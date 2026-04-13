@@ -3,7 +3,9 @@ import { API_CONFIG } from '../config/apiConfig';
 import { User } from '../interfaces/User';
 import { Figurita } from '../interfaces/Figurita';
 import { FiguritaColeccion } from '../interfaces/FiguritaColeccion';
+import { Propuesta } from '../interfaces/proposals/Propuesta';
 import { getMockedUserMissingCards, getMockedUserCollection, getMockedUsers, getMockedUser } from '../../mocks/usersMock';
+import { getMockedReceivedProposals, getMockedSentProposals } from '../../mocks/proposalsMock';
 
 const API_BASE_URL = API_CONFIG.users.base;
 
@@ -60,6 +62,28 @@ export const listarRepetidas = async (userId: number): Promise<FiguritaColeccion
     return getMockedUserCollection(); // Usamos la misma que para la general porque debería ser el mismo tipo de items, sólo que filtrados por cantidad
   } catch (error) {
     console.error(`Error al listar repetidas del usuario ${userId}:`, error);
+    throw error;
+  }
+};
+
+export const getReceivedProposals = async (userId: number): Promise<Propuesta[]> => {
+  try {
+    // const response = await axios.get<Propuesta[]>(`${API_BASE_URL}/${userId}/propuestas/recibidas`);
+    // return response.data;
+    return getMockedReceivedProposals(userId);
+  } catch (error) {
+    console.error(`Error al obtener propuestas recibidas del usuario ${userId}:`, error);
+    throw error;
+  }
+};
+
+export const getSentProposals = async (userId: number): Promise<Propuesta[]> => {
+  try {
+    // const response = await axios.get<Propuesta[]>(`${API_BASE_URL}/${userId}/propuestas/enviadas`);
+    // return response.data;
+    return getMockedSentProposals(userId);
+  } catch (error) {
+    console.error(`Error al obtener propuestas enviadas del usuario ${userId}:`, error);
     throw error;
   }
 };
