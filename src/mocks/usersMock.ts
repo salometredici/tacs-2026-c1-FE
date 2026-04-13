@@ -7,7 +7,7 @@ export const mockUser: User = {
   nombre: 'Juan Pérez',
   email: 'juan.perez@frba.utn.edu.ar',
   rating: 4.3,
-  img: '../../public/assets/user-svgrepo-com.svg'
+  img: '../app/pages/profile/user-svgrepo-com.svg'
 };
 
 export const mockUserCollection: Figurita[] = [

@@ -16,6 +16,10 @@ export const API_CONFIG = {
     base: `${API_BASE_URL}/usuarios`,
   },
 
+  exchanges: {
+    base: `${API_BASE_URL}/exchanges`
+  },
+
   auth: { // para hacer, separar en backend la logica de login, register y logout del controller de cosas del usuario
     login: `${API_BASE_URL}/auth/login`,
     logout: `${API_BASE_URL}/auth/logout`,

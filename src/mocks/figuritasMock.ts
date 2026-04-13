@@ -74,3 +74,8 @@ export const mockSearchFiguritas = (): SearchFiguritasResponse => {
     count: mockFiguritas.length,
   };
 };
+
+export const mockAddMissingCardResponse = () => ({
+  success: true,
+  message: 'Figurita faltante registrada',
+});

@@ -1,5 +1,5 @@
 import { Auction as Auction } from '../interfaces/auction/Auction';
-import { getMockedActiveAuctions, getMockedCreatedAuctionResponse } from '../../mocks/auctionsMock';
+import { getMockedActiveAuctions, getMockedCreatedAuctionResponse, getMockedUserAuctions } from '../../mocks/auctionsMock';
 import axios from 'axios';
 import { API_CONFIG } from '../config/apiConfig';
 import { CreateAuctionRequest } from '../interfaces/auction/CreateAuctionRequest';
@@ -26,5 +26,17 @@ export const createAuction = async (data: CreateAuctionRequest): Promise<CreateA
   } catch (error) {
     console.error('Error al crear la subasta:', error);
     throw error;
+  }
+};
+
+export const getAuctionsByUserId = async (userId: number): Promise<Auction[]> => {
+  try {
+    /* Ésta es la llamada al backend, pero por esta entrega, usamos mocks
+    const result = await axios.get<Auction[]>(`${API_CONFIG.auctions.base}`, { params: { publicanteId: userId } });
+    return result.data; */
+    return getMockedUserAuctions(userId);
+  } catch (error) {
+    console.error(`Error al obtener subastas del usuario ${userId}:`, error);
+    return [];
   }
 };

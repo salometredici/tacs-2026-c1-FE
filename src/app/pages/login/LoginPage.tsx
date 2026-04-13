@@ -15,7 +15,7 @@ import {
 } from './LoginPage.styles';
 
 const LogoTACS = () => (
-  <img src={'../../../../public/assets/football-svgrepo-com.svg'} alt="Logo TACS" width={80} height={80} />
+  <img src="/assets/football-svgrepo-com.svg" alt="Logo TACS" width={80} height={80} />
 );
 
 export default function LoginPage() {

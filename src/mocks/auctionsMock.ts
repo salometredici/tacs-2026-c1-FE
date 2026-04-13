@@ -59,4 +59,9 @@ export const getMockedCreatedAuctionResponse = (): CreateAuctionResponse => {
     message: "Subasta creada exitosamente",
     auctionId: 321
   };
-}
+};
+
+// Subastas del usuario con id=1 (usuario logueado en el mock)
+export const getMockedUserAuctions = (userId: number): Auction[] => {
+  return mockAuctions.filter(a => a.publicante.id === userId);
+};

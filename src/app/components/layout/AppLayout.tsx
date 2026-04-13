@@ -1,4 +1,5 @@
 import { Outlet, useNavigate } from 'react-router-dom';
+import { Toaster } from 'react-hot-toast';
 import Navbar from './Navbar';
 import Footer from './Footer';
 import { LayoutContainer, MainContent } from './AppLayout.styles';
@@ -29,6 +30,7 @@ export default function AppLayout() {
         <Outlet />
       </MainContent>
       <Footer />
+      <Toaster position="bottom-right" />
     </LayoutContainer>
   );
 }
