@@ -1,0 +1,1 @@
+export type Categoria = 'COMUN' | 'EPICO' | 'LEGENDARIO';
