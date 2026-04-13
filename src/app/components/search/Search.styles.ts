@@ -4,6 +4,7 @@ import { theme } from '../../styles/theme';
 export const SearchContainer = styled.div`
   max-width: 1200px;
   margin: 0 auto;
+  display: contents;
 `;
 
 export const SearchTitle = styled.h1`
@@ -13,11 +14,8 @@ export const SearchTitle = styled.h1`
 `;
 
 export const FilterSection = styled.div`
-  background: ${theme.colors.surface};
   padding: ${theme.spacing.xl};
-  border-radius: ${theme.borderRadius.md};
   margin-bottom: ${theme.spacing.xl};
-  box-shadow: ${theme.shadows.sm};
 `;
 
 export const FiltersGrid = styled.div`

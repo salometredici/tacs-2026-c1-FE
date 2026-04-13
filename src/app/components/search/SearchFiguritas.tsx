@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { mockSearchFiguritas } from '../../../mocks/figuritasMock';
 import { Figurita } from '../../interfaces/Figurita';
-import { SearchFiguritasFilters } from '../../interfaces/SearchFiguritasFilters';
+import { defaultSearchFilters, SearchFiguritasFilters } from '../../interfaces/search/SearchFiguritasFilters';
 import {
   SearchContainer,
   SearchTitle,
@@ -14,6 +14,7 @@ import {
   Button,
   LoadingMessage,
 } from './Search.styles';
+import { searchFiguritas } from '../../api/FiguritasService';
 
 interface SearchFiguritasProps {
   onSearch: (results: Figurita[], searched: boolean, loading: boolean) => void;
@@ -22,14 +23,10 @@ interface SearchFiguritasProps {
 export default function SearchFiguritas({
   onSearch,
 }: SearchFiguritasProps) {
-  const [filters, setFilters] = useState<SearchFiguritasFilters>({
-    numero: 0,
-    jugador: '',
-    seleccion: '',
-    equipo: '',
-  });
+  const [filters, setFilters] = useState<SearchFiguritasFilters>(defaultSearchFilters);
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
 
   const handleFilterChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -44,36 +41,20 @@ export default function SearchFiguritas({
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setSearched(true);
-
-    try {
-      // TODO: Cambiar a comentarios reales cuando backend esté disponible
-      // const response = await searchFiguritas(filters);
-      // onSearch(response.figuritas, true, false);
-
-      // Por ahora usar mock
-      const response = mockSearchFiguritas(
-        filters.numero > 0 ? filters.numero : undefined,
-        filters.jugador || undefined,
-        filters.seleccion || undefined,
-        filters.equipo || undefined
-      );
+    searchFiguritas(filters).then(res => {
+      if (res.count === 0) {
+        setErrorMsg('No se encontraron figuritas con esos filtros');
+        onSearch([], true, false);
+        return;
+      }
+      setSearched(true);
       setLoading(false);
-      onSearch(response.figuritas, true, false);
-    } catch (error) {
-      console.error('Error en búsqueda:', error);
-      setLoading(false);
-      onSearch([], true, false);
-    }
+      onSearch(res.figuritas, true, false);
+    });
   };
 
   const handleReset = () => {
-    setFilters({
-      numero: 0,
-      jugador: '',
-      seleccion: '',
-      equipo: '',
-    });
+    setFilters(defaultSearchFilters);
     setSearched(false);
     onSearch([], false, false);
   };

@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useUserContext } from '../../context/useUserContext';
+import { mockUser } from '../../../mocks/usersMock';
 import {
   LoginContainer,
   LoginCard,
@@ -13,15 +15,12 @@ import {
 } from './LoginPage.styles';
 
 const LogoTACS = () => (
-  <svg viewBox="0 0 100 100" width="80" height="80" aria-label="TACS logo">
-    <circle cx="50" cy="50" r="48" fill="#1976d2" stroke="white" strokeWidth="2" />
-    <polygon points="50,20 58,38 78,38 62,50 68,70 50,58 32,70 38,50 22,38 42,38" fill="white" opacity="0.9" />
-    <circle cx="50" cy="50" r="8" fill="#1976d2" />
-  </svg>
+  <img src={'../../../../public/assets/football-svgrepo-com.svg'} alt="Logo TACS" width={80} height={80} />
 );
 
 export default function LoginPage() {
   const navigate = useNavigate();
+  const { login } = useUserContext();
   const [form, setForm] = useState({ usuario: '', password: '' });
 
   const handleChange = (e: { target: HTMLInputElement }) => {
@@ -30,6 +29,8 @@ export default function LoginPage() {
 
   const handleSubmit = (e: { preventDefault: () => void }) => {
     e.preventDefault();
+    // Por ahora, usamos mockUser porque no hay desarrollo de auth
+    login(mockUser);
     navigate('/');
   };
 
@@ -39,7 +40,7 @@ export default function LoginPage() {
         <LoginLogo>
           <LogoTACS />
         </LoginLogo>
-        <LoginTitle>TACS</LoginTitle>
+        <LoginTitle>TACS K3061</LoginTitle>
         <LoginSubtitle>Intercambio de Figuritas Mundial 2026</LoginSubtitle>
         <LoginForm onSubmit={handleSubmit}>
           <LoginLabel>Usuario</LoginLabel>

@@ -2,28 +2,26 @@ import { Outlet, useNavigate } from 'react-router-dom';
 import Navbar from './Navbar';
 import Footer from './Footer';
 import { LayoutContainer, MainContent } from './AppLayout.styles';
+import { useUserContext } from '../../context/useUserContext';
+import { mockUser } from '../../../mocks/usersMock';
 
 export default function AppLayout() {
   const navigate = useNavigate();
-
-  const handleHomeClick = () => {
-    navigate('/');
-  };
+  const { currentUser, login, logout } = useUserContext();
 
   const handleProfileClick = () => {
-    // TODO: Obtener ID del usuario logueado del context/estado
-    navigate('/profile/1');
+    navigate(`/profile/${currentUser?.id}`);
   };
 
   const handleLogout = () => {
-    // TODO: Limpiar contexto/estado de usuario
+    logout();
     navigate('/login');
   };
 
   return (
     <LayoutContainer>
       <Navbar
-        onHomeClick={handleHomeClick}
+        onHomeClick={() => {navigate('/');}}
         onProfileClick={handleProfileClick}
         onLogout={handleLogout}
       />

@@ -1,4 +1,4 @@
-import { Figurita } from "./Figurita";
+import { Figurita } from "../Figurita";
 
 export interface SearchFiguritasResponse {
     figuritas: Figurita[];
