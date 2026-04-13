@@ -32,9 +32,7 @@ export default function SearchResults({
         <ResultCount>
           {results.length === 0
             ? 'No se encontraron figuritas'
-            : `Se encontraron ${results.length} figurita${
-                results.length !== 1 ? 's' : ''
-              }`}
+            : `Se encontraron ${results.length} figurita/s`}
         </ResultCount>
       </ResultsHeader>
 

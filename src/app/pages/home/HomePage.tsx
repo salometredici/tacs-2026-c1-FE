@@ -5,7 +5,6 @@ import {
   Subtitle,
   CardsGrid,
   Card,
-  CardIcon,
   CardTitle,
   CardDescription,
 } from './HomePage.styles';
@@ -20,10 +19,15 @@ export default function HomePage() {
 
       <CardsGrid>
         <Card onClick={() => navigate('/search')}>
-          <CardIcon />
           <CardTitle>Búsqueda de Figuritas</CardTitle>
           <CardDescription>
             Busca figuritas por número, jugador, selección o equipo
+          </CardDescription>
+        </Card>
+        <Card onClick={() => navigate('/auctions')}>
+          <CardTitle>Subastas Activas</CardTitle>
+          <CardDescription>
+            Buscá subastas activas o inicia las tuyas
           </CardDescription>
         </Card>
       </CardsGrid>

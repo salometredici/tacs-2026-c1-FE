@@ -10,15 +10,15 @@ export default function Footer() {
     <FooterContainer>
       <FooterContent>
         <FooterSection>
-          <h3>TACS</h3>
+          <h3>TACS K3061</h3>
           <p>Plataforma de intercambio de figuritas del Mundial 2026</p>
         </FooterSection>
 
         <FooterSection>
-          <h3>Ayuda</h3>
-          <p><a href="#help">Preguntas Frecuentes</a></p>
-          <p><a href="#guide">Guía de Uso</a></p>
-          <p><a href="#contact">Contacto</a></p>
+          <h3>Información</h3>
+          <p><a href="https://github.com/salometredici/tacs-2026-c1-FE/">Repositorio</a></p>
+          <p><a href="https://github.com/salometredici/tacs-2026-c1-FE/wiki">Wiki</a></p>
+          <p><a href="https://github.com/salometredici/tacs-2026-c1-FE/issues">Issues</a></p>
         </FooterSection>
 
         <FooterSection>

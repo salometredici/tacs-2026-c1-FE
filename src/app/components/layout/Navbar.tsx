@@ -31,7 +31,7 @@ export default function Navbar({ onHomeClick, onProfileClick, onLogout }: Navbar
     <NavbarContainer>
       <BrandSection>
         <BrandTitle onClick={onHomeClick} style={{ cursor: 'pointer' }}>
-          TACS
+          TACS K3061
         </BrandTitle>
       </BrandSection>
 

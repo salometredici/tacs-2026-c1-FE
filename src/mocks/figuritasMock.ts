@@ -1,8 +1,7 @@
-import { SearchFiguritasResponse } from '../app/interfaces/SearchFiguritasResponse';
+import { SearchFiguritasResponse } from '../app/interfaces/search/SearchFiguritasResponse';
 import { Figurita } from '../app/interfaces/Figurita';
 
-// Datos mockeados para desarrollo
-const mockFiguritas: Figurita[] = [
+export const mockFiguritas: Figurita[] = [
   {
     id: 1,
     numero: 1,
@@ -69,45 +68,9 @@ const mockFiguritas: Figurita[] = [
   },
 ];
 
-export const mockSearchFiguritas = (
-  numero?: number,
-  jugador?: string,
-  seleccion?: string,
-  equipo?: string,
-  categoria?: string
-): SearchFiguritasResponse => {
-  let resultados = [...mockFiguritas];
-
-  if (numero && numero > 0) {
-    resultados = resultados.filter((f) => f.numero === numero);
-  }
-
-  if (jugador) {
-    resultados = resultados.filter((f) =>
-      f.jugador.toLowerCase().includes(jugador.toLowerCase())
-    );
-  }
-
-  if (seleccion) {
-    resultados = resultados.filter((f) =>
-      f.seleccion.toLowerCase().includes(seleccion.toLowerCase())
-    );
-  }
-
-  if (equipo) {
-    resultados = resultados.filter((f) =>
-      f.equipo.toLowerCase().includes(equipo.toLowerCase())
-    );
-  }
-
-  if (categoria) {
-    resultados = resultados.filter((f) =>
-      f.categoria.toString().toLowerCase().includes(categoria.toLowerCase())
-    );
-  }
-
+export const mockSearchFiguritas = (): SearchFiguritasResponse => {
   return {
-    figuritas: resultados,
-    count: resultados.length,
-  } as SearchFiguritasResponse;
+    figuritas: mockFiguritas,
+    count: mockFiguritas.length,
+  };
 };

@@ -7,8 +7,12 @@ export const API_CONFIG = {
     base: `${API_BASE_URL}/figuritas`,
     search: `${API_BASE_URL}/figuritas/search`,
   },
+
+  auctions: {
+    base: `${API_BASE_URL}/auctions`,
+  },
   
-  usuarios: {
+  users: {
     base: `${API_BASE_URL}/usuarios`,
   },
 
