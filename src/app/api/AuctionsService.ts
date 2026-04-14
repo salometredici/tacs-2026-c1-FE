@@ -40,3 +40,22 @@ export const getAuctionsByUserId = async (userId: number): Promise<Auction[]> =>
     return [];
   }
 };
+
+
+
+export const placeBid = async (auctionId: number, userId: number, figuritasIds: number[]): Promise<void> => {
+  try {
+    /* En backend: ResponseEntity<Void> — post ...
+     * Pendiente: alinear rutas en backend.
+    await axios.post(
+      `${API_CONFIG.baseUrl}/api/falta`,
+      null,
+      { params: { auctionId, userId, figuritasIds } }
+    ); */
+    return;
+
+  } catch (e) {
+    console.error('Error al realizar la oferta:', e);
+    throw e;
+  }
+}

@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { Auction } from '../../interfaces/auction/Auction';
 import { getActiveAuctions } from '../../api/AuctionsService';
 import AuctionCard from '../../components/auctions/AuctionCard';
+import PlaceBidModal from '../../components/auctions/PlaceBidModal';
+import { useUserContext } from '../../context/useUserContext';
 import {
   AuctionsContainer,
   AuctionsHeader,
@@ -15,8 +17,11 @@ import {
 
 export default function AuctionsPage() {
   const navigate = useNavigate();
+  const { currentUser } = useUserContext();
   const [subastas, setSubastas] = useState<Auction[]>([]);
   const [loading, setLoading] = useState(true);
+  const [subastaSeleccionada, setSubastaSeleccionada] = useState<Auction | null>(null);
+
 
   useEffect(() => {
     loadAuctions();
@@ -52,10 +57,19 @@ export default function AuctionsPage() {
           </p>
           <AuctionsGrid>
             {subastas.map(subasta => (
-              <AuctionCard key={subasta.id} auction={subasta} />
+              <AuctionCard key={subasta.id} auction={subasta} onBid={() => setSubastaSeleccionada(subasta)} />
             ))}
           </AuctionsGrid>
         </>
+      )}
+      {subastaSeleccionada && currentUser && (
+        <PlaceBidModal
+          userId={currentUser.id}
+          figurita={subastaSeleccionada.figurita}
+          auctionId={subastaSeleccionada.id}
+          onClose={() => setSubastaSeleccionada(null)}
+          onSuccess={() => setSubastaSeleccionada(null)}
+        />
       )}
     </AuctionsContainer>
   );
