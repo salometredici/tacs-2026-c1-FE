@@ -1,4 +1,6 @@
-import React from 'react';
+import { useState } from 'react';
+import { useUserContext } from '../../context/useUserContext';
+import MakeProposalModal from '../proposals/MakeProposalModal';
 import { Figurita } from '../../interfaces/Figurita';
 import {
   ResultsContainer,
@@ -22,6 +24,9 @@ export default function SearchResults({
   searched,
   loading,
 }: SearchResultsProps) {
+  const { currentUser } = useUserContext();
+  const [modalFigurita, setModalFigurita] = useState<Figurita | null>(null);
+
   if (!searched || loading) {
     return null;
   }
@@ -50,9 +55,24 @@ export default function SearchResults({
                 {figurita.seleccion} - {figurita.equipo}
               </FiguritaInfo>
               <FiguritaInfo>{figurita.categoria}</FiguritaInfo>
+              {currentUser && (
+                <button onClick={() => setModalFigurita(figurita)}>
+                  Proponer intercambio
+                </button>
+              )}
             </FiguritaCard>
           ))}
         </ResultsGrid>
+      )}
+
+      {modalFigurita && currentUser && (
+        <MakeProposalModal
+          userId={currentUser.id}
+          figurita={modalFigurita}
+          publicacionId={modalFigurita.id}
+          onClose={() => setModalFigurita(null)}
+          onSuccess={() => setModalFigurita(null)}
+        />
       )}
     </ResultsContainer>
   );

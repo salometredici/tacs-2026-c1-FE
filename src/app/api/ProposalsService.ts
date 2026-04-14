@@ -42,3 +42,22 @@ export const rejectProposal = async (
     throw error;
   }
 };
+
+export const makeProposal = async (
+  publicacionId: number,
+  userId: number,
+  numFiguritas: number[]
+): Promise<void> => {
+  try {
+    /* En backend: POST /api/publicaciones/intercambios/{publicacionId}/propuestas?userId=
+    await axios.post(
+      `${API_CONFIG.baseUrl}/api/publicaciones/intercambios/${publicacionId}/propuestas`,
+      { numfiguritas: numFiguritas },
+      { params: { userId } }
+    ); */
+    return;
+  } catch (error) {
+    console.error('Error al enviar propuesta:', error);
+    throw error;
+  }
+};
