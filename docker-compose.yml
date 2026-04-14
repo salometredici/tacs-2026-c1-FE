@@ -1,0 +1,24 @@
+services:
+  backend:
+    build:
+      context: ./tp1c2026/backend
+    ports:
+      - "8080:8080"
+    networks:
+      - tacs-network
+
+  frontend:
+    build:
+      context: ./tacs-2026-c1-FE
+      args:
+        VITE_API_BASE_URL: http://backend:8080
+    ports:
+      - "80:80"
+    networks:
+      - tacs-network
+    #depends_on:
+      #- backend
+
+networks:
+  tacs-network:
+    driver: bridge
