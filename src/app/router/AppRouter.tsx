@@ -8,6 +8,10 @@ import CreateAuctionPage from '../pages/Auctions/CreateAuctionPage'
 import ProfilePage from '../pages/profile/ProfilePage'
 import ProposalsPage from '../pages/proposals/ProposalsPage'
 import ExchangesPage from '../pages/exchanges/ExchangesPage'
+import AdminLayout from '../components/admin/AdminLayout'
+import AdminRoute from '../components/admin/AdminRoute'
+import AdminLoginPage from '../pages/admin/AdminLoginPage'
+import AdminDashboardPage from '../pages/admin/AdminDashboardPage'
 
 export default function AppRouter() {
   return (
@@ -22,6 +26,12 @@ export default function AppRouter() {
           <Route path="/profile/:id" element={<ProfilePage />} />
           <Route path="/proposals" element={<ProposalsPage />} />
           <Route path="/exchanges" element={<ExchangesPage />} />
+        </Route>
+        <Route element={<AdminLayout />}>
+          <Route path="/admin/login" element={<AdminLoginPage />} />
+          <Route element={<AdminRoute />}>
+            <Route path="/admin" element={<AdminDashboardPage />} />
+          </Route>
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
