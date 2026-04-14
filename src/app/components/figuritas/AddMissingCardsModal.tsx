@@ -1,212 +1,14 @@
 import React, { useState } from 'react';
-import styled from 'styled-components';
 import { Categoria } from '../../interfaces/Categoria';
 import { AddMissingCardRequest } from '../../interfaces/figuritas/AddMissingCardRequest';
 import { addMissingCard } from '../../api/FiguritasService';
-import { theme } from '../../styles/theme';
-
-// ─── Estilos ────────────────────────────────────────────────────────────────
-
-const Overlay = styled.div`
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.45);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-  padding: ${theme.spacing.md};
-`;
-
-const Modal = styled.div`
-  background: ${theme.colors.surface};
-  border-radius: ${theme.borderRadius.md};
-  box-shadow: ${theme.shadows.lg};
-  width: 100%;
-  max-width: 520px;
-  max-height: 90vh;
-  overflow-y: auto;
-  padding: ${theme.spacing.xl};
-  display: flex;
-  flex-direction: column;
-  gap: ${theme.spacing.lg};
-`;
-
-const ModalHeader = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-`;
-
-const ModalTitle = styled.h2`
-  color: ${theme.colors.primary};
-  margin: 0;
-  font-size: 1.3rem;
-`;
-
-const CloseButton = styled.button`
-  background: none;
-  border: none;
-  font-size: 1.4rem;
-  cursor: pointer;
-  color: ${theme.colors.textSecondary};
-  line-height: 1;
-  &:hover { color: ${theme.colors.text}; }
-`;
-
-const Form = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: ${theme.spacing.md};
-  border: 1px solid ${theme.colors.border};
-  border-radius: ${theme.borderRadius.sm};
-  padding: ${theme.spacing.md};
-  background: ${theme.colors.background};
-`;
-
-const FormTitle = styled.p`
-  font-weight: 600;
-  font-size: 0.9rem;
-  color: ${theme.colors.textSecondary};
-  margin: 0;
-`;
-
-const Row = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: ${theme.spacing.md};
-`;
-
-const Field = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: ${theme.spacing.xs};
-
-  label {
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: ${theme.colors.text};
-  }
-`;
-
-const Input = styled.input`
-  padding: ${theme.spacing.sm};
-  border: 1px solid ${theme.colors.border};
-  border-radius: ${theme.borderRadius.sm};
-  font-size: 0.9rem;
-  &:focus {
-    outline: none;
-    border-color: ${theme.colors.primary};
-  }
-`;
-
-const Select = styled.select`
-  padding: ${theme.spacing.sm};
-  border: 1px solid ${theme.colors.border};
-  border-radius: ${theme.borderRadius.sm};
-  font-size: 0.9rem;
-  background: white;
-  cursor: pointer;
-  &:focus {
-    outline: none;
-    border-color: ${theme.colors.primary};
-  }
-`;
-
-const AddToListButton = styled.button`
-  padding: ${theme.spacing.sm} ${theme.spacing.md};
-  background: ${theme.colors.surface};
-  border: 2px solid ${theme.colors.primary};
-  color: ${theme.colors.primary};
-  border-radius: ${theme.borderRadius.sm};
-  font-size: 0.9rem;
-  font-weight: 600;
-  cursor: pointer;
-  align-self: flex-end;
-  transition: all 0.2s;
-  &:hover {
-    background: ${theme.colors.primary};
-    color: white;
-  }
-`;
-
-const PendingList = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: ${theme.spacing.sm};
-`;
-
-const PendingListTitle = styled.p`
-  font-weight: 600;
-  font-size: 0.9rem;
-  color: ${theme.colors.text};
-  margin: 0;
-`;
-
-const PendingItem = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: ${theme.colors.background};
-  border: 1px solid ${theme.colors.border};
-  border-radius: ${theme.borderRadius.sm};
-  padding: ${theme.spacing.sm} ${theme.spacing.md};
-  font-size: 0.9rem;
-`;
-
-const PendingItemInfo = styled.span`
-  color: ${theme.colors.text};
-  span { color: ${theme.colors.textSecondary}; }
-`;
-
-const RemoveButton = styled.button`
-  background: none;
-  border: none;
-  color: ${theme.colors.danger};
-  cursor: pointer;
-  font-size: 1rem;
-  padding: 0;
-  &:hover { opacity: 0.7; }
-`;
-
-const Footer = styled.div`
-  display: flex;
-  justify-content: flex-end;
-  gap: ${theme.spacing.md};
-`;
-
-const CancelButton = styled.button`
-  padding: ${theme.spacing.sm} ${theme.spacing.lg};
-  background: none;
-  border: 1px solid ${theme.colors.border};
-  border-radius: ${theme.borderRadius.sm};
-  color: ${theme.colors.textSecondary};
-  font-size: 0.95rem;
-  cursor: pointer;
-  &:hover { border-color: ${theme.colors.text}; color: ${theme.colors.text}; }
-`;
-
-const ConfirmButton = styled.button`
-  padding: ${theme.spacing.sm} ${theme.spacing.lg};
-  background: ${theme.colors.primary};
-  border: none;
-  border-radius: ${theme.borderRadius.sm};
-  color: white;
-  font-size: 0.95rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.2s;
-  &:hover:not(:disabled) { background: #1565c0; }
-  &:disabled { background: ${theme.colors.border}; cursor: not-allowed; }
-`;
-
-const ErrorMsg = styled.p`
-  color: ${theme.colors.danger};
-  font-size: 0.85rem;
-  margin: 0;
-`;
-
-// ─── Tipos ───────────────────────────────────────────────────────────────────
+import { toastError } from '../../utils/toast';
+import {
+  Overlay, Modal, ModalHeader, ModalTitle, CloseButton,
+  Form, FormTitle, Row, Field, Input, Select, AddToListButton,
+  PendingList, PendingListTitle, PendingItem, PendingItemInfo, RemoveButton,
+  Footer, CancelButton, ConfirmButton, ErrorMsg,
+} from './AddMissingCardsModal.styles';
 
 const CATEGORIAS: Categoria[] = ['COMUN', 'EPICO', 'LEGENDARIO'];
 
@@ -219,8 +21,6 @@ const emptyForm = (): AddMissingCardRequest => ({
   categoria: 'COMUN',
 });
 
-// ─── Componente ─────────────────────────────────────────────────────────────
-
 interface Props {
   userId: number;
   onClose: () => void;
@@ -232,7 +32,6 @@ export default function AddMissingCardsModal({ userId, onClose, onSuccess }: Pro
   const [pending, setPending] = useState<AddMissingCardRequest[]>([]);
   const [formError, setFormError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
-  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const handleChange = (field: keyof AddMissingCardRequest, value: string | number) => {
     setForm(prev => ({ ...prev, [field]: value }));
@@ -264,7 +63,6 @@ export default function AddMissingCardsModal({ userId, onClose, onSuccess }: Pro
   const handleConfirm = async () => {
     if (pending.length === 0) return;
     setSubmitting(true);
-    setSubmitError(null);
     try {
       for (const card of pending) {
         await addMissingCard(userId, card);
@@ -272,7 +70,7 @@ export default function AddMissingCardsModal({ userId, onClose, onSuccess }: Pro
       onSuccess();
       onClose();
     } catch {
-      setSubmitError('Ocurrió un error al registrar las figuritas. Intentá de nuevo.');
+      toastError('Ocurrió un error al registrar las figuritas. Intentá de nuevo.');
     } finally {
       setSubmitting(false);
     }
@@ -286,7 +84,6 @@ export default function AddMissingCardsModal({ userId, onClose, onSuccess }: Pro
           <CloseButton onClick={onClose} title="Cerrar">✕</CloseButton>
         </ModalHeader>
 
-        {/* ── Formulario de una figurita ── */}
         <Form>
           <FormTitle>Completá los datos de la figurita</FormTitle>
 
@@ -368,7 +165,6 @@ export default function AddMissingCardsModal({ userId, onClose, onSuccess }: Pro
           </AddToListButton>
         </Form>
 
-        {/* ── Lista pendiente ── */}
         {pending.length > 0 && (
           <PendingList>
             <PendingListTitle>Para registrar ({pending.length}):</PendingListTitle>
@@ -386,9 +182,6 @@ export default function AddMissingCardsModal({ userId, onClose, onSuccess }: Pro
           </PendingList>
         )}
 
-        {submitError && <ErrorMsg>{submitError}</ErrorMsg>}
-
-        {/* ── Acciones ── */}
         <Footer>
           <CancelButton onClick={onClose}>Cancelar</CancelButton>
           <ConfirmButton

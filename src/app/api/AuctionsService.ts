@@ -7,8 +7,9 @@ import { CreateAuctionResponse } from '../interfaces/auction/CreateAuctionRespon
 
 export const getActiveAuctions = async (): Promise<Auction[]> => {
   try {
-    /* Ésta es la llamada al backend, pero por esta entrega, usamos mocks
-    const result = await axios.get<Auction[]>(`${API_CONFIG.auctions}&status=active`);
+    /* En backend: ResponseEntity<List<SubastaDTO>> — GET /api/auctions?status=active
+     * NOTA: endpoint no existe aún en backend. Subasta no es @Entity ni tiene controller/service.
+    const result = await axios.get<Auction[]>(`${API_CONFIG.auctions.base}`, { params: { status: 'active' } });
     return result.data; */
     return getMockedActiveAuctions();
   } catch (error) {
@@ -19,8 +20,9 @@ export const getActiveAuctions = async (): Promise<Auction[]> => {
 
 export const createAuction = async (data: CreateAuctionRequest): Promise<CreateAuctionResponse> => {
   try {
-    /* Ésta es la llamada al backend, pero por esta entrega, usamos mocks
-    const response = await axios.post(`${API_CONFIG.auctions.base}`, data);
+    /* En backend: ResponseEntity<SubastaDTO> — POST /api/auctions
+     * NOTA: endpoint no existe aún en backend.
+    const response = await axios.post<CreateAuctionResponse>(`${API_CONFIG.auctions.base}`, data);
     return response.data; */
     return getMockedCreatedAuctionResponse();
   } catch (error) {
@@ -31,7 +33,8 @@ export const createAuction = async (data: CreateAuctionRequest): Promise<CreateA
 
 export const getAuctionsByUserId = async (userId: number): Promise<Auction[]> => {
   try {
-    /* Ésta es la llamada al backend, pero por esta entrega, usamos mocks
+    /* En backend: ResponseEntity<List<SubastaDTO>> — GET /api/auctions?publicanteId=
+     * NOTA: endpoint no existe aún en backend.
     const result = await axios.get<Auction[]>(`${API_CONFIG.auctions.base}`, { params: { publicanteId: userId } });
     return result.data; */
     return getMockedUserAuctions(userId);
