@@ -4,8 +4,10 @@ import { User } from '../interfaces/User';
 import { Figurita } from '../interfaces/Figurita';
 import { FiguritaColeccion } from '../interfaces/FiguritaColeccion';
 import { Propuesta } from '../interfaces/proposals/Propuesta';
+import { PublicacionIntercambio } from '../interfaces/proposals/PublicacionIntercambio';
 import { getMockedUserMissingCards, getMockedUserCollection, getMockedUsers, getMockedUser } from '../../mocks/usersMock';
 import { getMockedReceivedProposals, getMockedSentProposals } from '../../mocks/proposalsMock';
+import { getMockedSugerencias } from '../../mocks/sugerenciasMock';
 
 const API_BASE_URL = API_CONFIG.users.base;
 
@@ -84,6 +86,17 @@ export const getSentProposals = async (userId: number): Promise<Propuesta[]> => 
     return getMockedSentProposals(userId);
   } catch (error) {
     console.error(`Error al obtener propuestas enviadas del usuario ${userId}:`, error);
+    throw error;
+  }
+};
+
+export const getSugerencias = async (userId: number): Promise<PublicacionIntercambio[]> => {
+  try {
+    // const response = await axios.get<PublicacionIntercambio[]>(`${API_BASE_URL}/${userId}/sugerencias`);
+    // return response.data;
+    return getMockedSugerencias(userId);
+  } catch (error) {
+    console.error(`Error al obtener sugerencias para el usuario ${userId}:`, error);
     throw error;
   }
 };
