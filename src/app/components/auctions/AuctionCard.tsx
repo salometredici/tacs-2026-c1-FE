@@ -1,5 +1,7 @@
 import React from 'react';
 import { Auction } from '../../interfaces/auction/Auction';
+
+
 import {
   AuctionCard,
   FiguritaInfo,
@@ -16,9 +18,12 @@ import {
 
 interface AuctionCardProps {
   auction: Auction;
+  onBid: () => void;
 }
 
-export default function AuctionCardComponent({ auction: auction }: AuctionCardProps) {
+
+export default function AuctionCardComponent({ auction: auction, onBid }: AuctionCardProps) {
+
   const calcularTiempoRestante = () => {
     const ahora = new Date();
     const diferencia = new Date(auction.fechaCierre).getTime() - ahora.getTime();
@@ -94,8 +99,7 @@ export default function AuctionCardComponent({ auction: auction }: AuctionCardPr
           <span className="value">{reputacionMinima} ⭐</span>
         </div>
       </RequirmentsInfo>
-
-      <BidButton onClick={() => console.log('Participar en subasta:', auction.id)}>
+      <BidButton onClick={onBid}>
         Ofertar
       </BidButton>
     </AuctionCard>
