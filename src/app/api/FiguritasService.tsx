@@ -8,7 +8,8 @@ import { mockSearchFiguritas, mockAddMissingCardResponse } from "../../mocks/fig
 
 export const addMissingCard = async (userId: number, data: AddMissingCardRequest): Promise<AddMissingCardResponse> => {
     try {
-        /* Ésta es la llamada al backend, pero por esta entrega, usamos mocks
+        /* En backend: ResponseEntity<String> — POST /api/figuritas/registrar-faltante?userId=
+         * NOTA: este endpoint SÍ existe. DTO: FiguritaFaltanteDto (numero, jugador, seleccion, equipo, descripcion, categoria).
         const response = await axios.post<AddMissingCardResponse>(
             `${API_CONFIG.figuritas.base}/registrar-faltante`,
             data,
@@ -31,7 +32,8 @@ export const searchFiguritas = async (filters: SearchFiguritasFilters): Promise<
             equipo: filters.equipo
         } as SearchFiguritasFilters;
 
-        /* Ésta es la llamada al backend, pero por esta entrega, usamos mocks
+        /* En backend: ResponseEntity<List<FiguritaDTO>> — GET /api/figuritas/search
+         * NOTA: endpoint no existe aún. FiguritasController no tiene GET.
         const result = await axios.get<SearchFiguritasResponse>(`${API_CONFIG.figuritas.search}`, { params });
         return result.data; */
         return mockSearchFiguritas();

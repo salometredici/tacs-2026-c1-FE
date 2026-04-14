@@ -9,84 +9,99 @@ import { getMockedUserMissingCards, getMockedUserCollection, getMockedUsers, get
 import { getMockedReceivedProposals, getMockedSentProposals } from '../../mocks/proposalsMock';
 import { getMockedSugerencias } from '../../mocks/sugerenciasMock';
 
-const API_BASE_URL = API_CONFIG.users.base;
+// NOTA: UsuariosController está vacío en backend. Todos estos endpoints están pendientes de implementar.
+// La ruta base /api/usuarios tampoco está registrada aún.
 
-// Todos los users (para la vista del admin)
+const BASE = API_CONFIG.users.base;
+
 export const getAll = async (): Promise<User[]> => {
   try {
-    // const response = await axios.get<User[]>(`${API_BASE_URL}`);
-    // return response.data;
+    /* En backend: ResponseEntity<List<UsuarioDTO>> — GET /api/users
+     * NOTA: endpoint no existe aún.
+    const response = await axios.get<User[]>(`${BASE}`);
+    return response.data; */
     return getMockedUsers();
   } catch (error) {
     console.error('Error al listar usuarios:', error);
-    throw error;
+    return [];
   }
 };
 
-export const getById = async (userId: number): Promise<User> => {
+export const getById = async (userId: number): Promise<User | null> => {
   try {
-    // const response = await axios.get<User>(`${API_BASE_URL}/${userId}`);
-    // return response.data;
+    /* En backend: ResponseEntity<UsuarioDTO> — GET /api/users/{id}
+     * NOTA: endpoint no existe aún.
+    const response = await axios.get<User>(`${BASE}/${userId}`);
+    return response.data; */
     return getMockedUser();
   } catch (error) {
     console.error(`Error al buscar usuario ${userId}:`, error);
-    throw error;
+    return null;
   }
 };
 
 export const getUserMissingCards = async (userId: number): Promise<Figurita[]> => {
   try {
-    // const response = await axios.get<Figurita[]>(`${API_BASE_URL}/${userId}/faltantes`);
-    // return response.data;
+    /* En backend: ResponseEntity<List<FiguritaDTO>> — GET /api/users/{id}/missing-cards
+     * NOTA: endpoint no existe aún. Backend tiene la entidad faltantes en Usuario.
+    const response = await axios.get<Figurita[]>(`${BASE}/${userId}/missing-cards`);
+    return response.data; */
     return getMockedUserMissingCards();
   } catch (error) {
     console.error(`Error al listar faltantes del usuario ${userId}:`, error);
-    throw error;
+    return [];
   }
 };
 
-// Retorna todas las figuritas que posee el usuario
 export const getUserCollection = async (userId: number): Promise<FiguritaColeccion[]> => {
   try {
-    // const response = await axios.get<FiguritaColeccion[]>(`${API_BASE_URL}/${userId}/collection`);
-    // return response.data;
+    /* En backend: ResponseEntity<List<FiguritaColeccionDTO>> — GET /api/users/{id}/collection
+     * NOTA: endpoint no existe aún. Backend tiene repetidas en Usuario.
+    const response = await axios.get<FiguritaColeccion[]>(`${BASE}/${userId}/collection`);
+    return response.data; */
     return getMockedUserCollection();
   } catch (error) {
-    console.error(`Error al obtener las figuritas repetidas para el usuario ${userId}:`, error);
-    throw error;
+    console.error(`Error al obtener colección del usuario ${userId}:`, error);
+    return [];
   }
 };
 
 export const listarRepetidas = async (userId: number): Promise<FiguritaColeccion[]> => {
   try {
-    // const response = await axios.get<FiguritaColeccion[]>(`${API_BASE_URL}/${userId}/repetidas`);
-    // return response.data;
-    return getMockedUserCollection(); // Usamos la misma que para la general porque debería ser el mismo tipo de items, sólo que filtrados por cantidad
+    /* En backend: ResponseEntity<List<FiguritaColeccionDTO>> — GET /api/users/{id}/repeated-cards
+     * NOTA: endpoint no existe aún.
+    const response = await axios.get<FiguritaColeccion[]>(`${BASE}/${userId}/repeated-cards`);
+    return response.data; */
+    return getMockedUserCollection();
   } catch (error) {
     console.error(`Error al listar repetidas del usuario ${userId}:`, error);
-    throw error;
+    return [];
   }
 };
 
 export const getReceivedProposals = async (userId: number): Promise<Propuesta[]> => {
   try {
-    // const response = await axios.get<Propuesta[]>(`${API_BASE_URL}/${userId}/propuestas/recibidas`);
-    // return response.data;
+    /* En backend: ResponseEntity<List<PropuestaDTO>> — GET /api/users/{id}/proposals/received
+     * NOTA: endpoint no existe aún.
+    const response = await axios.get<Propuesta[]>(`${BASE}/${userId}/proposals/received`);
+    return response.data; */
     return getMockedReceivedProposals(userId);
   } catch (error) {
     console.error(`Error al obtener propuestas recibidas del usuario ${userId}:`, error);
-    throw error;
+    return [];
   }
 };
 
 export const getSentProposals = async (userId: number): Promise<Propuesta[]> => {
   try {
-    // const response = await axios.get<Propuesta[]>(`${API_BASE_URL}/${userId}/propuestas/enviadas`);
-    // return response.data;
+    /* En backend: ResponseEntity<List<PropuestaDTO>> — GET /api/users/{id}/proposals/sent
+     * NOTA: endpoint no existe aún.
+    const response = await axios.get<Propuesta[]>(`${BASE}/${userId}/proposals/sent`);
+    return response.data; */
     return getMockedSentProposals(userId);
   } catch (error) {
     console.error(`Error al obtener propuestas enviadas del usuario ${userId}:`, error);
-    throw error;
+    return [];
   }
 };
 
