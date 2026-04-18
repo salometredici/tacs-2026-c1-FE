@@ -1,7 +1,6 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Auction } from '../../interfaces/auction/Auction';
-
-
 import {
   AuctionCard,
   FiguritaInfo,
@@ -19,14 +18,16 @@ import {
 interface AuctionCardProps {
   auction: Auction;
   onBid: () => void;
+  hideBidButton?: boolean;
 }
 
 
-export default function AuctionCardComponent({ auction: auction, onBid }: AuctionCardProps) {
+export default function AuctionCardComponent({ auction, onBid, hideBidButton = false }: AuctionCardProps) {
+  const navigate = useNavigate();
 
   const calcularTiempoRestante = () => {
     const ahora = new Date();
-    const diferencia = new Date(auction.fechaCierre).getTime() - ahora.getTime();
+    const diferencia = new Date(auction.endDate).getTime() - ahora.getTime();
 
     if (diferencia <= 0) {
       return { texto: 'Finalizada', color: '#d32f2f' };
@@ -45,10 +46,10 @@ export default function AuctionCardComponent({ auction: auction, onBid }: Auctio
   };
 
   const tiempoRestante = calcularTiempoRestante();
-  const reputacionMinima = auction.condicionesMinimas.find(c => c.tipo === 'REPUTATION_MINIMA')?.valor || 4;
+  const reputacionMinima = auction.rules.find(c => c.type === 'REPUTACION_MINIMA')?.value;
 
   return (
-    <AuctionCard>
+    <AuctionCard onClick={() => navigate(`/auctions/${auction.id}`)} style={{ cursor: 'pointer' }}>
       <FiguritaInfo>
         <FiguritaNumber>#{auction.figurita.numero}</FiguritaNumber>
         <FiguritaDetails>
@@ -64,12 +65,12 @@ export default function AuctionCardComponent({ auction: auction, onBid }: Auctio
 
       <SellerInfo>
         <span>Publicante:</span>
-        <span className="seller-name">{auction.publicante.nombre}</span>
+        <span className="seller-name">{auction.publisherId.nombre}</span>
         <span className="reputation">
-          {'★'.repeat(Math.round(auction.publicante.rating || 4))}
+          {'★'.repeat(Math.round(auction.publisherId.rating || 4))}
           {' '}
           <span style={{ color: '#666' }}>
-            ({(auction.publicante.rating || 0).toFixed(1)})
+            ({(auction.publisherId.rating || 0).toFixed(1)})
           </span>
         </span>
       </SellerInfo>
@@ -81,27 +82,57 @@ export default function AuctionCardComponent({ auction: auction, onBid }: Auctio
         </TimeRemaining>
       </AuctionStatus>
 
-      {auction.mejorApuesta && (
-        <BestBidInfo>
-          <div className="bid-label">Mejor oferta:</div>
-          <div className="bid-details">
-            {auction.mejorApuesta.figuritasOfrecidas.length} figurita(s) ofrecidas
-          </div>
-          <div style={{ fontSize: '0.8rem', color: '#666', marginTop: '0.25rem' }}>
-            Por {auction.mejorApuesta.postor.nombre}
-          </div>
-        </BestBidInfo>
-      )}
+      {auction.lastBidId && (() => {
+        const mejor = auction.bids.find(o => o.bidId === auction.lastBidId);
+        return mejor ? (
+          <BestBidInfo>
+            <div className="bid-label">Última oferta:</div>
+            <div className="bid-details">
+              {mejor.offeredFiguritas.length} figurita(s) ofrecidas
+            </div>
+            <div style={{ fontSize: '0.8rem', color: '#666', marginTop: '0.25rem' }}>
+              Por {mejor.postor.name}
+            </div>
+          </BestBidInfo>
+        ) : null;
+      })()}
 
       <RequirmentsInfo>
-        <div className="requirement">
-          <span className="label">Reputación mínima:</span>
-          <span className="value">{reputacionMinima} ⭐</span>
-        </div>
+        {reputacionMinima && (
+          <div className="requirement">
+            <span className="label">Reputación mínima:</span>
+            <span className="value">{reputacionMinima} ⭐</span>
+          </div>
+        )}
+        {auction.rules.find(r => r.type === 'INTERCAMBIOS_MINIMOS') && (
+          <div className="requirement">
+            <span className="label">Intercambios mínimos:</span>
+            <span className="value">{auction.rules.find(r => r.type === 'INTERCAMBIOS_MINIMOS')!.value}</span>
+          </div>
+        )}
+        {auction.rules.find(r => r.type === 'CANTIDAD_MINIMA_FIGURITAS') && (
+          <div className="requirement">
+            <span className="label">Figuritas mínimas en oferta:</span>
+            <span className="value">{auction.rules.find(r => r.type === 'CANTIDAD_MINIMA_FIGURITAS')!.value}</span>
+          </div>
+        )}
+        {auction.rules.find(r => r.type === 'CATEGORIA_MINIMA') && (
+          <div className="requirement">
+            <span className="label">Categoría mínima:</span>
+            <span className="value">{auction.rules.find(r => r.type === 'CATEGORIA_MINIMA')!.value}</span>
+          </div>
+        )}
+        {auction.rules.length === 0 && (
+          <div className="requirement">
+            <span className="label">Sin restricciones</span>
+          </div>
+        )}
       </RequirmentsInfo>
-      <BidButton onClick={onBid}>
-        Ofertar
-      </BidButton>
+      {!hideBidButton && (
+        <BidButton onClick={e => { e.stopPropagation(); onBid(); }}>
+          Ofertar
+        </BidButton>
+      )}
     </AuctionCard>
   );
 }

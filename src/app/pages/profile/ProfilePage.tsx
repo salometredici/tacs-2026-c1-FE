@@ -5,6 +5,7 @@ import { Figurita } from '../../interfaces/Figurita';
 import { FiguritaColeccion } from '../../interfaces/FiguritaColeccion';
 import { Propuesta } from '../../interfaces/proposals/Propuesta';
 import { Auction } from '../../interfaces/auction/Auction';
+import { UserBid } from '../../interfaces/auction/bid/UserBid';
 import { getUserCollection, getUserMissingCards, getReceivedProposals, getSentProposals } from '../../api/UsersService';
 import { getAuctionsByUserId, getAuctionBidsByUserId } from '../../api/AuctionsService';
 import { useUserContext } from '../../context/useUserContext';
@@ -45,7 +46,7 @@ export default function ProfilePage() {
   const [recibidas, setRecibidas]       = useState<Propuesta[]>([]);
   const [enviadas, setEnviadas]         = useState<Propuesta[]>([]);
   const [misSubastas, setMisSubastas]   = useState<Auction[]>([]);
-  const [misOfertas, setMisOfertas]     = useState<Auction[]>([]);
+  const [misOfertas, setMisOfertas]     = useState<UserBid[]>([]);
   const [loading, setLoading]           = useState(true);
   const [error, setError]               = useState(false);
   const [showAddMissingModal, setShowAddMissingModal] = useState(false);
@@ -77,7 +78,7 @@ export default function ProfilePage() {
     getUserMissingCards(user.id).then(missing => setFaltantes(missing));
   };
 
-  const isAuctionActive = (a: Auction) => new Date(a.fechaCierre) > new Date();
+  const isAuctionActive = (a: Auction) => new Date(a.endDate) > new Date();
 
   return (
     <ProfileContainer>
@@ -227,7 +228,7 @@ export default function ProfilePage() {
                       <CompactAuctionCard key={a.id} onClick={() => navigate(`/auctions/${a.id}`)}>
                         <AuctionText>
                           <strong>#{a.figurita.numero} {a.figurita.jugador}</strong>
-                          {' — '}cierra {new Date(a.fechaCierre).toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}
+                          {' — '}cierra {new Date(a.endDate).toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}
                         </AuctionText>
                         <AuctionStatus $active={isAuctionActive(a)}>
                           {isAuctionActive(a) ? 'Activa' : 'Cerrada'}
@@ -254,21 +255,21 @@ export default function ProfilePage() {
                   <EmptyMessage>No realizaste ofertas en subastas</EmptyMessage>
                 ) : (
                   <RowList>
-                    {misOfertas.slice(0, PREVIEW).map(a => (
-                      <CompactAuctionCard key={a.id} onClick={() => navigate(`/auctions/${a.id}`)}>
+                    {misOfertas.slice(0, PREVIEW).map(o => (
+                      <CompactAuctionCard key={o.bidId} onClick={() => navigate(`/auctions/${o.auctionId}`)}>
                         <AuctionText>
-                          <strong>#{a.figurita.numero} {a.figurita.jugador}</strong>
-                          {' — de '}{a.publicante.nombre}
-                          {' — '}cierra {new Date(a.fechaCierre).toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}
+                          <strong>#{o.figurita.numero} {o.figurita.jugador}</strong>
+                          {' — de '}{o.publisher.nombre}
+                          {' — '}cierra {new Date(o.closingDate).toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}
                         </AuctionText>
-                        <AuctionStatus $active={isAuctionActive(a)}>
-                          {isAuctionActive(a) ? 'Activa' : 'Cerrada'}
+                        <AuctionStatus $active={o.auctionStatus === 'ACTIVA'}>
+                          {o.auctionStatus === 'ACTIVA' ? 'Activa' : 'Cerrada'}
                         </AuctionStatus>
                       </CompactAuctionCard>
                     ))}
                     {misOfertas.length > PREVIEW && (
                       <SeeAllLink onClick={() => navigate('/auctions')} style={{ alignSelf: 'center', marginTop: '0.25rem' }}>
-                        +{misOfertas.length - PREVIEW} más
+                        +{misOfertas.length - PREVIEW} más →
                       </SeeAllLink>
                     )}
                   </RowList>

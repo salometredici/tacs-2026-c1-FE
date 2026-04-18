@@ -1,14 +1,17 @@
 import { Figurita } from '../Figurita';
 import { User } from '../User';
-import { OfertaSubasta } from './OfertaSubasta';
-import { ReglaCondicion } from './ReglaCondicion';
+import { Bid } from './bid/Bid';
+import { AuctionRule } from './auctionRule/AuctionRule';
+import { AuctionStatus } from './AuctionStatus';
 
 export interface Auction {
   id: number;
   figurita: Figurita;
-  publicante: User;
-  fechaCreacion: Date;
-  fechaCierre: Date;
-  condicionesMinimas: ReglaCondicion[];
-  mejorApuesta?: OfertaSubasta;
+  publisherId: User;
+  status: AuctionStatus;
+  creationDate: string;
+  endDate: string;
+  rules: AuctionRule[];
+  bids: Bid[];
+  lastBidId?: string;
 }

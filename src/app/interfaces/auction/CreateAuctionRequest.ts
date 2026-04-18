@@ -1,6 +1,8 @@
+import { AuctionRule } from './auctionRule/AuctionRule';
+
 export interface CreateAuctionRequest {
-    figuritaId: number;
-    publicanteId: number;
-    duracionHoras: number;
-    ratingMinimo: number;
+  figuritaId: number;
+  publisherId: number;
+  duration: number; // En horas
+  rules: AuctionRule[];
 }
