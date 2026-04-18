@@ -5,6 +5,7 @@ import HomePage from '../pages/home/HomePage'
 import SearchPage from '../pages/SearchPage'
 import AuctionsPage from '../pages/Auctions/AuctionsPage'
 import CreateAuctionPage from '../pages/Auctions/CreateAuctionPage'
+import AuctionDetailPage from '../pages/Auctions/AuctionDetailPage'
 import ProfilePage from '../pages/profile/ProfilePage'
 import ProposalsPage from '../pages/proposals/ProposalsPage'
 import ExchangesPage from '../pages/exchanges/ExchangesPage'
@@ -23,6 +24,7 @@ export default function AppRouter() {
           <Route path="/search" element={<SearchPage />} />
           <Route path="/auctions" element={<AuctionsPage />} />
           <Route path="/auctions/create" element={<CreateAuctionPage />} />
+          <Route path="/auctions/:id" element={<AuctionDetailPage />} />
           <Route path="/profile/:id" element={<ProfilePage />} />
           <Route path="/proposals" element={<ProposalsPage />} />
           <Route path="/exchanges" element={<ExchangesPage />} />
