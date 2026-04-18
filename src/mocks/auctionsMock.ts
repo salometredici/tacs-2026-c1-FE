@@ -61,7 +61,12 @@ export const getMockedCreatedAuctionResponse = (): CreateAuctionResponse => {
   };
 };
 
-// Subastas del usuario con id=1 (usuario logueado en el mock)
+// Subastas creadas por el usuario
 export const getMockedUserAuctions = (userId: number): Auction[] => {
   return mockAuctions.filter(a => a.publicante.id === userId);
+};
+
+// Subastas donde el usuario ofertó
+export const getMockedUserBids = (userId: number): Auction[] => {
+  return mockAuctions.filter(a => a.mejorApuesta?.postor.id === userId);
 };
