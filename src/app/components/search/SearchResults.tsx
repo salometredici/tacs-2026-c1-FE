@@ -47,14 +47,14 @@ export default function SearchResults({
         <ResultsGrid>
           {results.map((figurita) => (
             <FiguritaCard key={figurita.id}>
-              <FiguritaNumber>#{figurita.numero}</FiguritaNumber>
+              <FiguritaNumber>#{figurita.number}</FiguritaNumber>
               <FiguritaInfo>
-                <strong>{figurita.jugador}</strong>
+                <strong>{figurita.description}</strong>
               </FiguritaInfo>
               <FiguritaInfo>
-                {figurita.seleccion} - {figurita.equipo}
+                {figurita.country} - {figurita.team}
               </FiguritaInfo>
-              <FiguritaInfo>{figurita.categoria}</FiguritaInfo>
+              <FiguritaInfo>{figurita.category}</FiguritaInfo>
               {currentUser && (
                 <button onClick={() => setModalFigurita(figurita)}>
                   Proponer intercambio
@@ -69,7 +69,7 @@ export default function SearchResults({
         <MakeProposalModal
           userId={currentUser.id}
           figurita={modalFigurita}
-          publicacionId={modalFigurita.id}
+          publicacionId={String(modalFigurita.id)}
           onClose={() => setModalFigurita(null)}
           onSuccess={() => setModalFigurita(null)}
         />

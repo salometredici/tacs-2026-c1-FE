@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { PublicacionIntercambio } from '../../interfaces/proposals/PublicacionIntercambio';
-import { getSugerencias } from '../../api/UsersService';
+import { Publicacion } from '../../interfaces/publicaciones/Publicacion';
+import { getUserSuggestions } from '../../api/UsersService';
 import { useUserContext } from '../../context/useUserContext';
 import MakeProposalModal from '../../components/proposals/MakeProposalModal';
 import {
@@ -28,14 +28,14 @@ export default function HomePage() {
   const navigate = useNavigate();
   const { currentUser } = useUserContext();
 
-  const [sugerencias, setSugerencias] = useState<PublicacionIntercambio[]>([]);
+  const [sugerencias, setSugerencias] = useState<Publicacion[]>([]);
   const [loading, setLoading] = useState(false);
-  const [seleccionada, setSeleccionada] = useState<PublicacionIntercambio | null>(null);
+  const [seleccionada, setSeleccionada] = useState<Publicacion | null>(null);
 
   useEffect(() => {
     if (!currentUser) return;
     setLoading(true);
-    getSugerencias(currentUser.id)
+    getUserSuggestions(currentUser.id)
       .then(data => setSugerencias(data))
       .finally(() => setLoading(false));
   }, [currentUser]);
@@ -57,13 +57,13 @@ export default function HomePage() {
             <SugerenciasCarousel>
               {sugerencias.map(s => (
                 <SugerenciaCard key={s.id} onClick={() => setSeleccionada(s)}>
-                  <CategoriaBadge $categoria={s.figurita.categoria}>
-                    {s.figurita.categoria}
+                  <CategoriaBadge $categoria={s.figurita.category}>
+                    {s.figurita.category}
                   </CategoriaBadge>
-                  <CardNumber>#{s.figurita.numero}</CardNumber>
-                  <CardPlayer>{s.figurita.jugador}</CardPlayer>
-                  <CardMeta>{s.figurita.seleccion}</CardMeta>
-                  <CardOwner>Ofrecida por {s.publicante.nombre}</CardOwner>
+                  <CardNumber>#{s.figurita.number}</CardNumber>
+                  <CardPlayer>{s.figurita.description}</CardPlayer>
+                  <CardMeta>{s.figurita.country}</CardMeta>
+                  <CardOwner>Ofrecida por {s.publisher.name}</CardOwner>
                 </SugerenciaCard>
               ))}
             </SugerenciasCarousel>

@@ -1,7 +1,7 @@
 import { Categoria } from '../Categoria';
 
 export interface AddMissingCardRequest {
-  numero: number;
+  number: number;
   jugador: string;
   seleccion: string;
   equipo: string;

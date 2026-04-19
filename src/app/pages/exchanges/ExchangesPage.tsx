@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Exchange } from '../../interfaces/exchanges/Exchange';
-import { PublicacionIntercambio, TipoParticipacion } from '../../interfaces/proposals/PublicacionIntercambio';
+import { Publicacion } from '../../interfaces/publicaciones/Publicacion';
 import { getExchangesByUserId, getCardsForExchangeByUserId, submitFeedback } from '../../api/ExchangesService';
 import { useUserContext } from '../../context/useUserContext';
 import { toastError } from '../../utils/toast';
@@ -14,9 +14,10 @@ import {
   Overlay, Modal, ModalTitle, StarsRow, StarButton,
   CommentInput, ModalActions, CancelButton, SubmitButton,
 } from './ExchangesPage.styles';
+import { TIPO_PARTICIPACION } from '../../interfaces/publicaciones/publicacionTypes';
 
 const EXCHANGE_TYPE_LABEL = { PROPUESTA: 'Propuesta', SUBASTA: 'Subasta' };
-const TIPO_LABEL: Record<TipoParticipacion, string> = {
+const TIPO_LABEL: Record<TIPO_PARTICIPACION, string> = {
   INTERCAMBIO: 'Intercambio',
   SUBASTA: 'Subasta',
 };
@@ -30,7 +31,7 @@ export default function ExchangesPage() {
     return null;
   }
 
-  const [publications, setPublications] = useState<PublicacionIntercambio[]>([]);
+  const [publications, setPublications] = useState<Publicacion[]>([]);
   const [exchanges, setExchanges] = useState<Exchange[]>([]);
   const [loading, setLoading] = useState(true);
   const [showPublishModal, setShowPublishModal] = useState(false);
@@ -106,14 +107,14 @@ export default function ExchangesPage() {
                 <PublicationCard key={pub.id}>
                   <ExchangeInfo>
                     <ExchangeTitle>
-                      #{pub.figurita.numero} · {pub.figurita.jugador}
+                      #{pub.figurita.number} · {pub.figurita.description}
                     </ExchangeTitle>
                     <ExchangeDetail>
-                      {pub.figurita.seleccion} · {pub.figurita.categoria} · ×{pub.cantidad}
+                      {pub.figurita.country} · {pub.figurita.category} · ×{pub.count}
                     </ExchangeDetail>
                   </ExchangeInfo>
-                  <PublicationTypeBadge $tipo={pub.tipoParticipacion}>
-                    {TIPO_LABEL[pub.tipoParticipacion]}
+                  <PublicationTypeBadge $tipo={pub.participationType}>
+                    {TIPO_LABEL[pub.participationType]}
                   </PublicationTypeBadge>
                 </PublicationCard>
               ))}
@@ -135,10 +136,10 @@ export default function ExchangesPage() {
                 <ExchangeCard key={e.id}>
                   <ExchangeInfo>
                     <ExchangeTitle>
-                      #{e.figurita.numero} · {e.figurita.jugador}
+                      #{e.figurita.number} · {e.figurita.description}
                     </ExchangeTitle>
                     <ExchangeDetail>
-                      Con {e.otherUser.nombre} · {new Date(e.date).toLocaleDateString('es-AR')}
+                      Con {e.otherUser.name} · {new Date(e.date).toLocaleDateString('es-AR')}
                     </ExchangeDetail>
                   </ExchangeInfo>
                   <TypeBadge $type={e.type}>{EXCHANGE_TYPE_LABEL[e.type]}</TypeBadge>
@@ -166,7 +167,7 @@ export default function ExchangesPage() {
       {ratingTarget && (
         <Overlay onClick={ev => { if (ev.target === ev.currentTarget) closeRatingModal(); }}>
           <Modal>
-            <ModalTitle>Calificar a {ratingTarget.otherUser.nombre}</ModalTitle>
+            <ModalTitle>Calificar a {ratingTarget.otherUser.name}</ModalTitle>
             <StarsRow>
               {[1, 2, 3, 4, 5].map(n => (
                 <StarButton

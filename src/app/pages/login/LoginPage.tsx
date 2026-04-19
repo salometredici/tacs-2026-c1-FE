@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import { useUserContext } from '../../context/useUserContext';
-import { mockUser } from '../../../mocks/usersMock';
+import { API_CONFIG } from '../../config/apiConfig';
+import { mockUsers } from '../../../mocks/usersMock';
 import {
   LoginContainer,
   LoginCard,
@@ -21,18 +23,43 @@ const LogoTACS = () => (
 export default function LoginPage() {
   const navigate = useNavigate();
   const { login } = useUserContext();
-  const [form, setForm] = useState({ usuario: '', password: '' });
+  const [form, setForm] = useState({ email: '', password: '' });
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleChange = (e: { target: HTMLInputElement }) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
+    setError('');
   };
 
-  const handleSubmit = (e: { preventDefault: () => void }) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Por ahora, usamos mockUser porque no hay desarrollo de auth
-    login(mockUser);
+    setError('');
+    setLoading(true);
+
+    // Para reemplazar el mock del user por la invocación real cuando esté elendpoint
+    // try {
+    //   const response = await axios.post(API_CONFIG.auth.login, {
+    //     email: form.email,
+    //     password: form.password,
+    //   });
+    //   const { token, user } = response.data;
+    //   login(user, token);
+    //   navigate('/');
+    // } catch {
+    //   setError('Email o contraseña incorrectos.');
+    // } finally {
+    //   setLoading(false);
+    // }
+
+    // linea a borrar!
+    login(mockUsers[0], 'mock-token');
     navigate('/');
+    setLoading(false);
   };
+
+  void axios;
+  void API_CONFIG;
 
   return (
     <LoginContainer>
@@ -43,12 +70,14 @@ export default function LoginPage() {
         <LoginTitle>TACS K3061</LoginTitle>
         <LoginSubtitle>Intercambio de Figuritas Mundial 2026</LoginSubtitle>
         <LoginForm onSubmit={handleSubmit}>
-          <LoginLabel>Usuario</LoginLabel>
+          <LoginLabel>Email</LoginLabel>
           <LoginInput
-            name="usuario"
-            value={form.usuario}
+            name="email"
+            type="email"
+            value={form.email}
             onChange={handleChange}
-            placeholder="Ingresá tu usuario"
+            placeholder="Ingresá tu email"
+            autoComplete="email"
           />
           <LoginLabel>Contraseña</LoginLabel>
           <LoginInput
@@ -57,8 +86,12 @@ export default function LoginPage() {
             value={form.password}
             onChange={handleChange}
             placeholder="Ingresá tu contraseña"
+            autoComplete="current-password"
           />
-          <LoginButton type="submit">Ingresar</LoginButton>
+          {error && <p style={{ color: '#d32f2f', fontSize: '0.9rem', margin: 0 }}>{error}</p>}
+          <LoginButton type="submit" disabled={loading}>
+            {loading ? 'Ingresando...' : 'Ingresar'}
+          </LoginButton>
         </LoginForm>
       </LoginCard>
     </LoginContainer>

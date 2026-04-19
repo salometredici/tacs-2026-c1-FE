@@ -1,7 +1,8 @@
 import styled from 'styled-components';
 import { ExchangeType } from '../../interfaces/exchanges/Exchange';
-import { TipoParticipacion } from '../../interfaces/proposals/PublicacionIntercambio';
+import {  } from '../../interfaces/publicaciones/Publicacion';
 import { theme } from '../../styles/theme';
+import { TIPO_PARTICIPACION } from '../../interfaces/publicaciones/publicacionTypes';
 
 export const PageContainer = styled.div`
   max-width: 900px;
@@ -124,7 +125,7 @@ export const PublicationCard = styled.div`
   gap: ${theme.spacing.lg};
 `;
 
-export const PublicationTypeBadge = styled.span<{ $tipo: TipoParticipacion }>`
+export const PublicationTypeBadge = styled.span<{ $tipo: TIPO_PARTICIPACION }>`
   padding: 0.2rem 0.6rem;
   border-radius: 999px;
   font-size: 0.75rem;

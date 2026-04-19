@@ -1,5 +1,5 @@
 import React from 'react';
-import { listarRepetidas } from '../../api/UsersService';
+import { getUserCollection } from '../../api/UsersService';
 import { Figurita } from '../../interfaces/Figurita';
 import { FiguritaColeccion } from '../../interfaces/FiguritaColeccion';
 import {
@@ -11,7 +11,7 @@ import {
 } from './Collection.styles';
 
 interface CollectionProps {
-  usuarioId: number;
+  usuarioId: string;
   mockTodas?: Figurita[];
   mockRepetidas?: FiguritaColeccion[];
 }
@@ -30,9 +30,9 @@ export default function Collection({ usuarioId, mockTodas, mockRepetidas }: Coll
 
   const cargarColeccion = async () => {
     try {
-      const repetidasData = await listarRepetidas(usuarioId);
-      setRepetidas(repetidasData);
-      setTodas(repetidasData.map((fc) => fc.figurita));
+      const coleccion = await getUserCollection(usuarioId);
+      setTodas(coleccion.map((fc) => fc.figurita));
+      setRepetidas(coleccion.filter((fc) => fc.cantidad > 1));
     } catch (error) {
       console.error('Error al cargar colección:', error);
     } finally {
@@ -62,18 +62,18 @@ export default function Collection({ usuarioId, mockTodas, mockRepetidas }: Coll
       <CollectionContainer>
         {tab === 'todas' && todas.map((figurita) => (
           <FiguritaCard key={figurita.id}>
-            <h4>#{figurita.numero}</h4>
-            <p><strong>{figurita.jugador}</strong></p>
-            <p>{figurita.seleccion} - {figurita.equipo}</p>
-            <p>{figurita.categoria}</p>
+            <h4>#{figurita.number}</h4>
+            <p><strong>{figurita.description}</strong></p>
+            <p>{figurita.country} - {figurita.team}</p>
+            <p>{figurita.category}</p>
           </FiguritaCard>
         ))}
 
         {tab === 'repetidas' && repetidas.map((fc) => (
           <FiguritaCard key={fc.id}>
-            <h4>#{fc.figurita.numero}</h4>
-            <p><strong>{fc.figurita.jugador}</strong></p>
-            <p>{fc.figurita.seleccion} - {fc.figurita.equipo}</p>
+            <h4>#{fc.figurita.number}</h4>
+            <p><strong>{fc.figurita.description}</strong></p>
+            <p>{fc.figurita.country} - {fc.figurita.team}</p>
             <p>Cantidad: {fc.cantidad}{fc.enVenta ? ' (En venta)' : ''}</p>
           </FiguritaCard>
         ))}

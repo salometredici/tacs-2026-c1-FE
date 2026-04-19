@@ -33,4 +33,4 @@ export const mockExchanges: Exchange[] = [
   },
 ];
 
-export const getMockedExchanges = (userId: number): Exchange[] => mockExchanges;
+export const getMockedExchanges = (userId: string): Exchange[] => mockExchanges;

@@ -13,7 +13,7 @@ import {
 const CATEGORIAS: Categoria[] = ['COMUN', 'EPICO', 'LEGENDARIO'];
 
 const emptyForm = (): AddMissingCardRequest => ({
-  numero: '' as unknown as number,
+  number: '' as unknown as number,
   jugador: '',
   seleccion: '',
   equipo: '',
@@ -22,7 +22,7 @@ const emptyForm = (): AddMissingCardRequest => ({
 });
 
 interface Props {
-  userId: number;
+  userId: string;
   onClose: () => void;
   onSuccess: () => void;
 }
@@ -39,7 +39,7 @@ export default function AddMissingCardsModal({ userId, onClose, onSuccess }: Pro
   };
 
   const handleAddToList = () => {
-    if (!form.numero || form.numero <= 0) {
+    if (!form.number || form.number <= 0) {
       setFormError('El número de figurita es obligatorio.');
       return;
     }
@@ -95,8 +95,8 @@ export default function AddMissingCardsModal({ userId, onClose, onSuccess }: Pro
                 type="number"
                 min={1}
                 placeholder="Ej: 42"
-                value={form.numero || ''}
-                onChange={e => handleChange('numero', parseInt(e.target.value) || ('' as unknown as number))}
+                value={form.number || ''}
+                onChange={e => handleChange('number', parseInt(e.target.value) || ('' as unknown as number))}
               />
             </Field>
             <Field>
@@ -171,7 +171,7 @@ export default function AddMissingCardsModal({ userId, onClose, onSuccess }: Pro
             {pending.map((card, i) => (
               <PendingItem key={i}>
                 <PendingItemInfo>
-                  <strong>#{card.numero}</strong> · {card.jugador}
+                  <strong>#{card.number}</strong> · {card.jugador}
                   {card.seleccion && <span> · {card.seleccion}</span>}
                   {card.equipo && <span> · {card.equipo}</span>}
                   <span> · {card.categoria}</span>

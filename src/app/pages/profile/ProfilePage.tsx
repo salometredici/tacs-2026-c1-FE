@@ -1,13 +1,14 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { User } from '../../interfaces/User';
+import { User } from '../../interfaces/auth/User';
 import { Figurita } from '../../interfaces/Figurita';
 import { FiguritaColeccion } from '../../interfaces/FiguritaColeccion';
-import { Propuesta } from '../../interfaces/proposals/Propuesta';
-import { Auction } from '../../interfaces/auction/Auction';
-import { UserBid } from '../../interfaces/auction/bid/UserBid';
-import { getUserCollection, getUserMissingCards, getReceivedProposals, getSentProposals } from '../../api/UsersService';
+import { Proposal } from '../../interfaces/proposals/Proposal';
+import { Auction } from '../../interfaces/auctions/Auction';
+import { UserBid } from '../../interfaces/auctions/bid/UserBid';
+import { getUserCollection, getUserMissingCards } from '../../api/UsersService';
 import { getAuctionsByUserId, getAuctionBidsByUserId } from '../../api/AuctionsService';
+import { getProposals } from '../../api/ProposalsService';
 import { useUserContext } from '../../context/useUserContext';
 import {
   ProfileContainer, ProfileHeader, ProfileTitle, ProfileEmail,
@@ -43,8 +44,8 @@ export default function ProfilePage() {
   const [activeTab, setActiveTab]       = useState<Tab>('collection');
   const [collection, setCollection]     = useState<FiguritaColeccion[]>([]);
   const [faltantes, setFaltantes]       = useState<Figurita[]>([]);
-  const [recibidas, setRecibidas]       = useState<Propuesta[]>([]);
-  const [enviadas, setEnviadas]         = useState<Propuesta[]>([]);
+  const [recibidas, setRecibidas]       = useState<Proposal[]>([]);
+  const [enviadas, setEnviadas]         = useState<Proposal[]>([]);
   const [misSubastas, setMisSubastas]   = useState<Auction[]>([]);
   const [misOfertas, setMisOfertas]     = useState<UserBid[]>([]);
   const [loading, setLoading]           = useState(true);
@@ -57,8 +58,8 @@ export default function ProfilePage() {
     Promise.all([
       getUserCollection(user.id),
       getUserMissingCards(user.id),
-      getReceivedProposals(user.id),
-      getSentProposals(user.id),
+      getProposals(user.id),        /// Recibidas -> publisherId = el usuario (hizo la publicación)
+      getProposals('', user.id),    // Enviadas -> postorId = el usuario (hizo la propuesta)
       getAuctionsByUserId(user.id),
       getAuctionBidsByUserId(user.id),
     ])
@@ -85,11 +86,11 @@ export default function ProfilePage() {
       <ProfileHeader>
         <img
           src="/assets/user-svgrepo-com.svg"
-          alt={user.nombre}
+          alt={user.name}
           style={{ width: '48px', height: '48px', marginRight: '1rem' }}
         />
         <div>
-          <ProfileTitle>{user.nombre}</ProfileTitle>
+          <ProfileTitle>{user.name}</ProfileTitle>
           <ProfileEmail>{user.email}</ProfileEmail>
         </div>
       </ProfileHeader>
@@ -139,10 +140,10 @@ export default function ProfilePage() {
                   <CollectionContainer>
                     {faltantes.map(figurita => (
                       <FiguritaCard key={figurita.id}>
-                        <h4>#{figurita.numero}</h4>
-                        <p><strong>{figurita.jugador}</strong></p>
-                        <p>{figurita.seleccion} - {figurita.equipo}</p>
-                        <p>{figurita.categoria}</p>
+                        <h4>#{figurita.number}</h4>
+                        <p><strong>{figurita.description}</strong></p>
+                        <p>{figurita.country} - {figurita.team}</p>
+                        <p>{figurita.category}</p>
                       </FiguritaCard>
                     ))}
                   </CollectionContainer>
@@ -166,10 +167,10 @@ export default function ProfilePage() {
                     {recibidas.slice(0, PREVIEW).map(p => (
                       <ProposalRow key={p.id}>
                         <ProposalText>
-                          <strong>#{p.publicacion.figurita.numero} {p.publicacion.figurita.jugador}</strong>
-                          {' — '}de {p.postor.nombre}
+                          <strong>#{p.publicacion.figurita.number} {p.publicacion.figurita.description}</strong>
+                          {' — '}de {p.postor.name}
                         </ProposalText>
-                        <StatusBadge $estado={p.estado}>{STATUS_LABEL[p.estado]}</StatusBadge>
+                        <StatusBadge $estado={p.status}>{STATUS_LABEL[p.status]}</StatusBadge>
                       </ProposalRow>
                     ))}
                     {recibidas.length > PREVIEW && (
@@ -195,10 +196,10 @@ export default function ProfilePage() {
                     {enviadas.slice(0, PREVIEW).map(p => (
                       <ProposalRow key={p.id}>
                         <ProposalText>
-                          <strong>#{p.publicacion.figurita.numero} {p.publicacion.figurita.jugador}</strong>
-                          {' — '}a {p.publicacion.publicante.nombre}
+                          <strong>#{p.publicacion.figurita.number} {p.publicacion.figurita.description}</strong>
+                          {' — '}a {p.publicacion.publisher.name}
                         </ProposalText>
-                        <StatusBadge $estado={p.estado}>{STATUS_LABEL[p.estado]}</StatusBadge>
+                        <StatusBadge $estado={p.status}>{STATUS_LABEL[p.status]}</StatusBadge>
                       </ProposalRow>
                     ))}
                     {enviadas.length > PREVIEW && (
@@ -227,7 +228,7 @@ export default function ProfilePage() {
                     {misSubastas.slice(0, PREVIEW).map(a => (
                       <CompactAuctionCard key={a.id} onClick={() => navigate(`/auctions/${a.id}`)}>
                         <AuctionText>
-                          <strong>#{a.figurita.numero} {a.figurita.jugador}</strong>
+                          <strong>#{a.figurita.number} {a.figurita.description}</strong>
                           {' — '}cierra {new Date(a.endDate).toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}
                         </AuctionText>
                         <AuctionStatus $active={isAuctionActive(a)}>
@@ -258,8 +259,8 @@ export default function ProfilePage() {
                     {misOfertas.slice(0, PREVIEW).map(o => (
                       <CompactAuctionCard key={o.bidId} onClick={() => navigate(`/auctions/${o.auctionId}`)}>
                         <AuctionText>
-                          <strong>#{o.figurita.numero} {o.figurita.jugador}</strong>
-                          {' — de '}{o.publisher.nombre}
+                          <strong>#{o.figurita.number} {o.figurita.description}</strong>
+                          {' — de '}{o.publisher.name}
                           {' — '}cierra {new Date(o.closingDate).toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}
                         </AuctionText>
                         <AuctionStatus $active={o.auctionStatus === 'ACTIVA'}>

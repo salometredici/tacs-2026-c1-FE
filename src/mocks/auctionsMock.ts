@@ -1,14 +1,14 @@
-import { Auction } from '../app/interfaces/auction/Auction';
-import { UserBid } from '../app/interfaces/auction/bid/UserBid';
-import { CreateAuctionResponse } from '../app/interfaces/auction/CreateAuctionResponse';
+import { Auction } from '../app/interfaces/auctions/Auction';
+import { UserBid } from '../app/interfaces/auctions/bid/UserBid';
+import { CreateAuctionResponse } from '../app/interfaces/auctions/CreateAuctionResponse';
 import { mockFiguritas } from './figuritasMock';
 import { mockUsers } from './usersMock';
 
 export const mockAuctions: Auction[] = [
   {
-    id: 1,
+    id: '1',
     figurita: mockFiguritas[0], // Messi
-    publisherId: mockUsers[0],   // Pepe (id=1)
+    publisherId: mockUsers[0],   // Pepe (user_1)
     status: 'ACTIVA',
     creationDate: '2026-04-13T10:00:00',
     endDate: '2026-04-28T15:30:00',
@@ -19,7 +19,7 @@ export const mockAuctions: Auction[] = [
     bids: [
       {
         bidId: 'o-1',
-        postor: { userId: '2', name: 'Mónica Argento', rating: 4.8, avatarId: 'avatar_2' },
+        postor: { userId: 'user_2', name: 'Mónica Argento', rating: 4.8, avatarId: 'avatar_2' },
         offeredFiguritas: [mockFiguritas[2], mockFiguritas[4]],
         status: 'ACTIVA',
         bidDate: '2026-04-15T10:00:00',
@@ -28,9 +28,9 @@ export const mockAuctions: Auction[] = [
     lastBidId: 'o-1',
   },
   {
-    id: 2,
+    id: '2',
     figurita: mockFiguritas[1], // Cristiano Ronaldo
-    publisherId: mockUsers[1],   // Mónica (id=2)
+    publisherId: mockUsers[1],   // Mónica (user_2)
     status: 'ACTIVA',
     creationDate: '2026-04-12T09:00:00',
     endDate: '2026-04-29T20:00:00',
@@ -41,7 +41,7 @@ export const mockAuctions: Auction[] = [
     bids: [
       {
         bidId: 'o-2',
-        postor: { userId: '3', name: 'Homero Simpson', rating: 5.0, avatarId: 'avatar_3' },
+        postor: { userId: 'user_3', name: 'Homero Simpson', rating: 5.0, avatarId: 'avatar_3' },
         offeredFiguritas: [mockFiguritas[5]],
         status: 'ACTIVA',
         bidDate: '2026-04-16T14:30:00',
@@ -50,9 +50,9 @@ export const mockAuctions: Auction[] = [
     lastBidId: 'o-2',
   },
   {
-    id: 3,
+    id: '3',
     figurita: mockFiguritas[3], // Mbappé
-    publisherId: mockUsers[2],   // Homero (id=3)
+    publisherId: mockUsers[2],   // Homero (user_3)
     status: 'ACTIVA',
     creationDate: '2026-04-14T12:00:00',
     endDate: '2026-04-27T18:00:00',
@@ -69,26 +69,26 @@ export const getMockedActiveAuctions = (): Auction[] => {
 export const getMockedCreatedAuctionResponse = (): CreateAuctionResponse => ({
   success: true,
   message: 'Subasta creada exitosamente',
-  auctionId: 321,
+  auctionId: '321',
 });
 
-export const getMockedAuctionById = (id: number): Auction | undefined => {
+export const getMockedAuctionById = (id: string): Auction | undefined => {
   return mockAuctions.find(a => a.id === id);
 };
 
 // Subastas creadas por el usuario
-export const getMockedUserAuctions = (userId: number): Auction[] => {
+export const getMockedUserAuctions = (userId: string): Auction[] => {
   return mockAuctions.filter(a => a.publisherId.id === userId);
 };
 
 // Vista aplanada de mis ofertas (subastas donde el usuario ofertó)
-export const getMockedUserBids = (userId: number): UserBid[] => {
+export const getMockedUserBids = (userId: string): UserBid[] => {
   const result: UserBid[] = [];
   for (const subasta of mockAuctions) {
-    const oferta = subasta.bids.find(o => o.postor.userId === String(userId));
+    const oferta = subasta.bids.find(o => o.postor.userId === userId);
     if (oferta) {
       result.push({
-        auctionId: String(subasta.id),
+        auctionId: subasta.id,
         figurita: subasta.figurita,
         publisher: subasta.publisherId,
         auctionStatus: subasta.status,

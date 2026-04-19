@@ -6,7 +6,7 @@ import { AddMissingCardRequest } from "../interfaces/figuritas/AddMissingCardReq
 import { AddMissingCardResponse } from "../interfaces/figuritas/AddMissingCardResponse";
 import { mockSearchFiguritas, mockAddMissingCardResponse } from "../../mocks/figuritasMock";
 
-export const addMissingCard = async (userId: number, data: AddMissingCardRequest): Promise<AddMissingCardResponse> => {
+export const addMissingCard = async (userId: string, data: AddMissingCardRequest): Promise<AddMissingCardResponse> => {
     try {
         /* En backend: ResponseEntity<String> — POST /api/figuritas/registrar-faltante?userId=
          * NOTA: este endpoint SÍ existe. DTO: FiguritaFaltanteDto (numero, jugador, seleccion, equipo, descripcion, categoria).
@@ -26,7 +26,7 @@ export const addMissingCard = async (userId: number, data: AddMissingCardRequest
 export const searchFiguritas = async (filters: SearchFiguritasFilters): Promise<SearchFiguritasResponse> => {
     try {
         const params = {
-            numero: filters.numero,
+            number: filters.number,
             jugador: filters.jugador,
             seleccion: filters.seleccion,
             equipo: filters.equipo

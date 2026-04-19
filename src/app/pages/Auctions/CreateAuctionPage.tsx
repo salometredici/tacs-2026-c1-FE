@@ -26,7 +26,7 @@ import {
 
 // ─── Constantes ─────────────────────────────────────────────────────────────
 
-const CURRENT_USER_ID = 1; // TODO: reemplazar por el usuario autenticado
+const CURRENT_USER_ID = 'user_1'; // Para reemplazar por el usuario autenticado cuando esté la llamada disponible en backend
 
 // ─── Componente ─────────────────────────────────────────────────────────────
 
@@ -122,7 +122,7 @@ export default function CreateAuctionPage() {
               <option value="">— Seleccioná una figurita —</option>
               {collection.map(fc => (
                 <option key={fc.figurita.id} value={fc.figurita.id}>
-                  #{fc.figurita.numero} · {fc.figurita.jugador} ({fc.figurita.seleccion}) · {fc.figurita.categoria}
+                  #{fc.figurita.number} · {fc.figurita.description} ({fc.figurita.country}) · {fc.figurita.category}
                   {fc.cantidad > 1 ? ` ×${fc.cantidad}` : ''}
                 </option>
               ))}

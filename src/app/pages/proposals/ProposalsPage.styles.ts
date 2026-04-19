@@ -1,6 +1,6 @@
 import styled from 'styled-components';
-import { EstadoPropuesta } from '../../interfaces/proposals/Propuesta';
 import { theme } from '../../styles/theme';
+import { ProposalStatus } from '../../interfaces/proposals/ProposalStatus';
 
 export const PageContainer = styled.div`
   max-width: 900px;
@@ -99,7 +99,7 @@ export const CardRight = styled.div`
   flex-shrink: 0;
 `;
 
-export const StatusBadge = styled.span<{ $estado: EstadoPropuesta }>`
+export const StatusBadge = styled.span<{ $estado: ProposalStatus }>`
   padding: 0.25rem 0.75rem;
   border-radius: 999px;
   font-size: 0.8rem;
