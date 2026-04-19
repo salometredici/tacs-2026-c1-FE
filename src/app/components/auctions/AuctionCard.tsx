@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Auction } from '../../interfaces/auction/Auction';
+import { Auction } from '../../interfaces/auctions/Auction';
 import {
   AuctionCard,
   FiguritaInfo,
@@ -51,21 +51,21 @@ export default function AuctionCardComponent({ auction, onBid, hideBidButton = f
   return (
     <AuctionCard onClick={() => navigate(`/auctions/${auction.id}`)} style={{ cursor: 'pointer' }}>
       <FiguritaInfo>
-        <FiguritaNumber>#{auction.figurita.numero}</FiguritaNumber>
+        <FiguritaNumber>#{auction.figurita.number}</FiguritaNumber>
         <FiguritaDetails>
           <p>
-            <strong>{auction.figurita.jugador}</strong>
+            <strong>{auction.figurita.description}</strong>
           </p>
-          <p>{auction.figurita.seleccion} - {auction.figurita.equipo}</p>
+          <p>{auction.figurita.country} - {auction.figurita.team}</p>
           <p style={{ fontSize: '0.8rem', marginTop: '0.25rem' }}>
-            Categoría: <span style={{ color: '#1976d2' }}>{auction.figurita.categoria}</span>
+            Categoría: <span style={{ color: '#1976d2' }}>{auction.figurita.category}</span>
           </p>
         </FiguritaDetails>
       </FiguritaInfo>
 
       <SellerInfo>
         <span>Publicante:</span>
-        <span className="seller-name">{auction.publisherId.nombre}</span>
+        <span className="seller-name">{auction.publisherId.name}</span>
         <span className="reputation">
           {'★'.repeat(Math.round(auction.publisherId.rating || 4))}
           {' '}

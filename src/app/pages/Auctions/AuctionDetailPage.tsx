@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Auction } from '../../interfaces/auction/Auction';
-import { Bid } from '../../interfaces/auction/bid/Bid';
+import { Auction } from '../../interfaces/auctions/Auction';
+import { Bid } from '../../interfaces/auctions/bid/Bid';
 import { getAuctionById, endAuction, cancelAuction } from '../../api/AuctionsService';
 import PlaceBidModal from '../../components/auctions/PlaceBidModal';
-import { useUserContext } from '../../context/useUserContext';
+// import { useUserContext } from '../../context/useUserContext';
+import { mockUsers } from '../../../mocks/usersMock';
 import { theme } from '../../styles/theme';
-import { RULE_LABELS } from '../../interfaces/auction/auctionRule/AuctionRule';
+import { RULE_LABELS } from '../../interfaces/auctions/auctionRule/AuctionRule';
 import { formatCountdown } from '../../utils/utils';
 import {
   Page,
@@ -37,7 +38,8 @@ import {
 export default function AuctionDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { currentUser } = useUserContext();
+  // const { currentUser } = useUserContext();
+  const currentUser = mockUsers[0];
 
   const [auction, setAuction] = useState<Auction | null>(null);
   const [loading, setLoading] = useState(true);
@@ -48,10 +50,10 @@ export default function AuctionDetailPage() {
   const [confirmCancel, setConfirmCancel] = useState(false);
   const [cancelling, setCancelling] = useState(false);
 
-  const isOwner = auction !== null && currentUser?.id === auction.publisherId.id;
+  const isOwner = auction !== null && currentUser.id === auction.publisherId.id;
 
   useEffect(() => {
-    getAuctionById(Number(id))
+    getAuctionById(id!)
       .then(setAuction)
       .finally(() => setLoading(false));
   }, [id]);
@@ -101,12 +103,12 @@ export default function AuctionDetailPage() {
       {/* ── Figurita ── */}
       <Card>
         <FiguritaHeader>
-          <FiguritaNumero>#{auction.figurita.numero}</FiguritaNumero>
+          <FiguritaNumero>#{auction.figurita.number}</FiguritaNumero>
           <FiguritaInfo>
-            <h2>{auction.figurita.jugador}</h2>
-            <p>{auction.figurita.seleccion} · {auction.figurita.equipo}</p>
+            <h2>{auction.figurita.description}</h2>
+            <p>{auction.figurita.country} · {auction.figurita.team}</p>
             <div style={{ marginTop: '0.5rem', display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-              <CategoriaBadge $cat={auction.figurita.categoria}>{auction.figurita.categoria}</CategoriaBadge>
+              <CategoriaBadge $cat={auction.figurita.category}>{auction.figurita.category}</CategoriaBadge>
               <EstadoBadge $estado={auction.status}>{auction.status}</EstadoBadge>
             </div>
           </FiguritaInfo>
@@ -115,7 +117,7 @@ export default function AuctionDetailPage() {
         <InfoRow>
           <span className="label">Publicante</span>
           <span className="value">
-            {auction.publisherId.nombre}
+            {auction.publisherId.name}
             {' '}{'★'.repeat(Math.round(auction.publisherId.rating || 0))}
             <span style={{ color: theme.colors.textSecondary, fontWeight: 400 }}>
               {' '}({(auction.publisherId.rating ?? 0).toFixed(1)})
@@ -149,7 +151,7 @@ export default function AuctionDetailPage() {
             </ReglaItem>
           ))
         )}
-        {isActive && currentUser && !isOwner && (
+        {isActive && !isOwner && ( // despues con && currentUser
           <BidButton onClick={() => setShowBidModal(true)}>
             Hacer oferta
           </BidButton>
@@ -185,7 +187,7 @@ export default function AuctionDetailPage() {
                     </div>
                     <div style={{ fontSize: '0.85rem', marginTop: '0.4rem' }}>
                       {o.offeredFiguritas.length} figurita(s):{' '}
-                      {o.offeredFiguritas.map(f => `#${f.numero} ${f.jugador}`).join(', ')}
+                      {o.offeredFiguritas.map(f => `#${f.number} ${f.description}`).join(', ')}
                     </div>
                     <div style={{ fontSize: '0.8rem', color: theme.colors.textSecondary, marginTop: '0.2rem' }}>
                       {new Date(o.bidDate).toLocaleString('es-AR')}
@@ -222,7 +224,7 @@ export default function AuctionDetailPage() {
             <ExchangeSummary>
               <div>
                 <div className="label">Subasta</div>
-                <div className="value">#{auction.figurita.numero} {auction.figurita.jugador}</div>
+                <div className="value">#{auction.figurita.number} {auction.figurita.description}</div>
               </div>
               <div>
                 <div className="label">Ofertas que se descartarán</div>
@@ -254,12 +256,12 @@ export default function AuctionDetailPage() {
             <ExchangeSummary>
               <div>
                 <div className="label">Vos entregás</div>
-                <div className="value">#{auction.figurita.numero} {auction.figurita.jugador}</div>
+                <div className="value">#{auction.figurita.number} {auction.figurita.description}</div>
               </div>
               <div>
                 <div className="label">Recibís de {pendingOferta.postor.name}</div>
                 <div className="value">
-                  {pendingOferta.offeredFiguritas.map(f => `#${f.numero} ${f.jugador}`).join(', ')}
+                  {pendingOferta.offeredFiguritas.map(f => `#${f.number} ${f.description}`).join(', ')}
                 </div>
               </div>
               <div>
@@ -282,7 +284,7 @@ export default function AuctionDetailPage() {
         </ConfirmOverlay>
       )}
 
-      {showBidModal && currentUser && (
+      {showBidModal && ( // despues con && currentUser
         <PlaceBidModal
           userId={currentUser.id}
           figurita={auction.figurita}

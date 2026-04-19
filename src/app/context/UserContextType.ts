@@ -1,7 +1,7 @@
-import { User } from '../interfaces/User';
+import { User } from '../interfaces/auth/User';
 
 export type UserContextType = {
   currentUser: User | null;
-  login: (user: User) => void;
+  login: (user: User, token: string) => void;
   logout: () => void;
 };

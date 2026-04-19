@@ -1,37 +1,34 @@
 import axios from 'axios';
 import { API_CONFIG } from '../config/apiConfig';
-import { User } from '../interfaces/User';
+import { User } from '../interfaces/auth/User';
 import { Figurita } from '../interfaces/Figurita';
 import { FiguritaColeccion } from '../interfaces/FiguritaColeccion';
-import { Propuesta } from '../interfaces/proposals/Propuesta';
-import { PublicacionIntercambio } from '../interfaces/proposals/PublicacionIntercambio';
+import { Proposal } from '../interfaces/proposals/Proposal';
+import { Publicacion } from '../interfaces/publicaciones/Publicacion';
 import { getMockedUserMissingCards, getMockedUserCollection, getMockedUsers, getMockedUser } from '../../mocks/usersMock';
 import { getMockedReceivedProposals, getMockedSentProposals } from '../../mocks/proposalsMock';
 import { getMockedSugerencias } from '../../mocks/sugerenciasMock';
 
-// NOTA: UsuariosController está vacío en backend. Todos estos endpoints están pendientes de implementar.
-// La ruta base /api/usuarios tampoco está registrada aún.
+const BASE_URL = API_CONFIG.users.base;
 
-const BASE = API_CONFIG.users.base;
-
+// Puede ser útil en la vista del administrador, el usuario no va a necesitar info de otros usuarios
 export const getAll = async (): Promise<User[]> => {
   try {
-    /* En backend: ResponseEntity<List<UsuarioDTO>> — GET /api/users
-     * NOTA: endpoint no existe aún.
-    const response = await axios.get<User[]>(`${BASE}`);
+    /* En backend: GET /api/users
+    const response = await axios.get<User[]>(`${BASE_URL}`);
     return response.data; */
     return getMockedUsers();
   } catch (error) {
-    console.error('Error al listar usuarios:', error);
+    console.error('Error al listar los usuarios: ', error);
     return [];
   }
 };
 
-export const getById = async (userId: number): Promise<User | null> => {
+// Para obtener un usuario por id (para el perfil)
+export const getById = async (userId: string): Promise<User | null> => {
   try {
-    /* En backend: ResponseEntity<UsuarioDTO> — GET /api/users/{id}
-     * NOTA: endpoint no existe aún.
-    const response = await axios.get<User>(`${BASE}/${userId}`);
+    /* En backend: GET /api/users/{id}
+    const response = await axios.get<User>(`${BASE_URL}/${userId}`);
     return response.data; */
     return getMockedUser();
   } catch (error) {
@@ -40,24 +37,13 @@ export const getById = async (userId: number): Promise<User | null> => {
   }
 };
 
-export const getUserMissingCards = async (userId: number): Promise<Figurita[]> => {
-  try {
-    /* En backend: ResponseEntity<List<FiguritaDTO>> — GET /api/users/{id}/missing-cards
-     * NOTA: endpoint no existe aún. Backend tiene la entidad faltantes en Usuario.
-    const response = await axios.get<Figurita[]>(`${BASE}/${userId}/missing-cards`);
-    return response.data; */
-    return getMockedUserMissingCards();
-  } catch (error) {
-    console.error(`Error al listar faltantes del usuario ${userId}:`, error);
-    return [];
-  }
-};
+/* Funciones para obtener items del usuario logueado (exclusivas del perfil, no se acceden desde otro lado) */
 
-export const getUserCollection = async (userId: number): Promise<FiguritaColeccion[]> => {
+// Para obtener las figuritas que el usuario posee (desde el perfil)
+export const getUserCollection = async (userId: string): Promise<FiguritaColeccion[]> => {
   try {
-    /* En backend: ResponseEntity<List<FiguritaColeccionDTO>> — GET /api/users/{id}/collection
-     * NOTA: endpoint no existe aún. Backend tiene repetidas en Usuario.
-    const response = await axios.get<FiguritaColeccion[]>(`${BASE}/${userId}/collection`);
+    /* En backend: GET /api/users/{id}/collection
+    const response = await axios.get<FiguritaColeccion[]>(`${BASE_URL}/${userId}/collection`);
     return response.data; */
     return getMockedUserCollection();
   } catch (error) {
@@ -66,48 +52,23 @@ export const getUserCollection = async (userId: number): Promise<FiguritaColecci
   }
 };
 
-export const listarRepetidas = async (userId: number): Promise<FiguritaColeccion[]> => {
+// Para obtener las figuritas faltantes asociadas al usuario (desde el tab en su perfil)
+export const getUserMissingCards = async (userId: string): Promise<Figurita[]> => {
   try {
-    /* En backend: ResponseEntity<List<FiguritaColeccionDTO>> — GET /api/users/{id}/repeated-cards
-     * NOTA: endpoint no existe aún.
-    const response = await axios.get<FiguritaColeccion[]>(`${BASE}/${userId}/repeated-cards`);
+    /* En backend: GET /api/users/{id}/missing-cards
+    const response = await axios.get<Figurita[]>(`${BASE_URL}/${userId}/missing-cards`);
     return response.data; */
-    return getMockedUserCollection();
+    return getMockedUserMissingCards();
   } catch (error) {
-    console.error(`Error al listar repetidas del usuario ${userId}:`, error);
+    console.error(`Error al listar faltantes del usuario ${userId}:`, error);
     return [];
   }
 };
 
-export const getReceivedProposals = async (userId: number): Promise<Propuesta[]> => {
+// Para obtener las sugerencias en el home basadas en los intereses del usuario (suscripciones, faltantes, etc)
+export const getUserSuggestions = async (userId: string): Promise<Publicacion[]> => {
   try {
-    /* En backend: ResponseEntity<List<PropuestaDTO>> — GET /api/users/{id}/proposals/received
-     * NOTA: endpoint no existe aún.
-    const response = await axios.get<Propuesta[]>(`${BASE}/${userId}/proposals/received`);
-    return response.data; */
-    return getMockedReceivedProposals(userId);
-  } catch (error) {
-    console.error(`Error al obtener propuestas recibidas del usuario ${userId}:`, error);
-    return [];
-  }
-};
-
-export const getSentProposals = async (userId: number): Promise<Propuesta[]> => {
-  try {
-    /* En backend: ResponseEntity<List<PropuestaDTO>> — GET /api/users/{id}/proposals/sent
-     * NOTA: endpoint no existe aún.
-    const response = await axios.get<Propuesta[]>(`${BASE}/${userId}/proposals/sent`);
-    return response.data; */
-    return getMockedSentProposals(userId);
-  } catch (error) {
-    console.error(`Error al obtener propuestas enviadas del usuario ${userId}:`, error);
-    return [];
-  }
-};
-
-export const getSugerencias = async (userId: number): Promise<PublicacionIntercambio[]> => {
-  try {
-    // const response = await axios.get<PublicacionIntercambio[]>(`${API_BASE_URL}/${userId}/sugerencias`);
+    // const response = await axios.get<PublicacionIntercambio[]>(`${BASE_URL}/${userId}/sugerencias`);
     // return response.data;
     return getMockedSugerencias(userId);
   } catch (error) {

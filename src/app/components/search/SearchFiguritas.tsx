@@ -72,7 +72,7 @@ export default function SearchFiguritas({
                 id="numero"
                 type="number"
                 name="numero"
-                value={filters.numero || ''}
+                value={filters.number || ''}
                 onChange={handleFilterChange}
                 placeholder="Ej: 1, 10, 23..."
                 min="0"

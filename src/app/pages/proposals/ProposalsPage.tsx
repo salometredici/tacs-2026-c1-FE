@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Propuesta, EstadoPropuesta } from '../../interfaces/proposals/Propuesta';
-import { getReceivedProposals, getSentProposals } from '../../api/UsersService';
-import { acceptProposal, rejectProposal } from '../../api/ProposalsService';
+import { Proposal } from '../../interfaces/proposals/Proposal';
+import { getProposals, acceptProposal, rejectProposal } from '../../api/ProposalsService';
 import { useUserContext } from '../../context/useUserContext';
 import { toastError } from '../../utils/toast';
 import {
@@ -12,8 +11,9 @@ import {
   CardRight, StatusBadge, ActionButtons, AcceptButton, RejectButton,
   EmptyMessage,
 } from './ProposalsPage.styles';
+import { ProposalStatus } from '../../interfaces/proposals/ProposalStatus';
 
-const STATUS_LABEL: Record<EstadoPropuesta, string> = {
+const STATUS_LABEL: Record<ProposalStatus, string> = {
   PENDIENTE: 'Pendiente',
   ACEPTADA:  'Aceptada',
   RECHAZADA: 'Rechazada',
@@ -29,16 +29,16 @@ export default function ProposalsPage() {
   }
 
   const [tab, setTab] = useState<'recibidas' | 'enviadas'>('recibidas');
-  const [recibidas, setRecibidas] = useState<Propuesta[]>([]);
-  const [enviadas, setEnviadas] = useState<Propuesta[]>([]);
+  const [recibidas, setRecibidas] = useState<Proposal[]>([]);
+  const [enviadas, setEnviadas] = useState<Proposal[]>([]);
   const [loading, setLoading] = useState(true);
-  const [actionLoading, setActionLoading] = useState<number | null>(null);
+  const [actionLoading, setActionLoading] = useState<string | null>(null);
 
   useEffect(() => {
     const load = async () => {
       const [rec, env] = await Promise.all([
-        getReceivedProposals(currentUser.id),
-        getSentProposals(currentUser.id),
+        getProposals(currentUser.id),        // Recibidas -> publisherId = el usuario (hizo la publicación)
+        getProposals('', currentUser.id),    // Enviadas -> postorId = el usuario (hizo la propuesta)
       ]);
       setRecibidas(rec);
       setEnviadas(env);
@@ -47,12 +47,12 @@ export default function ProposalsPage() {
     load();
   }, [currentUser.id]);
 
-  const handleAccept = async (propuesta: Propuesta) => {
+  const handleAccept = async (propuesta: Proposal) => {
     setActionLoading(propuesta.id);
     try {
-      await acceptProposal(propuesta.publicacion.id, propuesta.id, currentUser.id);
+      await acceptProposal(propuesta.id, currentUser.id);
       setRecibidas(prev =>
-        prev.map(p => p.id === propuesta.id ? { ...p, estado: 'ACEPTADA' } : p)
+        prev.map(p => p.id === propuesta.id ? { ...p, status: 'ACEPTADA' } : p)
       );
     } catch {
       toastError('Error al aceptar la propuesta. Intentá de nuevo.');
@@ -61,12 +61,12 @@ export default function ProposalsPage() {
     }
   };
 
-  const handleReject = async (propuesta: Propuesta) => {
+  const handleReject = async (propuesta: Proposal) => {
     setActionLoading(propuesta.id);
     try {
-      await rejectProposal(propuesta.publicacion.id, propuesta.id, currentUser.id);
+      await rejectProposal(propuesta.id, currentUser.id);
       setRecibidas(prev =>
-        prev.map(p => p.id === propuesta.id ? { ...p, estado: 'RECHAZADA' } : p)
+        prev.map(p => p.id === propuesta.id ? { ...p, status: 'RECHAZADA' } : p)
       );
     } catch {
       toastError('Error al rechazar la propuesta. Intentá de nuevo.');
@@ -105,22 +105,22 @@ export default function ProposalsPage() {
             <ProposalCard key={p.id}>
               <ProposalInfo>
                 <ProposalTitle>
-                  #{p.publicacion.figurita.numero} · {p.publicacion.figurita.jugador}
+                  #{p.publicacion.figurita.number} · {p.publicacion.figurita.description}
                 </ProposalTitle>
                 <ProposalDetail>
                   {tab === 'recibidas'
-                    ? `Propuesta de ${p.postor.nombre}`
-                    : `Publicado por ${p.publicacion.publicante.nombre}`}
+                    ? `Propuesta de ${p.postor.name}`
+                    : `Publicado por ${p.publicacion.publisher.name}`}
                 </ProposalDetail>
                 <ProposalDetail>
-                  Ofrece: {p.figuritasOfrecidas.map(f => `#${f.numero} ${f.jugador}`).join(', ')}
+                  Ofrece: {p.offeredFiguritas.map(f => `#${f.number} ${f.description}`).join(', ')}
                 </ProposalDetail>
               </ProposalInfo>
 
               <CardRight>
-                <StatusBadge $estado={p.estado}>{STATUS_LABEL[p.estado]}</StatusBadge>
+                <StatusBadge $estado={p.status}>{STATUS_LABEL[p.status]}</StatusBadge>
 
-                {tab === 'recibidas' && p.estado === 'PENDIENTE' && (
+                {tab === 'recibidas' && p.status === 'PENDIENTE' && (
                   <ActionButtons>
                     <AcceptButton
                       disabled={actionLoading === p.id}

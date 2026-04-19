@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Categoria } from '../../interfaces/Categoria';
-import { TipoParticipacion } from '../../interfaces/proposals/PublicacionIntercambio';
 import { PublishFiguritaRequest } from '../../interfaces/exchanges/PublishFiguritaRequest';
 import { publishFigurita } from '../../api/ExchangesService';
 import {
@@ -8,11 +7,12 @@ import {
   Row, Field, Input, Select, TypeToggle, TypeOption,
   Footer, CancelButton, SubmitButton, ErrorMsg,
 } from './PublishFiguritaModal.styles';
+import { TIPO_PARTICIPACION } from '../../interfaces/publicaciones/publicacionTypes';
 
 const CATEGORIAS: Categoria[] = ['COMUN', 'EPICO', 'LEGENDARIO'];
 
 const emptyForm = (): PublishFiguritaRequest => ({
-  numero: '' as unknown as number,
+  number: '' as unknown as number,
   jugador: '',
   seleccion: '',
   equipo: '',
@@ -23,7 +23,7 @@ const emptyForm = (): PublishFiguritaRequest => ({
 });
 
 interface Props {
-  userId: number;
+  userId: string;
   onClose: () => void;
   onSuccess: () => void;
 }
@@ -37,7 +37,7 @@ export default function PublishFiguritaModal({ userId, onClose, onSuccess }: Pro
     setForm(prev => ({ ...prev, [field]: value }));
 
   const validate = (): string | null => {
-    if (!form.numero || (form.numero as unknown as string) === '') return 'El número es obligatorio.';
+    if (!form.number || (form.number as unknown as string) === '') return 'El número es obligatorio.';
     if (!form.jugador.trim()) return 'El jugador es obligatorio.';
     if (!form.seleccion.trim() && !form.equipo.trim()) return 'Completá al menos selección o equipo.';
     if (!form.cantidad || form.cantidad < 1) return 'La cantidad debe ser al menos 1.';
@@ -77,8 +77,8 @@ export default function PublishFiguritaModal({ userId, onClose, onSuccess }: Pro
               type="number"
               min={1}
               placeholder="Ej: 10"
-              value={form.numero || ''}
-              onChange={e => set('numero', parseInt(e.target.value) || ('' as unknown as number))}
+              value={form.number || ''}
+              onChange={e => set('number', parseInt(e.target.value) || ('' as unknown as number))}
             />
           </Field>
           <Field>
@@ -153,7 +153,7 @@ export default function PublishFiguritaModal({ userId, onClose, onSuccess }: Pro
         <Field>
           <label>Tipo de participación *</label>
           <TypeToggle>
-            {(['INTERCAMBIO', 'SUBASTA'] as TipoParticipacion[]).map(tipo => (
+            {(['INTERCAMBIO', 'SUBASTA'] as TIPO_PARTICIPACION[]).map(tipo => (
               <TypeOption
                 key={tipo}
                 type="button"

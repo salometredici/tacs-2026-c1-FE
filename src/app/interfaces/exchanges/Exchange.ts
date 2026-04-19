@@ -1,5 +1,5 @@
 import { Figurita } from '../Figurita';
-import { User } from '../User';
+import { User } from '../auth/User';
 
 export type ExchangeType = 'PROPUESTA' | 'SUBASTA';
 

@@ -9,9 +9,9 @@ import {
 } from '../exchanges/PublishFiguritaModal.styles';
 
 interface Props {
-  userId: number;
+  userId: string;
   figurita: Figurita;
-  publicacionId: number;
+  publicacionId: string;
   onClose: () => void;
   onSuccess: () => void;
 }
@@ -58,13 +58,13 @@ export default function MakeProposalModal({ userId, figurita, publicacionId, onC
   };
 
   const disponibles = coleccion
-    .filter(fc => !(fc.figurita.numero in seleccionadas))
+    .filter(fc => !(fc.figurita.number in seleccionadas))
     .filter(fc =>
-      fc.figurita.jugador.toLowerCase().includes(busqueda.toLowerCase()) ||
-      String(fc.figurita.numero).includes(busqueda)
+      fc.figurita.description.toLowerCase().includes(busqueda.toLowerCase()) ||
+      String(fc.figurita.number).includes(busqueda)
     );
 
-  const ofrecidas = coleccion.filter(fc => fc.figurita.numero in seleccionadas);
+  const ofrecidas = coleccion.filter(fc => fc.figurita.number in seleccionadas);
 
   const handleSubmit = async () => {
     if (Object.keys(seleccionadas).length === 0) { setError('Seleccioná al menos una figurita para ofrecer.'); return; }
@@ -88,7 +88,7 @@ export default function MakeProposalModal({ userId, figurita, publicacionId, onC
           <CloseButton type="button" onClick={onClose}>✕</CloseButton>
         </ModalHeader>
 
-        <p>Querés: <strong>#{figurita.numero} {figurita.jugador}</strong> ({figurita.seleccion})</p>
+        <p>Querés: <strong>#{figurita.number} {figurita.description}</strong> ({figurita.country})</p>
 
         {loading ? <p>Cargando tu colección...</p> : coleccion.length === 0 ? (
           <p>No tenés figuritas para ofrecer.</p>
@@ -113,11 +113,11 @@ export default function MakeProposalModal({ userId, figurita, publicacionId, onC
                   <tr><td colSpan={4} style={{ padding: '0.5rem', color: '#888' }}>No hay figuritas disponibles</td></tr>
                 ) : disponibles.map(fc => (
                   <tr key={fc.id} style={{ borderBottom: '1px solid #eee' }}>
-                    <td style={{ padding: '0.5rem' }}>#{fc.figurita.numero}</td>
-                    <td style={{ padding: '0.5rem' }}>{fc.figurita.jugador}</td>
+                    <td style={{ padding: '0.5rem' }}>#{fc.figurita.number}</td>
+                    <td style={{ padding: '0.5rem' }}>{fc.figurita.description}</td>
                     <td style={{ padding: '0.5rem' }}>{fc.cantidad}</td>
                     <td style={{ padding: '0.5rem' }}>
-                      <button onClick={() => toggleFigurita(fc.figurita.numero)}>Agregar</button>
+                      <button onClick={() => toggleFigurita(fc.figurita.number)}>Agregar</button>
                     </td>
                   </tr>
                 ))}
@@ -136,16 +136,16 @@ export default function MakeProposalModal({ userId, figurita, publicacionId, onC
                   <tr><td colSpan={5} style={{ padding: '0.5rem', color: '#888' }}>Ninguna seleccionada aún</td></tr>
                 ) : ofrecidas.map(fc => (
                   <tr key={fc.id} style={{ borderBottom: '1px solid #eee' }}>
-                    <td style={{ padding: '0.5rem' }}>#{fc.figurita.numero}</td>
-                    <td style={{ padding: '0.5rem' }}>{fc.figurita.jugador}</td>
+                    <td style={{ padding: '0.5rem' }}>#{fc.figurita.number}</td>
+                    <td style={{ padding: '0.5rem' }}>{fc.figurita.description}</td>
                     <td style={{ padding: '0.5rem' }}>{fc.cantidad}</td>
                     <td style={{ padding: '0.5rem' }}>
-                      <button onClick={() => updateQuantity(fc.figurita.numero, -1)}>-</button>
-                      {' '}{seleccionadas[fc.figurita.numero]}{' '}
-                      <button onClick={() => updateQuantity(fc.figurita.numero, +1)} disabled={seleccionadas[fc.figurita.numero] >= fc.cantidad}>+</button>
+                      <button onClick={() => updateQuantity(fc.figurita.number, -1)}>-</button>
+                      {' '}{seleccionadas[fc.figurita.number]}{' '}
+                      <button onClick={() => updateQuantity(fc.figurita.number, +1)} disabled={seleccionadas[fc.figurita.number] >= fc.cantidad}>+</button>
                     </td>
                     <td style={{ padding: '0.5rem' }}>
-                      <button onClick={() => toggleFigurita(fc.figurita.numero)}>Quitar</button>
+                      <button onClick={() => toggleFigurita(fc.figurita.number)}>Quitar</button>
                     </td>
                   </tr>
                 ))}

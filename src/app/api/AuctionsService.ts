@@ -1,10 +1,10 @@
-import { Auction } from '../interfaces/auction/Auction';
-import { UserBid } from '../interfaces/auction/bid/UserBid';
+import { Auction } from '../interfaces/auctions/Auction';
+import { UserBid } from '../interfaces/auctions/bid/UserBid';
 import { getMockedActiveAuctions, getMockedAuctionById, getMockedCreatedAuctionResponse, getMockedUserAuctions, getMockedUserBids } from '../../mocks/auctionsMock';
 import axios from 'axios';
 import { API_CONFIG } from '../config/apiConfig';
-import { CreateAuctionRequest } from '../interfaces/auction/CreateAuctionRequest';
-import { CreateAuctionResponse } from '../interfaces/auction/CreateAuctionResponse';
+import { CreateAuctionRequest } from '../interfaces/auctions/CreateAuctionRequest';
+import { CreateAuctionResponse } from '../interfaces/auctions/CreateAuctionResponse';
 
 // Para obtener las subastas activas
 export const getActiveAuctions = async (): Promise<Auction[]> => {
@@ -34,7 +34,7 @@ export const createAuction = async (data: CreateAuctionRequest): Promise<CreateA
 };
 
 // Para obtener las subastas del usuario logueado, visible en "Mis Subastas"
-export const getAuctionsByUserId = async (userId: number): Promise<Auction[]> => {
+export const getAuctionsByUserId = async (userId: string): Promise<Auction[]> => {
   try {
     /* En backend: GET /api/auctions/{userId}
     const result = await axios.get<Auction[]>(`${API_CONFIG.auctions.base}/${userId}`);
@@ -47,7 +47,7 @@ export const getAuctionsByUserId = async (userId: number): Promise<Auction[]> =>
 };
 
 // Para obtener el detalle de una subasta en particular cuando se hace click sobre la misma (desde donde sea)
-export const getAuctionById = async (id: number): Promise<Auction | null> => {
+export const getAuctionById = async (id: string): Promise<Auction | null> => {
   try {
     /* GET /api/auctions/:id
     const result = await axios.get<Auction>(`${API_CONFIG.auctions.base}/${id}`);
@@ -60,7 +60,7 @@ export const getAuctionById = async (id: number): Promise<Auction | null> => {
 };
 
 // Para finalizar una subasta (cuando se selecciona un ganador entre los ofertantes)
-export const endAuction = async (auctionId: number, winnerBidId: string): Promise<void> => {
+export const endAuction = async (auctionId: string, winnerBidId: string): Promise<void> => {
   try {
     /* POST /api/auctions/:id/end  body: { winnerBidId }
     await axios.post(`${API_CONFIG.auctions.base}/${auctionId}/end`, { winnerBidId }); */
@@ -72,7 +72,7 @@ export const endAuction = async (auctionId: number, winnerBidId: string): Promis
 };
 
 // Para cancelar una subasta, sin haber elegido ganadores (el que publicó se arrepintió, básicamente)
-export const cancelAuction = async (auctionId: number): Promise<void> => {
+export const cancelAuction = async (auctionId: string): Promise<void> => {
   try {
     /* POST /api/auctions/:id/cancel
     await axios.post(`${API_CONFIG.auctions.base}/${auctionId}/cancel`); */
@@ -85,7 +85,7 @@ export const cancelAuction = async (auctionId: number): Promise<void> => {
 
 // Para poder ver las ofertas del usuario logueado en "Mis Ofertas"
 // Retorna todas las subastas asociadas a ese userId, separado del search porque devuelve los campos para ser mostrados en el perfil (otro modelo)
-export const getAuctionBidsByUserId = async (userId: number): Promise<UserBid[]> => {
+export const getAuctionBidsByUserId = async (userId: string): Promise<UserBid[]> => {
   try {
     /* GET /api/auctions?postorId={userId}
     const result = await axios.get<UserBid[]>(`${API_CONFIG.auctions.base}`, { params: { postorId: userId } });
@@ -98,7 +98,7 @@ export const getAuctionBidsByUserId = async (userId: number): Promise<UserBid[]>
 };
 
 // Para ofertar sobre una subasta (desde el detalle de la misma, con el botón "Ofertar")
-export const placeBid = async (auctionId: number, userId: number, figuritasIds: number[]): Promise<void> => {
+export const placeBid = async (auctionId: string, userId: string, figuritasIds: string[]): Promise<void> => {
   try {
     /* En backend: ResponseEntity<String>
       Pendiente: alinear rutas en backend.

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Auction } from '../../interfaces/auction/Auction';
-import { UserBid } from '../../interfaces/auction/bid/UserBid';
+import { Auction } from '../../interfaces/auctions/Auction';
+import { UserBid } from '../../interfaces/auctions/bid/UserBid';
 import { getActiveAuctions, getAuctionsByUserId, getAuctionBidsByUserId } from '../../api/AuctionsService';
 import AuctionCard from '../../components/auctions/AuctionCard';
 import PlaceBidModal from '../../components/auctions/PlaceBidModal';
@@ -33,7 +33,7 @@ export default function AuctionsPage() {
 
   useEffect(() => {
     setLoading(true);
-    const userId = currentUser?.id ?? 1;
+    const userId = currentUser?.id ?? '';
     Promise.all([
       getActiveAuctions(),
       getAuctionsByUserId(userId),
@@ -107,15 +107,15 @@ export default function AuctionsPage() {
                   <MiOfertaCard key={o.bidId} onClick={() => navigate(`/auctions/${o.auctionId}`)}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                       <div>
-                        <strong style={{ fontSize: '1.1rem' }}>#{o.figurita.numero} {o.figurita.jugador}</strong>
+                        <strong style={{ fontSize: '1.1rem' }}>#{o.figurita.number} {o.figurita.description}</strong>
                         <div style={{ fontSize: '0.85rem', color: theme.colors.textSecondary, marginTop: '0.25rem' }}>
-                          {o.figurita.seleccion} · {o.figurita.equipo}
+                          {o.figurita.country} · {o.figurita.team}
                         </div>
                       </div>
                       <EstadoBadge $estado={o.bidStatus}>{o.bidStatus}</EstadoBadge>
                     </div>
                     <div style={{ fontSize: '0.85rem', color: theme.colors.textSecondary }}>
-                      Publicante: <strong style={{ color: theme.colors.text }}>{o.publisher.nombre}</strong>
+                      Publicante: <strong style={{ color: theme.colors.text }}>{o.publisher.name}</strong>
                     </div>
                     <div style={{ fontSize: '0.85rem', color: theme.colors.textSecondary }}>
                       Ofrecí: <strong style={{ color: theme.colors.text }}>{o.offeredFiguritas.length} figurita(s)</strong>

@@ -19,20 +19,23 @@ export default function AdminLoginPage() {
   const { adminLogin } = useAdminContext();
   const [form, setForm] = useState({ username: '', password: '' });
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
     setError('');
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const success = adminLogin(form.username, form.password);
+    setLoading(true);
+    const success = await adminLogin(form.username, form.password);
     if (success) {
       navigate('/admin');
     } else {
       setError('Usuario o contraseña incorrectos.');
     }
+    setLoading(false);
   };
 
   return (
@@ -60,7 +63,9 @@ export default function AdminLoginPage() {
             autoComplete="current-password"
           />
           {error && <AdminLoginError>{error}</AdminLoginError>}
-          <AdminLoginButton type="submit">Ingresar</AdminLoginButton>
+          <AdminLoginButton type="submit" disabled={loading}>
+            {loading ? 'Ingresando...' : 'Ingresar'}
+          </AdminLoginButton>
         </AdminLoginForm>
       </AdminLoginCard>
     </AdminLoginContainer>

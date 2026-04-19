@@ -1,6 +1,6 @@
 import styled from 'styled-components';
-import { EstadoPropuesta } from '../../interfaces/proposals/Propuesta';
 import { theme } from '../../styles/theme';
+import { ProposalStatus } from '../../interfaces/proposals/ProposalStatus';
 
 export const ProfileContainer = styled.div`
   max-width: 1200px;
@@ -115,7 +115,7 @@ export const ProposalText = styled.span`
   flex: 1;
 `;
 
-export const StatusBadge = styled.span<{ $estado: EstadoPropuesta }>`
+export const StatusBadge = styled.span<{ $estado: ProposalStatus }>`
   padding: 0.2rem 0.6rem;
   border-radius: 999px;
   font-size: 0.75rem;

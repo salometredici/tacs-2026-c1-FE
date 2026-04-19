@@ -2,16 +2,17 @@ import axios from 'axios';
 import { Exchange } from '../interfaces/exchanges/Exchange';
 import { FeedbackRequest } from '../interfaces/exchanges/FeedbackRequest';
 import { PublishFiguritaRequest } from '../interfaces/exchanges/PublishFiguritaRequest';
-import { PublicacionIntercambio, EstadoPublicacion } from '../interfaces/proposals/PublicacionIntercambio';
+import { Publicacion } from '../interfaces/publicaciones/Publicacion';
 import { getMockedExchanges } from '../../mocks/exchangesMock';
 import { getMockedMyPublications } from '../../mocks/proposalsMock';
 import { API_CONFIG } from '../config/apiConfig';
+import { PublicacionStatus } from '../interfaces/publicaciones/publicacionTypes';
 
 // NOTA: la ruta usada en el FE es /exchanges.
 // El backend actual usa rutas distintas (/publicaciones/intercambios, /feedback, etc.).
 // Pendiente: alinear rutas en backenda
 
-export const getExchangesByUserId = async (userId: number): Promise<Exchange[]> => {
+export const getExchangesByUserId = async (userId: string): Promise<Exchange[]> => {
   try {
     /* En backend: ResponseEntity<List<IntercambioDTO>> — GET /api/exchanges?userId=
     const response = await axios.get<Exchange[]>(`${API_CONFIG.baseUrl}/api/exchanges`, { params: { userId } });
@@ -24,9 +25,9 @@ export const getExchangesByUserId = async (userId: number): Promise<Exchange[]> 
 };
 
 export const getCardsForExchangeByUserId = async (
-  userId: number,
-  status?: EstadoPublicacion
-): Promise<PublicacionIntercambio[]> => {
+  userId: string,
+  status?: PublicacionStatus
+): Promise<Publicacion[]> => {
   try {
     /* En backend: ResponseEntity<List<PublicacionIntercambioDTO>> — GET /api/exchanges/publications?userId=&status=
     const response = await axios.get<PublicacionIntercambio[]>(
@@ -35,7 +36,7 @@ export const getCardsForExchangeByUserId = async (
     );
     return response.data; */
     const all = getMockedMyPublications(userId);
-    return status ? all.filter(p => p.estado === status) : all;
+    return status ? all.filter(p => p.status === status) : all;
   } catch (error) {
     console.error('Error al obtener publicaciones de intercambio:', error);
     return [];
@@ -43,7 +44,7 @@ export const getCardsForExchangeByUserId = async (
 };
 
 // Crea una publicación de intercambio para una figurita que ya existe la colección del usuario
-export const publishFigurita = async (userId: number, data: PublishFiguritaRequest): Promise<void> => {
+export const publishFigurita = async (userId: string, data: PublishFiguritaRequest): Promise<void> => {
   try {
     /* En backend: ResponseEntity<PublicacionIntercambioDTO> — POST /api/exchanges/publications
     await axios.post(
