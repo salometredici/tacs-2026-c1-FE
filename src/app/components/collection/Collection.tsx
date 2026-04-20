@@ -1,7 +1,7 @@
 import React from 'react';
 import { getUserCollection } from '../../api/UsersService';
-import { Figurita } from '../../interfaces/Figurita';
-import { FiguritaColeccion } from '../../interfaces/FiguritaColeccion';
+import { FiguritaColeccion } from '../../interfaces/figuritas/FiguritaColeccion';
+import AddToCollectionModal from '../figuritas/AddToCollectionModal';
 import {
   CollectionContainer,
   FiguritaCard,
@@ -11,30 +11,25 @@ import {
 } from './Collection.styles';
 
 interface CollectionProps {
-  usuarioId: string;
-  mockTodas?: Figurita[];
-  mockRepetidas?: FiguritaColeccion[];
+  userId: string;
 }
 
-export default function Collection({ usuarioId, mockTodas, mockRepetidas }: CollectionProps) {
+export default function Collection({ userId: userId }: CollectionProps) {
   const [tab, setTab] = React.useState<'todas' | 'repetidas'>('todas');
-  const [todas, setTodas] = React.useState<Figurita[]>(mockTodas ?? []);
-  const [repetidas, setRepetidas] = React.useState<FiguritaColeccion[]>(mockRepetidas ?? []);
-  const [loading, setLoading] = React.useState(!mockTodas && !mockRepetidas);
+  const [collection, setCollection] = React.useState<FiguritaColeccion[]>([]);
+  const [loading, setLoading] = React.useState(true);
+  const [showAddModal, setShowAddModal] = React.useState(false);
 
   React.useEffect(() => {
-    if (!mockTodas && !mockRepetidas) {
-      cargarColeccion();
-    }
-  }, [usuarioId]);
+    loadCollection();
+  }, [userId]);
 
-  const cargarColeccion = async () => {
+  const loadCollection = async () => {
     try {
-      const coleccion = await getUserCollection(usuarioId);
-      setTodas(coleccion.map((fc) => fc.figurita));
-      setRepetidas(coleccion.filter((fc) => fc.cantidad > 1));
+      const data = await getUserCollection(userId);
+      setCollection(data);
     } catch (error) {
-      console.error('Error al cargar colección:', error);
+      console.error('Error al cargar la colección de figuritas: ', error);
     } finally {
       setLoading(false);
     }
@@ -42,48 +37,68 @@ export default function Collection({ usuarioId, mockTodas, mockRepetidas }: Coll
 
   if (loading) return <p>Cargando colección...</p>;
 
+  const repetidas = collection.filter((fc) => fc.quantity > 1);
+
   return (
     <div>
-      <TabButtons>
-        <TabButton
-          active={tab === 'todas'}
-          onClick={() => setTab('todas')}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+        <TabButtons style={{ marginBottom: 0 }}>
+          <TabButton active={tab === 'todas'} onClick={() => setTab('todas')}>
+            Todas ({collection.length})
+          </TabButton>
+          <TabButton active={tab === 'repetidas'} onClick={() => setTab('repetidas')}>
+            Repetidas ({repetidas.length})
+          </TabButton>
+        </TabButtons>
+        <button
+          onClick={() => setShowAddModal(true)}
+          style={{
+            padding: '0.5rem 1rem',
+            background: '#1976d2',
+            color: 'white',
+            border: 'none',
+            borderRadius: '4px',
+            cursor: 'pointer',
+            fontWeight: 600,
+            fontSize: '0.9rem',
+          }}
         >
-          Todas ({todas.length})
-        </TabButton>
-        <TabButton
-          active={tab === 'repetidas'}
-          onClick={() => setTab('repetidas')}
-        >
-          Repetidas ({repetidas.length})
-        </TabButton>
-      </TabButtons>
+          + Agregar figurita
+        </button>
+      </div>
 
       <CollectionContainer>
-        {tab === 'todas' && todas.map((figurita) => (
-          <FiguritaCard key={figurita.id}>
-            <h4>#{figurita.number}</h4>
-            <p><strong>{figurita.description}</strong></p>
-            <p>{figurita.country} - {figurita.team}</p>
-            <p>{figurita.category}</p>
+        {tab === 'todas' && collection.map((fc) => (
+          <FiguritaCard key={fc.figuritaId}>
+            <h4>#{fc.number}</h4>
+            <p><strong>{fc.description}</strong></p>
+            <p>{fc.country} - {fc.team}</p>
+            <p>{fc.category}</p>
+            <p>Cantidad: {fc.quantity}</p>
           </FiguritaCard>
         ))}
 
         {tab === 'repetidas' && repetidas.map((fc) => (
-          <FiguritaCard key={fc.id}>
-            <h4>#{fc.figurita.number}</h4>
-            <p><strong>{fc.figurita.description}</strong></p>
-            <p>{fc.figurita.country} - {fc.figurita.team}</p>
-            <p>Cantidad: {fc.cantidad}{fc.enVenta ? ' (En venta)' : ''}</p>
+          <FiguritaCard key={fc.figuritaId}>
+            <h4>#{fc.number} · x{fc.quantity}</h4>
+            <p><strong>{fc.description}</strong></p>
           </FiguritaCard>
         ))}
       </CollectionContainer>
 
-      {tab === 'todas' && todas.length === 0 && (
-        <EmptyMessage>No tienes figuritas en tu colección</EmptyMessage>
+      {tab === 'todas' && collection.length === 0 && (
+        <EmptyMessage>No tenés figuritas en tu colección</EmptyMessage>
       )}
       {tab === 'repetidas' && repetidas.length === 0 && (
-        <EmptyMessage>No tienes figuritas repetidas</EmptyMessage>
+        <EmptyMessage>No tenés figuritas repetidas</EmptyMessage>
+      )}
+
+      {showAddModal && (
+        <AddToCollectionModal
+          userId={userId}
+          onClose={() => setShowAddModal(false)}
+          onSuccess={loadCollection}
+        />
       )}
     </div>
   );

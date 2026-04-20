@@ -1,5 +1,5 @@
 import { SearchFiguritasResponse } from '../app/interfaces/search/SearchFiguritasResponse';
-import { Figurita } from '../app/interfaces/Figurita';
+import { Figurita } from '../app/interfaces/figuritas/Figurita';
 
 export const mockFiguritas: Figurita[] = [
   { id: '1', number: 1,  description: 'Messi',             country: 'Argentina', team: 'PSG',             category: 'LEGENDARIO' },
@@ -14,8 +14,11 @@ export const mockFiguritas: Figurita[] = [
 
 export const mockSearchFiguritas = (): SearchFiguritasResponse => {
   return {
-    figuritas: mockFiguritas,
-    count: mockFiguritas.length,
+    content: mockFiguritas,
+    page: 0,
+    size: mockFiguritas.length,
+    totalElements: mockFiguritas.length,
+    totalPages: 1,
   };
 };
 

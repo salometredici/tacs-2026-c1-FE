@@ -1,4 +1,4 @@
-import { Figurita } from '../Figurita';
+import { Figurita } from '../figuritas/Figurita';
 import { User } from '../auth/User';
 import { PublicacionStatus, TIPO_PARTICIPACION } from './publicacionTypes';
 

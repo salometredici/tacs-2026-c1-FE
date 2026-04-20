@@ -1,7 +1,7 @@
 import { FC, ReactNode, createContext, useState } from "react";
 import { AppContextType } from "./AppContextType";
 import { defaultSearchFilters, SearchFiguritasFilters } from "../interfaces/search/SearchFiguritasFilters";
-import { Figurita } from "../interfaces/Figurita";
+import { Figurita } from "../interfaces/figuritas/Figurita";
 
 export const AppContext = createContext<AppContextType | null>(null);
 

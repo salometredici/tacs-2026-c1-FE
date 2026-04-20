@@ -3,7 +3,7 @@ import { Publicacion } from '../app/interfaces/publicaciones/Publicacion';
 import { mockFiguritas } from './figuritasMock';
 import { mockUsers } from './usersMock';
 
-// Usuario logueado = mockUsers[0] (id: user_1, Pepe Argento)
+// Usuario logueado = mockUsers[0] (id: 69e54c037de7f7e868da90f4, Pepe Argento)
 
 // Publicaciones activas propias del usuario logueado
 export const mockMyPublications: Publicacion[] = [

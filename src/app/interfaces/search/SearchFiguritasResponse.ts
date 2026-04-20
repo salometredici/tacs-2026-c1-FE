@@ -1,6 +1,9 @@
-import { Figurita } from "../Figurita";
+import { Figurita } from "../figuritas/Figurita";
 
 export interface SearchFiguritasResponse {
-    figuritas: Figurita[];
-    count: number;
+    content: Figurita[];
+    page: number;
+    size: number;
+    totalElements: number;
+    totalPages: number;
 }

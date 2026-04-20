@@ -1,9 +1,9 @@
 import { User } from '../app/interfaces/auth/User';
-import { Figurita } from '../app/interfaces/Figurita';
-import { FiguritaColeccion } from '../app/interfaces/FiguritaColeccion';
+import { Figurita } from '../app/interfaces/figuritas/Figurita';
+import { FiguritaColeccion } from '../app/interfaces/figuritas/FiguritaColeccion';
 
 export const mockUser: User = {
-  id: 'user_1',
+  id: '69e54c037de7f7e868da90f4',
   name: 'Juan Pérez',
   email: 'juan.perez@frba.utn.edu.ar',
   rating: 4.3,
@@ -13,53 +13,33 @@ export const mockUser: User = {
 };
 
 export const mockUserCollection: Figurita[] = [
-  { id: '1',  number: 1,  description: 'Emiliano Martínez',      country: 'Argentina', team: 'Aston Villa',     category: 'EPICO' },
-  { id: '5',  number: 5,  description: 'Lautaro Martínez',       country: 'Argentina', team: 'Inter de Milán',  category: 'EPICO' },
-  { id: '8',  number: 8,  description: 'Jude Bellingham',        country: 'Inglaterra',team: 'Real Madrid',     category: 'EPICO' },
-  { id: '14', number: 14, description: 'Gavi',                   country: 'España',    team: 'FC Barcelona',    category: 'COMUN' },
-  { id: '21', number: 21, description: 'Bukayo Saka',            country: 'Inglaterra',team: 'Arsenal',         category: 'COMUN' },
-  { id: '22', number: 22, description: 'Rodri',                  country: 'España',    team: 'Manchester City', category: 'COMUN' },
-  { id: '30', number: 30, description: 'Rafael Leão',            country: 'Portugal',  team: 'AC Milan',        category: 'COMUN' },
-  { id: '33', number: 33, description: 'Rúben Dias',             country: 'Portugal',  team: 'Manchester City', category: 'COMUN' },
+  { id: 'fig_001', number: 1,  description: 'Emiliano Martínez',      country: 'Argentina', team: 'Aston Villa',     category: 'EPICO' },
+  { id: 'fig_005', number: 5,  description: 'Lautaro Martínez',       country: 'Argentina', team: 'Inter de Milán',  category: 'EPICO' },
+  { id: 'fig_008', number: 8,  description: 'Jude Bellingham',        country: 'Inglaterra',team: 'Real Madrid',     category: 'EPICO' },
+  { id: 'fig_014', number: 14, description: 'Gavi',                   country: 'España',    team: 'FC Barcelona',    category: 'COMUN' },
+  { id: 'fig_021', number: 21, description: 'Bukayo Saka',            country: 'Inglaterra',team: 'Arsenal',         category: 'COMUN' },
+  { id: 'fig_022', number: 22, description: 'Rodri',                  country: 'España',    team: 'Manchester City', category: 'COMUN' },
+  { id: 'fig_030', number: 30, description: 'Rafael Leão',            country: 'Portugal',  team: 'AC Milan',        category: 'COMUN' },
+  { id: 'fig_033', number: 33, description: 'Rúben Dias',             country: 'Portugal',  team: 'Manchester City', category: 'COMUN' },
 ];
 
 export const mockUserRepetidas: FiguritaColeccion[] = [
-  {
-    id: 101,
-    figurita: { id: '5',  number: 5,  description: 'Lautaro Martínez', country: 'Argentina', team: 'Inter de Milán',  category: 'EPICO' },
-    cantidad: 3,
-    enVenta: true,
-  },
-  {
-    id: 102,
-    figurita: { id: '22', number: 22, description: 'Rodri',            country: 'España',    team: 'Manchester City', category: 'COMUN' },
-    cantidad: 2,
-    enVenta: false,
-  },
-  {
-    id: 103,
-    figurita: { id: '8',  number: 8,  description: 'Jude Bellingham',  country: 'Inglaterra',team: 'Real Madrid',     category: 'EPICO' },
-    cantidad: 2,
-    enVenta: true,
-  },
-  {
-    id: 104,
-    figurita: { id: '14', number: 14, description: 'Gavi',             country: 'España',    team: 'FC Barcelona',    category: 'COMUN' },
-    cantidad: 4,
-    enVenta: false,
-  },
+  { figuritaId: 'fig_005', number: 5,  description: 'Lautaro Martínez', country: 'Argentina', team: 'Inter de Milán',  category: 'EPICO', quantity: 3, compromisedCount: 0 },
+  { figuritaId: 'fig_022', number: 22, description: 'Rodri',            country: 'España',    team: 'Manchester City', category: 'COMUN', quantity: 2, compromisedCount: 0 },
+  { figuritaId: 'fig_008', number: 8,  description: 'Jude Bellingham',  country: 'Inglaterra',team: 'Real Madrid',     category: 'EPICO', quantity: 2, compromisedCount: 0 },
+  { figuritaId: 'fig_014', number: 14, description: 'Gavi',             country: 'España',    team: 'FC Barcelona',    category: 'COMUN', quantity: 4, compromisedCount: 0 },
 ];
 
 export const mockUserMissingCards: Figurita[] = [
-  { id: '2',  number: 2,  description: 'Vinícius Jr.',          country: 'Brasil',    team: 'Real Madrid',        category: 'EPICO' },
-  { id: '3',  number: 3,  description: 'Florian Wirtz',         country: 'Alemania',  team: 'Bayer Leverkusen',   category: 'COMUN' },
-  { id: '6',  number: 6,  description: 'Sergi Roberto',         country: 'España',    team: 'FC Barcelona',       category: 'COMUN' },
-  { id: '10', number: 10, description: 'Khvicha Kvaratskhelia', country: 'Georgia',   team: 'Napoli',             category: 'COMUN' },
+  { id: 'fig_002', number: 2, description: 'Vinícius Jr.',          country: 'Brasil',   team: 'Real Madrid',      category: 'EPICO' },
+  { id: 'fig_003', number: 3, description: 'Florian Wirtz',         country: 'Alemania', team: 'Bayer Leverkusen', category: 'COMUN' },
+  { id: 'fig_006', number: 6, description: 'Sergi Roberto',         country: 'España',   team: 'FC Barcelona',     category: 'COMUN' },
+  { id: 'fig_010', number: 10, description: 'Khvicha Kvaratskhelia', country: 'Georgia',  team: 'Napoli',           category: 'COMUN' },
 ];
 
 export const mockUsers: User[] = [
   {
-    id: 'user_1',
+    id: '69e54c037de7f7e868da90f4',
     name: 'Pepe Argento',
     email: 'peperacing@gmail.com',
     rating: 4.5,

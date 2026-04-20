@@ -1,44 +1,50 @@
 import axios from "axios";
 import { API_CONFIG } from "../config/apiConfig";
-import { SearchFiguritasFilters } from "../interfaces/search/SearchFiguritasFilters";
+import { Figurita } from "../interfaces/figuritas/Figurita";
+import { mockSearchFiguritas } from "../../mocks/figuritasMock";
 import { SearchFiguritasResponse } from "../interfaces/search/SearchFiguritasResponse";
-import { AddMissingCardRequest } from "../interfaces/figuritas/AddMissingCardRequest";
-import { AddMissingCardResponse } from "../interfaces/figuritas/AddMissingCardResponse";
-import { mockSearchFiguritas, mockAddMissingCardResponse } from "../../mocks/figuritasMock";
 
-export const addMissingCard = async (userId: string, data: AddMissingCardRequest): Promise<AddMissingCardResponse> => {
+const BASE_URL = API_CONFIG.figuritas;
+
+// Catálogo completo — se cachea en sessionStorage para no repetir el request
+// El filtrado se hace en el FE sobre los datos cacheados
+const CATALOG_KEY = 'figuritas_catalog';
+export const getCatalog = async (): Promise<Figurita[]> => {
+    const cached = sessionStorage.getItem(CATALOG_KEY);
+    if (cached) return JSON.parse(cached) as Figurita[];
     try {
-        /* En backend: ResponseEntity<String> — POST /api/figuritas/registrar-faltante?userId=
-         * NOTA: este endpoint SÍ existe. DTO: FiguritaFaltanteDto (numero, jugador, seleccion, equipo, descripcion, categoria).
-        const response = await axios.post<AddMissingCardResponse>(
-            `${API_CONFIG.figuritas.base}/registrar-faltante`,
-            data,
-            { params: { userId } }
-        );
-        return response.data; */
-        return mockAddMissingCardResponse();
+        const response = await axios.get<Figurita[]>(BASE_URL.catalog);
+        sessionStorage.setItem(CATALOG_KEY, JSON.stringify(response.data));
+        return response.data;
     } catch (error) {
-        console.error('Error al registrar figurita faltante:', error);
-        throw error;
+        console.error("Error al obtener el catálogo: ", error);
+        return [];
+    }
+};
+export const clearCatalogCache = () => sessionStorage.removeItem(CATALOG_KEY);
+
+export const getCatalogCardById = async (id: string): Promise<Figurita | null> => {
+    try {
+        const response = await axios.get<Figurita>(`${BASE_URL.catalog}/${id}`);
+        return response.data;
+    } catch (error) {
+        console.error(`Error al obtener figurita ${id}:`, error);
+        return null;
     }
 };
 
-export const searchFiguritas = async (filters: SearchFiguritasFilters): Promise<SearchFiguritasResponse> => {
-    try {
-        const params = {
-            number: filters.number,
-            jugador: filters.jugador,
-            seleccion: filters.seleccion,
-            equipo: filters.equipo
-        } as SearchFiguritasFilters;
-
-        /* En backend: ResponseEntity<List<FiguritaDTO>> — GET /api/figuritas/search
-         * NOTA: endpoint no existe aún. FiguritasController no tiene GET.
-        const result = await axios.get<SearchFiguritasResponse>(`${API_CONFIG.figuritas.search}`, { params });
-        return result.data; */
-        return mockSearchFiguritas();
-    } catch (error) {
-        console.error(`Error en la búsqueda de figuritas:`, error);
-        return { figuritas: [], count: 0 } as SearchFiguritasResponse;
-    }
+/*
+    Búsqueda de figuritas disponibles en publicaciones y subastas activas.
+    Agrupa por figuritaId — devuelve una card por figurita con su disponibilidad.
+    TODO: implementar cuando el backend migre PublicacionesService y SubastasService a mongo
+    por ahora devuelve mock
+*/
+export const searchAvailable = async (number?: number, description?: string, country?: string,
+                                      category?: string, type?: string): Promise<SearchFiguritasResponse> => {
+    // TODO: descomentar cuando el backend implemente GET /figuritas/available
+    // const response = await axios.get<Figurita[]>(`${BASE_URL.available}`, {
+    //     params: { number, description, country, category, type }
+    // });
+    // return response.data;
+    return mockSearchFiguritas();
 };
