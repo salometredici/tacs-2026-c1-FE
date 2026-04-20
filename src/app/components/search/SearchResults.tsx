@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useUserContext } from '../../context/useUserContext';
 import MakeProposalModal from '../proposals/MakeProposalModal';
-import { Figurita } from '../../interfaces/Figurita';
+import { Figurita } from '../../interfaces/figuritas/Figurita';
 import {
   ResultsContainer,
   ResultsHeader,

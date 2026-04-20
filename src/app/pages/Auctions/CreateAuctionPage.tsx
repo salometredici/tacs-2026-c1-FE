@@ -1,32 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FiguritaColeccion } from '../../interfaces/FiguritaColeccion';
+import { FiguritaColeccion } from '../../interfaces/figuritas/FiguritaColeccion';
 import { getUserCollection } from '../../api/UsersService';
 import { createAuction } from '../../api/AuctionsService';
 import { theme } from '../../styles/theme';
 import { AUCTION_DURATION_MIN, AUCTION_DURATION_MAX } from '../../constants/auctions';
 import { formatDuration } from '../../utils/utils';
-import {
-  PageContainer,
-  Header,
-  BackButton,
-  Title,
-  Card,
-  Field,
-  Label,
-  Hint,
-  Select,
-  Input,
-  StarsRow,
-  StarButton,
-  StarLabel,
-  ErrorMsg,
-  SubmitButton,
-} from './CreateAuctionPage.styles';
+import { PageContainer, Header, BackButton, Title, Card, Field, Label, Hint, Select,
+  Input, StarsRow, StarButton, StarLabel, ErrorMsg, SubmitButton } from './CreateAuctionPage.styles';
 
 // ─── Constantes ─────────────────────────────────────────────────────────────
 
-const CURRENT_USER_ID = 'user_1'; // Para reemplazar por el usuario autenticado cuando esté la llamada disponible en backend
+const CURRENT_USER_ID = '69e54c037de7f7e868da90f4'; // Para reemplazar por el usuario autenticado cuando esté la llamada disponible en backend
 
 // ─── Componente ─────────────────────────────────────────────────────────────
 
@@ -121,9 +106,9 @@ export default function CreateAuctionPage() {
             >
               <option value="">— Seleccioná una figurita —</option>
               {collection.map(fc => (
-                <option key={fc.figurita.id} value={fc.figurita.id}>
-                  #{fc.figurita.number} · {fc.figurita.description} ({fc.figurita.country}) · {fc.figurita.category}
-                  {fc.cantidad > 1 ? ` ×${fc.cantidad}` : ''}
+                <option key={fc.figuritaId} value={fc.figuritaId}>
+                  #{fc.number} · {fc.description} ({fc.country}) · {fc.category}
+                  {fc.quantity > 1 ? ` ×${fc.quantity}` : ''}
                 </option>
               ))}
             </Select>

@@ -1,4 +1,4 @@
-import { Figurita } from '../Figurita';
+import { Figurita } from '../figuritas/Figurita';
 import { User } from '../auth/User';
 import { ProposalStatus } from './ProposalStatus';
 import { Publicacion } from '../publicaciones/Publicacion';

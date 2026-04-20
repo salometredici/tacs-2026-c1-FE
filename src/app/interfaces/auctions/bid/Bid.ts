@@ -1,5 +1,5 @@
 import { BidStatus } from './BidStatus';
-import { Figurita } from '../../Figurita';
+import { Figurita } from '../../figuritas/Figurita';
 
 export interface Bid {
   bidId: string;

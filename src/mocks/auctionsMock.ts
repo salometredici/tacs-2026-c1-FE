@@ -8,7 +8,7 @@ export const mockAuctions: Auction[] = [
   {
     id: '1',
     figurita: mockFiguritas[0], // Messi
-    publisherId: mockUsers[0],   // Pepe (user_1)
+    publisherId: mockUsers[0],   // Pepe (69e54c037de7f7e868da90f4)
     status: 'ACTIVA',
     creationDate: '2026-04-13T10:00:00',
     endDate: '2026-04-28T15:30:00',

@@ -21,6 +21,7 @@ export const API_CONFIG = {
 
   figuritas: {
     base: `${API_BASE_URL}/figuritas`,
+    catalog: `${API_BASE_URL}/figuritas/catalog`,
     search: `${API_BASE_URL}/figuritas/search`,
   },
 

@@ -1,4 +1,4 @@
-import { Figurita } from "../interfaces/Figurita";
+import { Figurita } from "../interfaces/figuritas/Figurita";
 import { SearchFiguritasFilters } from "../interfaces/search/SearchFiguritasFilters";
 
 export type AppContextType = {

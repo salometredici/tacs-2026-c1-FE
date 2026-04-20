@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { User } from '../../interfaces/auth/User';
-import { Figurita } from '../../interfaces/Figurita';
-import { FiguritaColeccion } from '../../interfaces/FiguritaColeccion';
+import { FiguritaColeccion } from '../../interfaces/figuritas/FiguritaColeccion';
+import { MissingCard } from '../../interfaces/figuritas/MissingCard';
 import { Proposal } from '../../interfaces/proposals/Proposal';
 import { Auction } from '../../interfaces/auctions/Auction';
 import { UserBid } from '../../interfaces/auctions/bid/UserBid';
@@ -41,15 +41,15 @@ export default function ProfilePage() {
 
   const user: User = currentUser;
 
-  const [activeTab, setActiveTab]       = useState<Tab>('collection');
-  const [collection, setCollection]     = useState<FiguritaColeccion[]>([]);
-  const [faltantes, setFaltantes]       = useState<Figurita[]>([]);
-  const [recibidas, setRecibidas]       = useState<Proposal[]>([]);
-  const [enviadas, setEnviadas]         = useState<Proposal[]>([]);
-  const [misSubastas, setMisSubastas]   = useState<Auction[]>([]);
-  const [misOfertas, setMisOfertas]     = useState<UserBid[]>([]);
-  const [loading, setLoading]           = useState(true);
-  const [error, setError]               = useState(false);
+  const [activeTab, setActiveTab] = useState<Tab>('collection');
+  const [collection, setCollection] = useState<FiguritaColeccion[]>([]);
+  const [faltantes, setFaltantes] = useState<MissingCard[]>([]);
+  const [recibidas, setRecibidas] = useState<Proposal[]>([]);
+  const [enviadas, setEnviadas] = useState<Proposal[]>([]);
+  const [misSubastas, setMisSubastas] = useState<Auction[]>([]);
+  const [misOfertas, setMisOfertas] = useState<UserBid[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
   const [showAddMissingModal, setShowAddMissingModal] = useState(false);
 
   useEffect(() => {
@@ -58,8 +58,8 @@ export default function ProfilePage() {
     Promise.all([
       getUserCollection(user.id),
       getUserMissingCards(user.id),
-      getProposals(user.id),        /// Recibidas -> publisherId = el usuario (hizo la publicación)
-      getProposals('', user.id),    // Enviadas -> postorId = el usuario (hizo la propuesta)
+      getProposals(user.id), // Recibidas -> publisherId = el usuario (hizo la publicación)
+      getProposals('', user.id), // Enviadas -> postorId = el usuario (hizo la propuesta)
       getAuctionsByUserId(user.id),
       getAuctionBidsByUserId(user.id),
     ])
@@ -119,11 +119,7 @@ export default function ProfilePage() {
           <>
             {/* Mi Colección */}
             {activeTab === 'collection' && (
-              <Collection
-                usuarioId={user.id}
-                mockTodas={collection.map(fc => fc.figurita)}
-                mockRepetidas={collection}
-              />
+              <Collection userId={user.id} />
             )}
 
             {/* Faltantes */}
@@ -139,7 +135,7 @@ export default function ProfilePage() {
                 ) : (
                   <CollectionContainer>
                     {faltantes.map(figurita => (
-                      <FiguritaCard key={figurita.id}>
+                      <FiguritaCard key={figurita.figuritaId}>
                         <h4>#{figurita.number}</h4>
                         <p><strong>{figurita.description}</strong></p>
                         <p>{figurita.country} - {figurita.team}</p>

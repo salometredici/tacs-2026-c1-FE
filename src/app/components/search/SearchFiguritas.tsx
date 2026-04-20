@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { mockSearchFiguritas } from '../../../mocks/figuritasMock';
-import { Figurita } from '../../interfaces/Figurita';
+import { Figurita } from '../../interfaces/figuritas/Figurita';
 import { defaultSearchFilters, SearchFiguritasFilters } from '../../interfaces/search/SearchFiguritasFilters';
+import { SearchFiguritasResponse } from '../../interfaces/search/SearchFiguritasResponse';
+import { searchAvailable } from '../../api/FiguritasService';
 import {
   SearchContainer,
   SearchTitle,
@@ -14,48 +15,35 @@ import {
   Button,
   LoadingMessage,
 } from './Search.styles';
-import { searchFiguritas } from '../../api/FiguritasService';
 
 interface SearchFiguritasProps {
   onSearch: (results: Figurita[], searched: boolean, loading: boolean) => void;
 }
 
-export default function SearchFiguritas({
-  onSearch,
-}: SearchFiguritasProps) {
+export default function SearchFiguritas({ onSearch }: SearchFiguritasProps) {
   const [filters, setFilters] = useState<SearchFiguritasFilters>(defaultSearchFilters);
   const [loading, setLoading] = useState(false);
-  const [searched, setSearched] = useState(false);
-  const [errorMsg, setErrorMsg] = useState('');
 
-  const handleFilterChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
+  const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setFilters((prev) => ({
+    setFilters(prev => ({
       ...prev,
-      [name]: name === 'numero' ? (value ? parseInt(value) : 0) : value,
+      [name]: name === 'number' ? (value ? parseInt(value) : undefined) : value,
     }));
   };
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    searchFiguritas(filters).then(res => {
-      if (res.count === 0) {
-        setErrorMsg('No se encontraron figuritas con esos filtros');
-        onSearch([], true, false);
-        return;
-      }
-      setSearched(true);
-      setLoading(false);
-      onSearch(res.figuritas, true, false);
-    });
+    const res: SearchFiguritasResponse = await searchAvailable(
+      filters.number, filters.description, filters.country, filters.category, filters.type
+    );
+    setLoading(false);
+    onSearch(res.content, true, false);
   };
 
   const handleReset = () => {
     setFilters(defaultSearchFilters);
-    setSearched(false);
     onSearch([], false, false);
   };
 
@@ -67,11 +55,11 @@ export default function SearchFiguritas({
         <form onSubmit={handleSearch}>
           <FiltersGrid>
             <FilterGroup>
-              <Label htmlFor="numero">Número de Figurita</Label>
+              <Label htmlFor="number">Número de Figurita</Label>
               <Input
-                id="numero"
+                id="number"
                 type="number"
-                name="numero"
+                name="number"
                 value={filters.number || ''}
                 onChange={handleFilterChange}
                 placeholder="Ej: 1, 10, 23..."
@@ -80,49 +68,45 @@ export default function SearchFiguritas({
             </FilterGroup>
 
             <FilterGroup>
-              <Label htmlFor="jugador">Jugador / Descripción</Label>
+              <Label htmlFor="description">Jugador / Descripción</Label>
               <Input
-                id="jugador"
+                id="description"
                 type="text"
-                name="jugador"
-                value={filters.jugador}
+                name="description"
+                value={filters.description || ''}
                 onChange={handleFilterChange}
                 placeholder="Ej: Messi, Ronaldo..."
               />
             </FilterGroup>
 
             <FilterGroup>
-              <Label htmlFor="seleccion">Selección</Label>
+              <Label htmlFor="country">Selección</Label>
               <Input
-                id="seleccion"
+                id="country"
                 type="text"
-                name="seleccion"
-                value={filters.seleccion}
+                name="country"
+                value={filters.country || ''}
                 onChange={handleFilterChange}
                 placeholder="Ej: Argentina, Francia..."
               />
             </FilterGroup>
 
             <FilterGroup>
-              <Label htmlFor="equipo">Equipo</Label>
+              <Label htmlFor="category">Categoría</Label>
               <Input
-                id="equipo"
+                id="category"
                 type="text"
-                name="equipo"
-                value={filters.equipo}
+                name="category"
+                value={filters.category || ''}
                 onChange={handleFilterChange}
-                placeholder="Ej: PSG, Manchester United..."
+                placeholder="Ej: COMUN, EPICO..."
               />
             </FilterGroup>
           </FiltersGrid>
 
           <ButtonGroup>
-            <Button type="submit" variant="primary">
-              Buscar
-            </Button>
-            <Button type="button" variant="secondary" onClick={handleReset}>
-              Limpiar
-            </Button>
+            <Button type="submit" variant="primary">Buscar</Button>
+            <Button type="button" variant="secondary" onClick={handleReset}>Limpiar</Button>
           </ButtonGroup>
         </form>
       </FilterSection>

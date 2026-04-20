@@ -1,13 +1,15 @@
 export interface SearchFiguritasFilters {
-    number: string;
-    jugador: string;
-    seleccion: string;
-    equipo: string;
+    number?: number;
+    description?: string;
+    country?: string;
+    category?: string;
+    type?: string;
 }
 
 export const defaultSearchFilters: SearchFiguritasFilters = {
-    number: '',
-    jugador: '',
-    seleccion: '',
-    equipo: ''
+    number: undefined,
+    description: '',
+    country: '',
+    category: '',
+    type: ''
 }
