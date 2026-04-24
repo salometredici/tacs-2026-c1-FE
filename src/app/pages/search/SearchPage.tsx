@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { theme } from '../styles/theme';
-import SearchFiguritas from '../components/search/SearchFiguritas';
-import SearchResults from '../components/search/SearchResults';
-import { Figurita } from '../interfaces/figuritas/Figurita';
+import { theme } from '../../styles/theme';
+import SearchFiguritas from '../../components/search/SearchFiguritas';
+import SearchResults from '../../components/search/SearchResults';
+import { Figurita } from '../../interfaces/figuritas/Figurita';
 
 const SearchPageContainer = styled.div`
   max-width: 1400px;

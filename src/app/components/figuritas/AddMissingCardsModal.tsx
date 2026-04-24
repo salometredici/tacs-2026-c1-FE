@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Figurita } from '../../interfaces/figuritas/Figurita';
-import { Categoria } from '../../interfaces/Categoria';
+import { Category } from '../../interfaces/Categoria';
 import { getCatalog } from '../../api/FiguritasService';
 import { addMissingCard } from '../../api/UsersService';
 import {
@@ -10,7 +10,7 @@ import {
   Footer, CancelButton, ConfirmButton, ErrorMsg,
 } from './AddMissingCardsModal.styles';
 
-const CATEGORIAS: Categoria[] = ['COMUN', 'EPICO', 'LEGENDARIO'];
+const CATEGORIES: Category[] = ['COMUN', 'EPICO', 'LEGENDARIO'];
 
 interface Props {
   userId: string;
@@ -21,7 +21,7 @@ interface Props {
 export default function AddMissingCardsModal({ userId, onClose, onSuccess }: Props) {
   const [catalog, setCatalog] = useState<Figurita[]>([]);
   const [query, setQuery] = useState('');
-  const [categoria, setCategoria] = useState<Categoria | ''>('');
+  const [category, setCategory] = useState<Category | ''>('');
   const [pending, setPending] = useState<Figurita[]>([]);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -38,8 +38,8 @@ export default function AddMissingCardsModal({ userId, onClose, onSuccess }: Pro
       !query ||
       f.description.toLowerCase().includes(query.toLowerCase()) ||
       String(f.number).includes(query);
-    const matchesCategoria = !categoria || f.category === categoria;
-    return matchesQuery && matchesCategoria;
+    const matchesCategory = !category || f.category === category;
+    return matchesQuery && matchesCategory;
   });
 
   const handleAdd = (f: Figurita) => setPending(prev => [...prev, f]);
@@ -79,11 +79,11 @@ export default function AddMissingCardsModal({ userId, onClose, onSuccess }: Pro
             autoFocus
           />
           <Select
-            value={categoria}
-            onChange={e => setCategoria(e.target.value as Categoria | '')}
+            value={category}
+            onChange={e => setCategory(e.target.value as Category | '')}
           >
             <option value="">Todas las categorías</option>
-            {CATEGORIAS.map(c => <option key={c} value={c}>{c}</option>)}
+            {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
           </Select>
         </Row>
 

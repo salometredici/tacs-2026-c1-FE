@@ -1,15 +1,14 @@
 import { Proposal } from '../app/interfaces/proposals/Proposal';
-import { Publicacion } from '../app/interfaces/publicaciones/Publicacion';
+import { Publication } from '../app/interfaces/publications/Publication';
 import { mockFiguritas } from './figuritasMock';
 import { mockUsers } from './usersMock';
 
-// Usuario logueado = mockUsers[0] (id: 69e54c037de7f7e868da90f4, Pepe Argento)
+// Logged-in user = mockUsers[0] (id: 69e54c037de7f7e868da90f4, Pepe Argento)
 
-// Publicaciones activas propias del usuario logueado
-export const mockMyPublications: Publicacion[] = [
+export const mockMyPublications: Publication[] = [
   {
     id: '11',
-    figurita: mockFiguritas[2], // Neymar
+    figurita: mockFiguritas[2],
     publisher: mockUsers[0],
     status: 'ACTIVA',
     participationType: 'INTERCAMBIO',
@@ -17,7 +16,7 @@ export const mockMyPublications: Publicacion[] = [
   },
   {
     id: '12',
-    figurita: mockFiguritas[4], // Piqué
+    figurita: mockFiguritas[4],
     publisher: mockUsers[0],
     status: 'ACTIVA',
     participationType: 'SUBASTA',
@@ -25,7 +24,7 @@ export const mockMyPublications: Publicacion[] = [
   },
   {
     id: '14',
-    figurita: mockFiguritas[7], // Benzema
+    figurita: mockFiguritas[7],
     publisher: mockUsers[0],
     status: 'ACTIVA',
     participationType: 'INTERCAMBIO',
@@ -33,68 +32,66 @@ export const mockMyPublications: Publicacion[] = [
   },
 ];
 
-export const getMockedMyPublications = (userId: string): Publicacion[] =>
+export const getMockedMyPublications = (userId: string): Publication[] =>
   mockMyPublications.filter(p => p.publisher.id === userId);
 
-// Propuestas RECIBIDAS
 export const mockReceivedProposals: Proposal[] = [
   {
     id: '201',
-    publicacion: { id: '11', figurita: mockFiguritas[2], publisher: mockUsers[0], status: 'ACTIVA', participationType: 'INTERCAMBIO', count: 2 },
+    publication: { id: '11', figurita: mockFiguritas[2], publisher: mockUsers[0], status: 'ACTIVA', participationType: 'INTERCAMBIO', count: 2 },
     offeredFiguritas: [mockFiguritas[5]],
-    postor: mockUsers[1],
+    bidder: mockUsers[1],
     status: 'PENDIENTE',
   },
   {
     id: '202',
-    publicacion: { id: '12', figurita: mockFiguritas[4], publisher: mockUsers[0], status: 'ACTIVA', participationType: 'SUBASTA', count: 1 },
+    publication: { id: '12', figurita: mockFiguritas[4], publisher: mockUsers[0], status: 'ACTIVA', participationType: 'SUBASTA', count: 1 },
     offeredFiguritas: [mockFiguritas[6], mockFiguritas[7]],
-    postor: mockUsers[2],
+    bidder: mockUsers[2],
     status: 'PENDIENTE',
   },
   {
     id: '203',
-    publicacion: { id: '13', figurita: mockFiguritas[0], publisher: mockUsers[0], status: 'FINALIZADA', participationType: 'INTERCAMBIO', count: 1 },
+    publication: { id: '13', figurita: mockFiguritas[0], publisher: mockUsers[0], status: 'FINALIZADA', participationType: 'INTERCAMBIO', count: 1 },
     offeredFiguritas: [mockFiguritas[3]],
-    postor: mockUsers[1],
+    bidder: mockUsers[1],
     status: 'ACEPTADA',
   },
   {
     id: '204',
-    publicacion: { id: '14', figurita: mockFiguritas[2], publisher: mockUsers[0], status: 'ACTIVA', participationType: 'INTERCAMBIO', count: 2 },
+    publication: { id: '14', figurita: mockFiguritas[2], publisher: mockUsers[0], status: 'ACTIVA', participationType: 'INTERCAMBIO', count: 2 },
     offeredFiguritas: [mockFiguritas[1]],
-    postor: mockUsers[2],
+    bidder: mockUsers[2],
     status: 'RECHAZADA',
   },
 ];
 
-// Propuestas ENVIADAS
 export const mockSentProposals: Proposal[] = [
   {
     id: '301',
-    publicacion: { id: '21', figurita: mockFiguritas[1], publisher: mockUsers[1], status: 'ACTIVA', participationType: 'INTERCAMBIO', count: 1 },
+    publication: { id: '21', figurita: mockFiguritas[1], publisher: mockUsers[1], status: 'ACTIVA', participationType: 'INTERCAMBIO', count: 1 },
     offeredFiguritas: [mockFiguritas[2]],
-    postor: mockUsers[0],
+    bidder: mockUsers[0],
     status: 'PENDIENTE',
   },
   {
     id: '302',
-    publicacion: { id: '22', figurita: mockFiguritas[5], publisher: mockUsers[2], status: 'FINALIZADA', participationType: 'INTERCAMBIO', count: 1 },
+    publication: { id: '22', figurita: mockFiguritas[5], publisher: mockUsers[2], status: 'FINALIZADA', participationType: 'INTERCAMBIO', count: 1 },
     offeredFiguritas: [mockFiguritas[0]],
-    postor: mockUsers[0],
+    bidder: mockUsers[0],
     status: 'ACEPTADA',
   },
   {
     id: '303',
-    publicacion: { id: '23', figurita: mockFiguritas[3], publisher: mockUsers[1], status: 'ACTIVA', participationType: 'SUBASTA', count: 1 },
+    publication: { id: '23', figurita: mockFiguritas[3], publisher: mockUsers[1], status: 'ACTIVA', participationType: 'SUBASTA', count: 1 },
     offeredFiguritas: [mockFiguritas[4], mockFiguritas[6]],
-    postor: mockUsers[0],
+    bidder: mockUsers[0],
     status: 'RECHAZADA',
   },
 ];
 
 export const getMockedReceivedProposals = (userId: string): Proposal[] =>
-  mockReceivedProposals.filter(p => p.publicacion.publisher.id === userId);
+  mockReceivedProposals.filter(p => p.publication.publisher.id === userId);
 
 export const getMockedSentProposals = (userId: string): Proposal[] =>
-  mockSentProposals.filter(p => p.postor.id === userId);
+  mockSentProposals.filter(p => p.bidder.id === userId);

@@ -22,7 +22,7 @@ export const TabBtn = styled.button<{ $active: boolean }>`
   &:hover { color: ${theme.colors.primary}; }
 `;
 
-export const MiOfertaCard = styled.div`
+export const MyBidCard = styled.div`
   background: ${theme.colors.surface};
   border-radius: ${theme.borderRadius.md};
   padding: ${theme.spacing.lg};
@@ -40,18 +40,18 @@ export const MiOfertaCard = styled.div`
   }
 `;
 
-export const EstadoBadge = styled.span<{ $estado: string }>`
+export const StatusBadge = styled.span<{ $status: string }>`
   display: inline-block;
   padding: 2px 10px;
   border-radius: 999px;
   font-size: 0.78rem;
   font-weight: 700;
-  background: ${({ $estado }) =>
-    $estado === 'ACTIVA' ? '#e3f2fd' :
-    $estado === 'GANADORA' ? '#e8f5e9' :
-    $estado === 'SUPERADA' ? '#fff3e0' : '#fce4ec'};
-  color: ${({ $estado }) =>
-    $estado === 'ACTIVA' ? '#1565c0' :
-    $estado === 'GANADORA' ? '#2e7d32' :
-    $estado === 'SUPERADA' ? '#e65100' : '#b71c1c'};
+  background: ${({ $status }) =>
+    $status === 'ACTIVA'   ? '#e3f2fd' :
+    $status === 'GANADORA' ? '#e8f5e9' :
+    $status === 'SUPERADA' ? '#fff3e0' : '#fce4ec'};
+  color: ${({ $status }) =>
+    $status === 'ACTIVA'   ? '#1565c0' :
+    $status === 'GANADORA' ? '#2e7d32' :
+    $status === 'SUPERADA' ? '#e65100' : '#b71c1c'};
 `;

@@ -1,1 +1,1 @@
-export type Categoria = 'COMUN' | 'EPICO' | 'LEGENDARIO';
+export type Category = 'COMUN' | 'EPICO' | 'LEGENDARIO';

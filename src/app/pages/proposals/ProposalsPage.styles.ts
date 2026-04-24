@@ -6,6 +6,8 @@ export const PageContainer = styled.div`
   max-width: 900px;
   margin: 0 auto;
   padding: ${theme.spacing.xl};
+
+  @media (max-width: 600px) { padding: ${theme.spacing.md}; }
 `;
 
 export const Header = styled.div`
@@ -20,37 +22,69 @@ export const BackButton = styled.button`
   border: none;
   font-size: 1.4rem;
   cursor: pointer;
-  color: ${theme.colors.primary};
-  padding: 0;
-  line-height: 1;
-  &:hover { opacity: 0.7; }
+  color: ${theme.colors.onSurfaceVariant};
+  width: 40px;
+  height: 40px;
+  border-radius: ${theme.shape.full};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: ${theme.colors.onSurface};
+    opacity: 0;
+    transition: opacity 0.2s;
+    border-radius: inherit;
+  }
+
+  &:hover::after { opacity: ${theme.state.hover}; }
 `;
 
 export const Title = styled.h1`
-  color: ${theme.colors.primary};
-  font-size: 1.8rem;
+  color: ${theme.colors.onBackground};
+  font-size: ${theme.typography.headlineSmall.fontSize};
+  font-weight: 400;
   margin: 0;
 `;
 
+// M3 Secondary Tabs
 export const TabNav = styled.div`
   display: flex;
   gap: 0;
-  border-bottom: 2px solid ${theme.colors.border};
+  border-bottom: 1px solid ${theme.colors.outlineVariant};
   margin-bottom: ${theme.spacing.xl};
 `;
 
 export const TabButton = styled.button<{ $active: boolean }>`
-  padding: ${theme.spacing.sm} ${theme.spacing.lg};
+  padding: ${theme.spacing.md} ${theme.spacing.lg};
   border: none;
-  background: ${({ $active }) => $active ? theme.colors.primary : 'transparent'};
-  color: ${({ $active }) => $active ? 'white' : theme.colors.textSecondary};
+  background: none;
+  border-bottom: 2px solid ${({ $active }) => ($active ? theme.colors.primary : 'transparent')};
+  margin-bottom: -1px;
+  color: ${({ $active }) => ($active ? theme.colors.primary : theme.colors.onSurfaceVariant)};
   cursor: pointer;
-  border-radius: ${theme.borderRadius.sm} ${theme.borderRadius.sm} 0 0;
-  font-size: 1rem;
-  transition: all 0.2s;
-  &:hover {
-    background: ${({ $active }) => $active ? theme.colors.primary : theme.colors.border};
+  font-size: ${theme.typography.titleSmall.fontSize};
+  font-weight: ${({ $active }) => ($active ? 500 : 400)};
+  letter-spacing: 0.00625em;
+  transition: color 0.15s;
+  position: relative;
+  overflow: hidden;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: ${theme.colors.primary};
+    opacity: 0;
+    transition: opacity 0.15s;
   }
+
+  &:hover { color: ${theme.colors.primary}; &::after { opacity: ${theme.state.hover}; } }
 `;
 
 export const ProposalList = styled.div`
@@ -59,16 +93,21 @@ export const ProposalList = styled.div`
   gap: ${theme.spacing.md};
 `;
 
+// M3 Elevated Card
 export const ProposalCard = styled.div`
-  background: ${theme.colors.surface};
-  border-radius: ${theme.borderRadius.md};
+  background: ${theme.colors.surfaceContainerLow};
+  border-radius: ${theme.shape.medium};
   padding: ${theme.spacing.lg};
-  box-shadow: ${theme.shadows.sm};
-  border-left: 4px solid ${theme.colors.border};
+  box-shadow: ${theme.elevation[1]};
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
   gap: ${theme.spacing.lg};
+
+  @media (max-width: 480px) {
+    flex-direction: column;
+    gap: ${theme.spacing.sm};
+  }
 `;
 
 export const ProposalInfo = styled.div`
@@ -79,16 +118,16 @@ export const ProposalInfo = styled.div`
 `;
 
 export const ProposalTitle = styled.p`
-  font-weight: 600;
-  color: ${theme.colors.text};
+  font-weight: 500;
+  color: ${theme.colors.onSurface};
   margin: 0;
-  font-size: 1rem;
+  font-size: ${theme.typography.bodyLarge.fontSize};
 `;
 
 export const ProposalDetail = styled.p`
-  color: ${theme.colors.textSecondary};
+  color: ${theme.colors.onSurfaceVariant};
   margin: 0;
-  font-size: 0.875rem;
+  font-size: ${theme.typography.bodyMedium.fontSize};
 `;
 
 export const CardRight = styled.div`
@@ -97,22 +136,32 @@ export const CardRight = styled.div`
   align-items: flex-end;
   gap: ${theme.spacing.sm};
   flex-shrink: 0;
+
+  @media (max-width: 480px) {
+    align-items: flex-start;
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
 `;
 
+// M3 Assist Chip – proposal status
 export const StatusBadge = styled.span<{ $estado: ProposalStatus }>`
-  padding: 0.25rem 0.75rem;
-  border-radius: 999px;
-  font-size: 0.8rem;
-  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 10px;
+  border-radius: ${theme.shape.small};
+  font-size: ${theme.typography.labelSmall.fontSize};
+  font-weight: ${theme.typography.labelSmall.fontWeight};
+  letter-spacing: 0.04em;
   white-space: nowrap;
   background: ${({ $estado }) =>
-    $estado === 'PENDIENTE' ? '#fff8e1' :
-    $estado === 'ACEPTADA'  ? '#e8f5e9' :
-    '#fce4ec'};
+    $estado === 'PENDIENTE' ? theme.colors.tertiaryContainer :
+    $estado === 'ACEPTADA'  ? theme.colors.successContainer :
+                               theme.colors.errorContainer};
   color: ${({ $estado }) =>
-    $estado === 'PENDIENTE' ? '#f57c00' :
-    $estado === 'ACEPTADA'  ? '#388e3c' :
-    '#d32f2f'};
+    $estado === 'PENDIENTE' ? theme.colors.onTertiaryContainer :
+    $estado === 'ACEPTADA'  ? theme.colors.success :
+                               theme.colors.onErrorContainer};
 `;
 
 export const ActionButtons = styled.div`
@@ -120,43 +169,77 @@ export const ActionButtons = styled.div`
   gap: ${theme.spacing.sm};
 `;
 
+// M3 Filled Tonal Button (accept)
 export const AcceptButton = styled.button`
-  padding: 0.3rem 0.8rem;
-  background: ${theme.colors.success};
-  color: white;
+  padding: 6px 16px;
+  background: ${theme.colors.secondaryContainer};
+  color: ${theme.colors.onSecondaryContainer};
   border: none;
-  border-radius: ${theme.borderRadius.sm};
-  font-size: 0.8rem;
-  font-weight: 600;
+  border-radius: ${theme.shape.full};
+  font-size: ${theme.typography.labelMedium.fontSize};
+  font-weight: ${theme.typography.labelMedium.fontWeight};
+  letter-spacing: 0.04em;
   cursor: pointer;
-  transition: opacity 0.15s;
-  &:hover:not(:disabled) { opacity: 0.85; }
-  &:disabled { opacity: 0.5; cursor: not-allowed; }
+  transition: box-shadow 0.15s;
+  position: relative;
+  overflow: hidden;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: ${theme.colors.onSecondaryContainer};
+    opacity: 0;
+    transition: opacity 0.15s;
+    border-radius: inherit;
+  }
+
+  &:hover { box-shadow: ${theme.elevation[1]}; &::after { opacity: ${theme.state.hover}; } }
+  &:disabled { opacity: 0.38; pointer-events: none; }
 `;
 
+// M3 Outlined Button (reject)
 export const RejectButton = styled.button`
-  padding: 0.3rem 0.8rem;
+  padding: 6px 16px;
   background: none;
-  color: ${theme.colors.danger};
-  border: 1px solid ${theme.colors.danger};
-  border-radius: ${theme.borderRadius.sm};
-  font-size: 0.8rem;
-  font-weight: 600;
+  color: ${theme.colors.error};
+  border: 1px solid ${theme.colors.error};
+  border-radius: ${theme.shape.full};
+  font-size: ${theme.typography.labelMedium.fontSize};
+  font-weight: ${theme.typography.labelMedium.fontWeight};
+  letter-spacing: 0.04em;
   cursor: pointer;
-  transition: all 0.15s;
-  &:hover:not(:disabled) { background: ${theme.colors.danger}; color: white; }
-  &:disabled { opacity: 0.5; cursor: not-allowed; }
+  transition: background 0.15s;
+  position: relative;
+  overflow: hidden;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: ${theme.colors.error};
+    opacity: 0;
+    transition: opacity 0.15s;
+    border-radius: inherit;
+  }
+
+  &:hover::after { opacity: ${theme.state.hover}; }
+  &:disabled { opacity: 0.38; pointer-events: none; }
 `;
 
 export const EmptyMessage = styled.p`
   text-align: center;
-  color: ${theme.colors.textSecondary};
+  color: ${theme.colors.onSurfaceVariant};
   padding: ${theme.spacing.xl};
+  font-size: ${theme.typography.bodyLarge.fontSize};
 `;
 
 export const ErrorMsg = styled.p`
-  color: ${theme.colors.danger};
-  font-size: 0.85rem;
+  color: ${theme.colors.error};
+  font-size: ${theme.typography.bodySmall.fontSize};
   text-align: center;
   margin: ${theme.spacing.sm} 0 0;
+  background: ${theme.colors.errorContainer};
+  padding: ${theme.spacing.sm} ${theme.spacing.md};
+  border-radius: ${theme.shape.extraSmall};
 `;

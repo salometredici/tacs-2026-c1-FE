@@ -5,6 +5,7 @@ import axios from 'axios';
 import { API_CONFIG } from '../config/apiConfig';
 import { CreateAuctionRequest } from '../interfaces/auctions/CreateAuctionRequest';
 import { CreateAuctionResponse } from '../interfaces/auctions/CreateAuctionResponse';
+import { AuctionRule } from '../interfaces/auctions/auctionRule/AuctionRule';
 
 // Para obtener las subastas activas
 export const getActiveAuctions = async (): Promise<Auction[]> => {
@@ -94,6 +95,18 @@ export const getAuctionBidsByUserId = async (userId: string): Promise<UserBid[]>
   } catch (error) {
     console.error(`Error al obtener ofertas del usuario ${userId}:`, error);
     return [];
+  }
+};
+
+// Para editar las condiciones de participación de una subasta activa
+export const updateAuction = async (auctionId: string, _data: { rules: AuctionRule[] }): Promise<void> => {
+  try {
+    /* PATCH /api/auctions/:id
+    await axios.patch(`${API_CONFIG.auctions.base}/${auctionId}`, data); */
+    return;
+  } catch (error) {
+    console.error(`Error al actualizar la subasta ${auctionId}:`, error);
+    throw error;
   }
 };
 

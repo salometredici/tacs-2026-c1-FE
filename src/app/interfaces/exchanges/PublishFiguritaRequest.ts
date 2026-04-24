@@ -1,13 +1,13 @@
-import { Categoria } from '../Categoria';
-import { TIPO_PARTICIPACION } from '../publicaciones/publicacionTypes';
+import { Category } from '../Categoria';
+import { ParticipationType } from '../publications/publicationTypes';
 
 export interface PublishFiguritaRequest {
   number: number;
-  jugador: string;
-  seleccion: string;
-  equipo: string;
-  descripcion?: string;
-  categoria: Categoria;
-  cantidad: number;
-  tipoParticipacion: TIPO_PARTICIPACION;
+  player: string;
+  country: string;
+  team: string;
+  description?: string;
+  category: Category;
+  quantity: number;
+  participationType: ParticipationType;
 }

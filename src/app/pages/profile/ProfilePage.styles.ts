@@ -5,67 +5,115 @@ import { ProposalStatus } from '../../interfaces/proposals/ProposalStatus';
 export const ProfileContainer = styled.div`
   max-width: 1200px;
   margin: 0 auto;
+  padding: ${theme.spacing.xl};
+
+  @media (max-width: 600px) { padding: ${theme.spacing.md}; }
 `;
 
+// M3 Elevated Card – profile header
 export const ProfileHeader = styled.div`
-  background: ${theme.colors.surface};
+  background: ${theme.colors.surfaceContainerLow};
   padding: ${theme.spacing.xl};
-  border-radius: ${theme.borderRadius.md};
-  margin-bottom: ${theme.spacing.xl};
-  box-shadow: ${theme.shadows.sm};
+  border-radius: ${theme.shape.medium};
+  margin-bottom: ${theme.spacing.lg};
+  box-shadow: ${theme.elevation[1]};
   display: flex;
   align-items: center;
+  gap: ${theme.spacing.lg};
+
+  @media (max-width: 480px) {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 `;
 
 export const ProfileTitle = styled.h1`
-  color: ${theme.colors.primary};
-  margin: 0 0 ${theme.spacing.sm} 0;
+  color: ${theme.colors.onSurface};
+  margin: 0 0 ${theme.spacing.xs} 0;
+  font-size: ${theme.typography.headlineSmall.fontSize};
+  font-weight: 400;
 `;
 
 export const ProfileEmail = styled.p`
-  color: ${theme.colors.textSecondary};
+  color: ${theme.colors.onSurfaceVariant};
   margin: 0;
+  font-size: ${theme.typography.bodyMedium.fontSize};
 `;
 
+// M3 Elevated Card – tab section
 export const TabSection = styled.div`
-  background: ${theme.colors.surface};
-  border-radius: ${theme.borderRadius.md};
+  background: ${theme.colors.surfaceContainerLow};
+  border-radius: ${theme.shape.medium};
   padding: ${theme.spacing.xl};
-  box-shadow: ${theme.shadows.sm};
+  box-shadow: ${theme.elevation[1]};
 `;
 
+// M3 Secondary Tab Row
 export const TabNav = styled.div`
   display: flex;
   gap: 0;
   margin-bottom: ${theme.spacing.lg};
-  border-bottom: 2px solid ${theme.colors.border};
+  border-bottom: 1px solid ${theme.colors.outlineVariant};
 `;
 
 export const TabButton = styled.button<{ $active: boolean }>`
-  padding: ${theme.spacing.sm} ${theme.spacing.lg};
+  padding: ${theme.spacing.md} ${theme.spacing.lg};
   border: none;
-  background: ${({ $active }) => $active ? theme.colors.primary : 'transparent'};
-  color: ${({ $active }) => $active ? 'white' : theme.colors.textSecondary};
+  background: none;
+  border-bottom: 2px solid ${({ $active }) => ($active ? theme.colors.primary : 'transparent')};
+  margin-bottom: -1px;
+  color: ${({ $active }) => ($active ? theme.colors.primary : theme.colors.onSurfaceVariant)};
   cursor: pointer;
-  border-radius: ${theme.borderRadius.sm} ${theme.borderRadius.sm} 0 0;
-  font-size: 1rem;
-  transition: all 0.2s;
+  font-size: ${theme.typography.titleSmall.fontSize};
+  font-weight: ${({ $active }) => ($active ? 500 : 400)};
+  letter-spacing: 0.00625em;
+  transition: color 0.15s;
+  position: relative;
+  overflow: hidden;
 
-  &:hover {
-    background: ${({ $active }) => $active ? theme.colors.primary : theme.colors.border};
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: ${theme.colors.primary};
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+
+  &:hover { color: ${theme.colors.primary}; &::after { opacity: ${theme.state.hover}; } }
+
+  @media (max-width: 480px) {
+    padding: ${theme.spacing.sm} ${theme.spacing.md};
+    font-size: ${theme.typography.bodySmall.fontSize};
   }
 `;
 
+// M3 Filled Button
 export const AddButton = styled.button`
-  padding: ${theme.spacing.sm} 1.25rem;
+  padding: 10px ${theme.spacing.lg};
   background: ${theme.colors.primary};
-  color: white;
+  color: ${theme.colors.onPrimary};
   border: none;
-  border-radius: ${theme.borderRadius.sm};
-  font-weight: 600;
+  border-radius: ${theme.shape.full};
+  font-size: ${theme.typography.labelLarge.fontSize};
+  font-weight: ${theme.typography.labelLarge.fontWeight};
+  letter-spacing: 0.00625em;
   cursor: pointer;
-  transition: background 0.2s;
-  &:hover { background: #1565c0; }
+  transition: box-shadow 0.2s;
+  position: relative;
+  overflow: hidden;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: ${theme.colors.onPrimary};
+    opacity: 0;
+    transition: opacity 0.2s;
+    border-radius: inherit;
+  }
+
+  &:hover { box-shadow: ${theme.elevation[1]}; &::after { opacity: ${theme.state.hover}; } }
 `;
 
 export const SectionHeader = styled.div`
@@ -73,23 +121,41 @@ export const SectionHeader = styled.div`
   justify-content: space-between;
   align-items: center;
   margin-bottom: ${theme.spacing.md};
+  gap: ${theme.spacing.md};
 `;
 
 export const SectionTitle = styled.h3`
   margin: 0;
-  font-size: 1rem;
-  color: ${theme.colors.text};
+  font-size: ${theme.typography.titleSmall.fontSize};
+  font-weight: ${theme.typography.titleSmall.fontWeight};
+  color: ${theme.colors.onSurface};
 `;
 
+// M3 Text Button
 export const SeeAllLink = styled.button`
   background: none;
   border: none;
   color: ${theme.colors.primary};
-  font-size: 0.875rem;
-  font-weight: 600;
+  font-size: ${theme.typography.labelLarge.fontSize};
+  font-weight: ${theme.typography.labelLarge.fontWeight};
+  letter-spacing: 0.00625em;
   cursor: pointer;
-  padding: 0;
-  &:hover { text-decoration: underline; }
+  padding: ${theme.spacing.xs} ${theme.spacing.sm};
+  border-radius: ${theme.shape.full};
+  position: relative;
+  overflow: hidden;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: ${theme.colors.primary};
+    opacity: 0;
+    transition: opacity 0.15s;
+    border-radius: inherit;
+  }
+
+  &:hover::after { opacity: ${theme.state.hover}; }
 `;
 
 export const RowList = styled.div`
@@ -98,42 +164,46 @@ export const RowList = styled.div`
   gap: ${theme.spacing.sm};
 `;
 
+// M3 List Item style
 export const ProposalRow = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: ${theme.spacing.sm} ${theme.spacing.md};
-  background: ${theme.colors.background};
-  border-radius: ${theme.borderRadius.sm};
-  border-left: 3px solid ${theme.colors.border};
+  background: ${theme.colors.surfaceContainerLowest};
+  border-radius: ${theme.shape.small};
   gap: ${theme.spacing.md};
 `;
 
 export const ProposalText = styled.span`
-  font-size: 0.875rem;
-  color: ${theme.colors.text};
+  font-size: ${theme.typography.bodyMedium.fontSize};
+  color: ${theme.colors.onSurface};
   flex: 1;
 `;
 
+// M3 Assist Chip
 export const StatusBadge = styled.span<{ $estado: ProposalStatus }>`
-  padding: 0.2rem 0.6rem;
-  border-radius: 999px;
-  font-size: 0.75rem;
-  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 10px;
+  border-radius: ${theme.shape.small};
+  font-size: ${theme.typography.labelSmall.fontSize};
+  font-weight: ${theme.typography.labelSmall.fontWeight};
+  letter-spacing: 0.04em;
   white-space: nowrap;
   background: ${({ $estado }) =>
-    $estado === 'PENDIENTE' ? '#fff8e1' :
-    $estado === 'ACEPTADA'  ? '#e8f5e9' :
-    '#fce4ec'};
+    $estado === 'PENDIENTE' ? theme.colors.tertiaryContainer :
+    $estado === 'ACEPTADA'  ? theme.colors.successContainer :
+                               theme.colors.errorContainer};
   color: ${({ $estado }) =>
-    $estado === 'PENDIENTE' ? '#f57c00' :
-    $estado === 'ACEPTADA'  ? '#388e3c' :
-    '#d32f2f'};
+    $estado === 'PENDIENTE' ? theme.colors.onTertiaryContainer :
+    $estado === 'ACEPTADA'  ? theme.colors.success :
+                               theme.colors.onErrorContainer};
 `;
 
 export const Divider = styled.hr`
   border: none;
-  border-top: 1px solid ${theme.colors.border};
+  border-top: 1px solid ${theme.colors.outlineVariant};
   margin: ${theme.spacing.lg} 0;
 `;
 
@@ -142,22 +212,36 @@ export const CompactAuctionCard = styled.div`
   justify-content: space-between;
   align-items: center;
   padding: ${theme.spacing.sm} ${theme.spacing.md};
-  background: ${theme.colors.background};
-  border-radius: ${theme.borderRadius.sm};
+  background: ${theme.colors.surfaceContainerLowest};
+  border-radius: ${theme.shape.small};
   cursor: pointer;
   transition: background 0.15s;
   gap: ${theme.spacing.md};
-  &:hover { background: ${theme.colors.border}; }
+  position: relative;
+  overflow: hidden;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: ${theme.colors.onSurface};
+    opacity: 0;
+    transition: opacity 0.15s;
+    border-radius: inherit;
+    pointer-events: none;
+  }
+
+  &:hover::after { opacity: ${theme.state.hover}; }
 `;
 
 export const AuctionText = styled.span`
-  font-size: 0.875rem;
-  color: ${theme.colors.text};
+  font-size: ${theme.typography.bodyMedium.fontSize};
+  color: ${theme.colors.onSurface};
   flex: 1;
 `;
 
 export const AuctionStatus = styled.span<{ $active: boolean }>`
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: ${({ $active }) => $active ? theme.colors.success : theme.colors.textSecondary};
+  font-size: ${theme.typography.labelSmall.fontSize};
+  font-weight: ${theme.typography.labelSmall.fontWeight};
+  color: ${({ $active }) => $active ? theme.colors.success : theme.colors.onSurfaceVariant};
 `;
