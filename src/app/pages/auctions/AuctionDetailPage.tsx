@@ -4,7 +4,6 @@ import { Auction } from '../../interfaces/auctions/Auction';
 import { Bid } from '../../interfaces/auctions/bid/Bid';
 import { getAuctionById, endAuction, cancelAuction } from '../../api/AuctionsService';
 import PlaceBidModal from '../../components/auctions/PlaceBidModal';
-import EditAuctionModal from '../../components/auctions/EditAuctionModal';
 import { mockUsers } from '../../../mocks/usersMock';
 import { theme } from '../../styles/theme';
 import { RULE_LABELS } from '../../interfaces/auctions/auctionRule/AuctionRule';
@@ -48,7 +47,6 @@ export default function AuctionDetailPage() {
   const [pendingBid, setPendingBid] = useState<Bid | null>(null);
   const [confirmCancel, setConfirmCancel] = useState(false);
   const [cancelling, setCancelling] = useState(false);
-  const [showEditModal, setShowEditModal] = useState(false);
 
   const isOwner = auction !== null && currentUser.id === auction.publisherId.id;
 
@@ -155,14 +153,12 @@ export default function AuctionDetailPage() {
           </BidButton>
         )}
         {isActive && isOwner && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: theme.spacing.sm, marginTop: theme.spacing.md }}>
-            <BidButton style={{ marginTop: 0 }} onClick={() => setShowEditModal(true)}>
-              Editar condiciones
-            </BidButton>
-            <BidButton style={{ background: theme.colors.danger, marginTop: 0 }} onClick={() => setConfirmCancel(true)}>
-              Cancelar subasta
-            </BidButton>
-          </div>
+          <BidButton
+            style={{ background: theme.colors.danger }}
+            onClick={() => setConfirmCancel(true)}
+          >
+            Cancelar subasta
+          </BidButton>
         )}
       </Card>
 
@@ -278,14 +274,6 @@ export default function AuctionDetailPage() {
             </ConfirmFooter>
           </ConfirmModal>
         </ConfirmOverlay>
-      )}
-
-      {showEditModal && auction && (
-        <EditAuctionModal
-          auction={auction}
-          onClose={() => setShowEditModal(false)}
-          onSuccess={(updated) => { setAuction(updated); setShowEditModal(false); }}
-        />
       )}
 
       {showBidModal && (
