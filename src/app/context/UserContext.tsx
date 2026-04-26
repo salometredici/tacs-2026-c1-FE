@@ -17,12 +17,10 @@ const MOCK_USER: User = {
 };
 
 export const UserProvider: FC<{ children: ReactNode }> = ({ children }) => {
-  // Para descomentar cuando haga auth:
-  // const [currentUser, setCurrentUser] = useState<User | null>(() => {
-  //   const saved = localStorage.getItem('currentUser');
-  //   return saved ? JSON.parse(saved) : null;
-  // });
-  const [currentUser, setCurrentUser] = useState<User | null>(MOCK_USER);
+  const [currentUser, setCurrentUser] = useState<User | null>(() => {
+    const saved = localStorage.getItem('currentUser');
+    return saved ? JSON.parse(saved) : null;
+  });
 
   const login = (user: User, token: string) => {
     setCurrentUser(user);
@@ -31,8 +29,7 @@ export const UserProvider: FC<{ children: ReactNode }> = ({ children }) => {
   };
 
   const logout = () => {
-    // Para descomentar cuando haga auth: setCurrentUser(null)
-    setCurrentUser(MOCK_USER);
+    setCurrentUser(null);
     localStorage.removeItem('currentUser');
     localStorage.removeItem('token');
     clearCatalogCache();

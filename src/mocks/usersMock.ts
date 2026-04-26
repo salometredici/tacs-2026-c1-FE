@@ -65,6 +65,15 @@ export const mockUsers: User[] = [
     avatarId: 'avatar_4',
     creationDate: '2025-03-10T00:00:00Z',
   },
+  {
+    id: '69e54c037de7f7e868da90f5',
+    name: "Test User",
+    email: "user@test.com",
+    avatarId: "avatar_1",
+    rating: 4.2,
+    exchangesAmount: 0,
+    creationDate: Date.now().toLocaleString()
+  }
 ];
 
 export const getMockedUserCollection = (): FiguritaColeccion[] => mockUserRepetidas;

@@ -5,130 +5,86 @@ export const Page = styled.div`
   max-width: 760px;
   margin: 0 auto;
   padding: ${theme.spacing.xl};
-
-  @media (max-width: 600px) { padding: ${theme.spacing.md}; }
 `;
 
 export const BackButton = styled.button`
   background: none;
   border: none;
-  font-size: ${theme.typography.labelLarge.fontSize};
-  font-weight: ${theme.typography.labelLarge.fontWeight};
+  font-size: 1.3rem;
   cursor: pointer;
   color: ${theme.colors.primary};
-  padding: ${theme.spacing.sm} ${theme.spacing.md};
+  padding: 0;
   margin-bottom: ${theme.spacing.lg};
-  margin-left: -${theme.spacing.md};
   display: flex;
   align-items: center;
-  gap: ${theme.spacing.sm};
-  border-radius: ${theme.shape.full};
-  position: relative;
-  overflow: hidden;
-  letter-spacing: 0.00625em;
-
-  &::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: ${theme.colors.primary};
-    opacity: 0;
-    transition: opacity 0.2s;
-    border-radius: inherit;
-  }
-
-  &:hover::after { opacity: ${theme.state.hover}; }
+  gap: ${theme.spacing.xs};
+  &:hover { opacity: 0.7; }
 `;
 
-// M3 Elevated Card
 export const Card = styled.div`
-  background: ${theme.colors.surfaceContainerLow};
-  border-radius: ${theme.shape.medium};
+  background: ${theme.colors.surface};
+  border-radius: ${theme.borderRadius.md};
   padding: ${theme.spacing.xl};
-  box-shadow: ${theme.elevation[1]};
-  margin-bottom: ${theme.spacing.md};
+  box-shadow: ${theme.shadows.sm};
+  margin-bottom: ${theme.spacing.lg};
 `;
 
 export const FiguritaHeader = styled.div`
   display: flex;
   align-items: center;
   gap: ${theme.spacing.lg};
-  border-bottom: 1px solid ${theme.colors.outlineVariant};
+  border-bottom: 1px solid ${theme.colors.border};
   padding-bottom: ${theme.spacing.lg};
   margin-bottom: ${theme.spacing.lg};
-
-  @media (max-width: 480px) {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: ${theme.spacing.sm};
-  }
 `;
 
 export const FiguritaNumero = styled.div`
-  font-size: 2.5rem;
+  font-size: 3rem;
   font-weight: 700;
   color: ${theme.colors.primary};
-  min-width: 72px;
+  min-width: 80px;
   text-align: center;
-  background: ${theme.colors.primaryContainer};
-  border-radius: ${theme.shape.medium};
-  padding: ${theme.spacing.sm};
-
-  @media (max-width: 480px) { font-size: 2rem; min-width: 56px; }
 `;
 
 export const FiguritaInfo = styled.div`
   flex: 1;
-  h2 { margin: 0 0 0.2rem; font-size: ${theme.typography.titleLarge.fontSize}; font-weight: 400; color: ${theme.colors.onSurface}; }
-  p  { margin: 0.15rem 0; font-size: ${theme.typography.bodySmall.fontSize}; color: ${theme.colors.onSurfaceVariant}; }
+  h2 { margin: 0 0 0.25rem; font-size: 1.5rem; }
+  p { margin: 0.2rem 0; font-size: 0.9rem; color: ${theme.colors.textSecondary}; }
 `;
 
-// M3 Assist Chip – category
 export const CategoriaBadge = styled.span<{ $cat: string }>`
-  display: inline-flex;
-  align-items: center;
-  padding: 2px 10px;
-  border-radius: ${theme.shape.small};
-  font-size: ${theme.typography.labelSmall.fontSize};
-  font-weight: ${theme.typography.labelSmall.fontWeight};
-  letter-spacing: 0.04em;
+  padding: 3px 12px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 700;
   background: ${({ $cat }) =>
-    $cat === 'LEGENDARIO' ? theme.colors.tertiaryContainer :
-    $cat === 'EPICO'      ? theme.colors.primaryContainer :
-                             theme.colors.surfaceContainerHighest};
+    $cat === 'LEGENDARIO' ? '#fff3e0' :
+    $cat === 'EPICO' ? '#e3f2fd' : '#f5f5f5'};
   color: ${({ $cat }) =>
-    $cat === 'LEGENDARIO' ? theme.colors.onTertiaryContainer :
-    $cat === 'EPICO'      ? theme.colors.onPrimaryContainer :
-                             theme.colors.onSurfaceVariant};
+    $cat === 'LEGENDARIO' ? '#e65100' :
+    $cat === 'EPICO' ? '#1565c0' : '#555'};
 `;
 
-// M3 Assist Chip – status
 export const EstadoBadge = styled.span<{ $estado: string }>`
-  display: inline-flex;
-  align-items: center;
-  padding: 2px 10px;
-  border-radius: ${theme.shape.small};
-  font-size: ${theme.typography.labelSmall.fontSize};
-  font-weight: ${theme.typography.labelSmall.fontWeight};
-  letter-spacing: 0.04em;
+  padding: 4px 14px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 700;
   background: ${({ $estado }) =>
-    $estado === 'ACTIVA'     ? theme.colors.primaryContainer :
-    $estado === 'FINALIZADA' ? theme.colors.secondaryContainer :
-    $estado === 'DESIERTA'   ? theme.colors.surfaceContainerHighest :
-                                theme.colors.errorContainer};
+    $estado === 'ACTIVA' ? '#e8f5e9' :
+    $estado === 'FINALIZADA' ? '#e3f2fd' :
+    $estado === 'DESIERTA' ? '#f5f5f5' : '#fce4ec'};
   color: ${({ $estado }) =>
-    $estado === 'ACTIVA'     ? theme.colors.onPrimaryContainer :
-    $estado === 'FINALIZADA' ? theme.colors.onSecondaryContainer :
-    $estado === 'DESIERTA'   ? theme.colors.onSurfaceVariant :
-                                theme.colors.onErrorContainer};
+    $estado === 'ACTIVA' ? '#2e7d32' :
+    $estado === 'FINALIZADA' ? '#1565c0' :
+    $estado === 'DESIERTA' ? '#555' : '#b71c1c'};
 `;
 
 export const SectionTitle = styled.h3`
-  font-size: ${theme.typography.labelLarge.fontSize};
-  font-weight: ${theme.typography.labelLarge.fontWeight};
-  color: ${theme.colors.onSurfaceVariant};
+  font-size: 1rem;
+  color: ${theme.colors.textSecondary};
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.05em;
   margin: 0 0 ${theme.spacing.md};
 `;
 
@@ -137,12 +93,11 @@ export const InfoRow = styled.div`
   justify-content: space-between;
   align-items: center;
   padding: ${theme.spacing.sm} 0;
-  border-bottom: 1px solid ${theme.colors.outlineVariant};
-  font-size: ${theme.typography.bodyMedium.fontSize};
-  gap: ${theme.spacing.sm};
+  border-bottom: 1px solid ${theme.colors.border};
+  font-size: 0.95rem;
   &:last-child { border-bottom: none; }
-  .label { color: ${theme.colors.onSurfaceVariant}; flex-shrink: 0; }
-  .value { font-weight: 500; color: ${theme.colors.onSurface}; text-align: right; }
+  .label { color: ${theme.colors.textSecondary}; }
+  .value { font-weight: 600; color: ${theme.colors.text}; }
 `;
 
 export const ReglaItem = styled.div`
@@ -150,71 +105,59 @@ export const ReglaItem = styled.div`
   align-items: center;
   gap: ${theme.spacing.sm};
   padding: ${theme.spacing.sm} 0;
-  font-size: ${theme.typography.bodyMedium.fontSize};
-  color: ${theme.colors.onSurface};
-  border-bottom: 1px solid ${theme.colors.outlineVariant};
+  font-size: 0.9rem;
+  color: ${theme.colors.text};
+  border-bottom: 1px solid ${theme.colors.border};
   &:last-child { border-bottom: none; }
-  &::before { content: '●'; color: ${theme.colors.primary}; font-size: 0.6rem; }
+  &::before { content: '•'; color: ${theme.colors.primary}; font-size: 1.2rem; }
 `;
 
 export const OfertaRow = styled.div<{ $estado: string }>`
   padding: ${theme.spacing.md};
-  border-radius: ${theme.shape.small};
-  background: ${theme.colors.surfaceContainerLowest};
+  border-radius: ${theme.borderRadius.sm};
+  background: ${theme.colors.background};
   margin-bottom: ${theme.spacing.sm};
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  gap: ${theme.spacing.md};
   border-left: 4px solid ${({ $estado }) =>
     $estado === 'GANADORA' ? theme.colors.success :
-    $estado === 'ACTIVA'   ? theme.colors.primary :
-    $estado === 'SUPERADA' ? theme.colors.tertiary :
-                              theme.colors.outlineVariant};
-
-  @media (max-width: 480px) { flex-direction: column; gap: ${theme.spacing.sm}; }
+    $estado === 'ACTIVA' ? theme.colors.primary :
+    $estado === 'SUPERADA' ? theme.colors.warning : theme.colors.border};
 `;
 
 export const OfertaEstadoBadge = styled.span<{ $estado: string }>`
-  display: inline-flex;
-  align-items: center;
   padding: 2px 10px;
-  border-radius: ${theme.shape.small};
-  font-size: ${theme.typography.labelSmall.fontSize};
-  font-weight: ${theme.typography.labelSmall.fontWeight};
-  letter-spacing: 0.04em;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
   background: ${({ $estado }) =>
-    $estado === 'GANADORA' ? theme.colors.successContainer :
-    $estado === 'ACTIVA'   ? theme.colors.primaryContainer :
-    $estado === 'SUPERADA' ? theme.colors.tertiaryContainer :
-                              theme.colors.surfaceContainerHighest};
+    $estado === 'GANADORA' ? '#e8f5e9' :
+    $estado === 'ACTIVA' ? '#e3f2fd' :
+    $estado === 'SUPERADA' ? '#fff3e0' : '#f5f5f5'};
   color: ${({ $estado }) =>
-    $estado === 'GANADORA' ? theme.colors.success :
-    $estado === 'ACTIVA'   ? theme.colors.onPrimaryContainer :
-    $estado === 'SUPERADA' ? theme.colors.onTertiaryContainer :
-                              theme.colors.onSurfaceVariant};
+    $estado === 'GANADORA' ? '#2e7d32' :
+    $estado === 'ACTIVA' ? '#1565c0' :
+    $estado === 'SUPERADA' ? '#e65100' : '#555'};
 `;
 
-// M3 Dialog / Full-screen overlay
 export const ConfirmOverlay = styled.div`
   position: fixed;
   inset: 0;
-  background: ${theme.colors.scrim};
+  background: rgba(0,0,0,0.5);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1000;
-  padding: ${theme.spacing.md};
 `;
 
-// M3 Dialog container (extraLarge radius)
 export const ConfirmModal = styled.div`
-  background: ${theme.colors.surfaceContainerHigh};
-  border-radius: ${theme.shape.extraLarge};
+  background: ${theme.colors.surface};
+  border-radius: ${theme.borderRadius.md};
   padding: ${theme.spacing.xl};
   max-width: 480px;
-  width: 100%;
-  box-shadow: ${theme.elevation[3]};
+  width: 90%;
+  box-shadow: ${theme.shadows.lg};
   display: flex;
   flex-direction: column;
   gap: ${theme.spacing.md};
@@ -222,128 +165,79 @@ export const ConfirmModal = styled.div`
 
 export const ConfirmTitle = styled.h3`
   margin: 0;
-  font-size: ${theme.typography.headlineSmall.fontSize};
-  font-weight: 400;
-  color: ${theme.colors.onSurface};
+  font-size: 1.2rem;
+  color: ${theme.colors.text};
 `;
 
 export const WarningBox = styled.div`
-  background: ${theme.colors.tertiaryContainer};
-  border-radius: ${theme.shape.small};
+  background: #fff3e0;
+  border-left: 4px solid ${theme.colors.secondary};
+  border-radius: ${theme.borderRadius.sm};
   padding: ${theme.spacing.md};
-  font-size: ${theme.typography.bodyMedium.fontSize};
-  color: ${theme.colors.onTertiaryContainer};
+  font-size: 0.9rem;
+  color: #e65100;
 `;
 
 export const ExchangeSummary = styled.div`
-  background: ${theme.colors.surfaceContainerLowest};
-  border-radius: ${theme.shape.small};
+  background: ${theme.colors.background};
+  border-radius: ${theme.borderRadius.sm};
   padding: ${theme.spacing.md};
-  font-size: ${theme.typography.bodyMedium.fontSize};
+  font-size: 0.9rem;
   display: flex;
   flex-direction: column;
-  gap: ${theme.spacing.sm};
-  .label { color: ${theme.colors.onSurfaceVariant}; font-size: ${theme.typography.labelMedium.fontSize}; text-transform: uppercase; letter-spacing: 0.06em; }
-  .value { font-weight: 500; color: ${theme.colors.onSurface}; }
+  gap: ${theme.spacing.xs};
+  .label { color: ${theme.colors.textSecondary}; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.04em; }
+  .value { font-weight: 600; color: ${theme.colors.text}; }
 `;
 
 export const ConfirmFooter = styled.div`
   display: flex;
   justify-content: flex-end;
-  gap: ${theme.spacing.sm};
-  flex-wrap: wrap;
+  gap: ${theme.spacing.md};
 `;
 
-// M3 Text Button
 export const CancelBtn = styled.button`
-  padding: 10px ${theme.spacing.md};
+  padding: ${theme.spacing.sm} ${theme.spacing.lg};
   background: none;
-  border: none;
-  border-radius: ${theme.shape.full};
-  font-size: ${theme.typography.labelLarge.fontSize};
-  font-weight: ${theme.typography.labelLarge.fontWeight};
+  border: 1px solid ${theme.colors.border};
+  border-radius: ${theme.borderRadius.sm};
+  font-size: 0.95rem;
   cursor: pointer;
-  color: ${theme.colors.primary};
-  letter-spacing: 0.00625em;
-  position: relative;
-  overflow: hidden;
-
-  &::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: ${theme.colors.primary};
-    opacity: 0;
-    transition: opacity 0.2s;
-    border-radius: inherit;
-  }
-
-  &:hover::after { opacity: ${theme.state.hover}; }
-  &:disabled { color: rgba(26,28,30,0.38); pointer-events: none; }
+  color: ${theme.colors.textSecondary};
+  &:hover { background: ${theme.colors.background}; }
 `;
 
-// M3 Filled Button (confirm / destructive action)
 export const ConfirmBtn = styled.button`
-  padding: 10px ${theme.spacing.lg};
-  background: ${theme.colors.error};
-  color: ${theme.colors.onError};
+  padding: ${theme.spacing.sm} ${theme.spacing.lg};
+  background: ${theme.colors.danger};
+  color: white;
   border: none;
-  border-radius: ${theme.shape.full};
-  font-size: ${theme.typography.labelLarge.fontSize};
-  font-weight: ${theme.typography.labelLarge.fontWeight};
+  border-radius: ${theme.borderRadius.sm};
+  font-size: 0.95rem;
+  font-weight: 700;
   cursor: pointer;
-  letter-spacing: 0.00625em;
-  transition: box-shadow 0.2s;
-  position: relative;
-  overflow: hidden;
-
-  &::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: ${theme.colors.onError};
-    opacity: 0;
-    transition: opacity 0.2s;
-    border-radius: inherit;
-  }
-
-  &:hover { box-shadow: ${theme.elevation[1]}; &::after { opacity: ${theme.state.hover}; } }
-  &:disabled { background: rgba(26,28,30,0.12); color: rgba(26,28,30,0.38); pointer-events: none; }
+  &:hover { background: #b71c1c; }
+  &:disabled { opacity: 0.6; cursor: not-allowed; }
 `;
 
-// M3 Filled Button (primary action)
 export const BidButton = styled.button`
   width: 100%;
-  padding: 10px ${theme.spacing.md};
+  padding: ${theme.spacing.md};
   background: ${theme.colors.primary};
-  color: ${theme.colors.onPrimary};
+  color: white;
   border: none;
-  border-radius: ${theme.shape.full};
-  font-size: ${theme.typography.labelLarge.fontSize};
-  font-weight: ${theme.typography.labelLarge.fontWeight};
-  letter-spacing: 0.00625em;
+  border-radius: ${theme.borderRadius.sm};
+  font-size: 1rem;
+  font-weight: 700;
   cursor: pointer;
-  transition: box-shadow 0.2s;
+  transition: all 0.2s;
   margin-top: ${theme.spacing.md};
-  position: relative;
-  overflow: hidden;
-
-  &::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: ${theme.colors.onPrimary};
-    opacity: 0;
-    transition: opacity 0.2s;
-    border-radius: inherit;
-  }
-
-  &:hover { box-shadow: ${theme.elevation[1]}; &::after { opacity: ${theme.state.hover}; } }
-  &:disabled { background: rgba(26,28,30,0.12); color: rgba(26,28,30,0.38); pointer-events: none; box-shadow: none; }
+  &:hover { background: #1565c0; transform: translateY(-2px); box-shadow: ${theme.shadows.md}; }
+  &:disabled { background: ${theme.colors.border}; cursor: not-allowed; transform: none; box-shadow: none; }
 `;
 
 export const Countdown = styled.div<{ $urgente: boolean }>`
-  font-size: ${theme.typography.titleLarge.fontSize};
+  font-size: 1.5rem;
   font-weight: 700;
-  color: ${({ $urgente }) => ($urgente ? theme.colors.error : theme.colors.success)};
+  color: ${({ $urgente }) => ($urgente ? theme.colors.danger : theme.colors.success)};
 `;

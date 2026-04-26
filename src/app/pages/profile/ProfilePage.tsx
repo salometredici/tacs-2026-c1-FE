@@ -163,8 +163,8 @@ export default function ProfilePage() {
                     {recibidas.slice(0, PREVIEW).map(p => (
                       <ProposalRow key={p.id}>
                         <ProposalText>
-                          <strong>#{p.publicacion.figurita.number} {p.publicacion.figurita.description}</strong>
-                          {' — '}de {p.postor.name}
+                          <strong>#{p.publication.figurita.number} {p.publication.figurita.description}</strong>
+                          {' — '}de {p.bidder.name}
                         </ProposalText>
                         <StatusBadge $estado={p.status}>{STATUS_LABEL[p.status]}</StatusBadge>
                       </ProposalRow>
@@ -192,8 +192,8 @@ export default function ProfilePage() {
                     {enviadas.slice(0, PREVIEW).map(p => (
                       <ProposalRow key={p.id}>
                         <ProposalText>
-                          <strong>#{p.publicacion.figurita.number} {p.publicacion.figurita.description}</strong>
-                          {' — '}a {p.publicacion.publisher.name}
+                          <strong>#{p.publication.figurita.number} {p.publication.figurita.description}</strong>
+                          {' — '}a {p.publication.publisher.name}
                         </ProposalText>
                         <StatusBadge $estado={p.status}>{STATUS_LABEL[p.status]}</StatusBadge>
                       </ProposalRow>

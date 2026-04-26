@@ -13,21 +13,24 @@ import AdminLayout from '../components/admin/AdminLayout'
 import AdminRoute from '../components/admin/AdminRoute'
 import AdminLoginPage from '../pages/admin/AdminLoginPage'
 import AdminDashboardPage from '../pages/admin/AdminDashboardPage'
+import UserRoute from '../components/layout/UserRoute'
 
 export default function AppRouter() {
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/login" element={<LoginPage />} />
-        <Route element={<AppLayout />}>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/search" element={<SearchPage />} />
-          <Route path="/auctions" element={<AuctionsPage />} />
-          <Route path="/auctions/create" element={<CreateAuctionPage />} />
-          <Route path="/auctions/:id" element={<AuctionDetailPage />} />
-          <Route path="/profile/:id" element={<ProfilePage />} />
-          <Route path="/proposals" element={<ProposalsPage />} />
-          <Route path="/exchanges" element={<ExchangesPage />} />
+        <Route element={<UserRoute />}>
+          <Route element={<AppLayout />}>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/search" element={<SearchPage />} />
+            <Route path="/auctions" element={<AuctionsPage />} />
+            <Route path="/auctions/create" element={<CreateAuctionPage />} />
+            <Route path="/auctions/:id" element={<AuctionDetailPage />} />
+            <Route path="/profile/:id" element={<ProfilePage />} />
+            <Route path="/proposals" element={<ProposalsPage />} />
+            <Route path="/exchanges" element={<ExchangesPage />} />
+          </Route>
         </Route>
         <Route element={<AdminLayout />}>
           <Route path="/admin/login" element={<AdminLoginPage />} />
@@ -35,7 +38,7 @@ export default function AppRouter() {
             <Route path="/admin" element={<AdminDashboardPage />} />
           </Route>
         </Route>
-        <Route path="*" element={<Navigate to="/" replace />} />
+        <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
     </BrowserRouter>
   )

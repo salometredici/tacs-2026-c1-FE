@@ -53,7 +53,7 @@ export default function LoginPage() {
     // }
 
     // linea a borrar!
-    login(mockUsers[0], 'mock-token');
+    login(mockUsers[3], 'mock-token');
     navigate('/');
     setLoading(false);
   };

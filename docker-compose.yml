@@ -1,9 +1,23 @@
 services:
+  mongo:
+    image: mongo:7
+    ports:
+      - "27018:27017"
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - tacs-network
+
   backend:
     build:
       context: ../tp1c2026/backend
     ports:
       - "8080:8080"
+    depends_on:
+      - mongo
+    environment:
+      SPRING_DATA_MONGODB_URI: mongodb://mongo:27017/tacs_db
+      MONGO_DATABASE: tacs_db
     networks:
       - tacs-network
     healthcheck:
@@ -34,3 +48,6 @@ services:
 networks:
   tacs-network:
     driver: bridge
+
+volumes:
+  mongo_data:
