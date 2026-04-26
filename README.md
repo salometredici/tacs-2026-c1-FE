@@ -2,14 +2,11 @@
 
 Frontend en React + TypeScript para la plataforma de intercambio de figuritas.
 
-## Requisitos
-
-- [Docker](https://www.docker.com/) y Docker Compose
-- O Node.js 22+ para desarrollo local
-
 ## Levantar con Docker (stack completo)
 
-Ambos repos deben estar clonados en la misma carpeta padre:
+**Requisitos:** [Docker Desktop](https://www.docker.com/products/docker-desktop/) corriendo + [`mongosh`](https://www.mongodb.com/try/download/shell) en el PATH
+
+Ambos repos deben estar clonados en la misma carpeta padre tal cual se clonan de GitHub:
 
 ```
 carpeta-padre/
@@ -17,18 +14,29 @@ carpeta-padre/
 └── tp1c2026/          ← repo del backend
 ```
 
-Desde dentro de `tacs-2026-c1-FE/`, ejecutar:
+Desde dentro de `tacs-2026-c1-FE/`:
 
+**Primera vez (o al resetear la base):**
 ```bash
-docker compose up --build
+docker compose up --build -d
+# esperar ~10 segundos a que Mongo esté listo
+mongosh "mongodb://localhost:27018/tacs_db" --file ../tp1c2026/backend/seed/seed.js
 ```
 
-| Servicio  | URL                    |
-|-----------|------------------------|
-| Frontend  | http://localhost:80    |
-| Backend   | http://localhost:8080  |
+**Levantar sin resetear:**
+```bash
+docker compose up -d
+```
+
+| Servicio  | URL                                       |
+|-----------|-------------------------------------------|
+| Frontend  | http://localhost (puerto 80, default HTTP) |
+| Backend   | http://localhost:8080                     |
+| MongoDB   | localhost:27018                           |
 
 ## Levantar en modo local (dev)
+
+**Requisitos:** Node.js 22+
 
 ```bash
 npm install
