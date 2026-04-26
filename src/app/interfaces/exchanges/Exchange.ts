@@ -8,7 +8,7 @@ export interface Exchange {
   type: ExchangeType;
   figurita: Figurita;
   otherUser: User;
-  publicacionId: number;
+  publicationId: number;
   date: Date;
   rated: boolean;
 }

@@ -9,7 +9,7 @@ export const mockExchanges: Exchange[] = [
     type: 'PROPUESTA',
     figurita: mockFiguritas[3], // Mbappé
     otherUser: mockUsers[1],   // Mónica Argento
-    publicacionId: 13,
+    publicationId: 13,
     date: new Date(2026, 2, 20),
     rated: false,
   },
@@ -18,7 +18,7 @@ export const mockExchanges: Exchange[] = [
     type: 'SUBASTA',
     figurita: mockFiguritas[5], // Haaland
     otherUser: mockUsers[2],   // Homero Simpson
-    publicacionId: 22,
+    publicationId: 22,
     date: new Date(2026, 2, 25),
     rated: true,
   },
@@ -27,10 +27,10 @@ export const mockExchanges: Exchange[] = [
     type: 'PROPUESTA',
     figurita: mockFiguritas[0], // Messi
     otherUser: mockUsers[1],
-    publicacionId: 21,
+    publicationId: 21,
     date: new Date(2026, 3, 5),
     rated: false,
   },
 ];
 
-export const getMockedExchanges = (userId: string): Exchange[] => mockExchanges;
+export const getMockedExchanges = (_userId: string): Exchange[] => mockExchanges;

@@ -3,7 +3,7 @@ import { Figurita } from '../../figuritas/Figurita';
 
 export interface Bid {
   bidId: string;
-  postor: {
+  bidder: {
     userId: string;
     name: string;
     rating: number;

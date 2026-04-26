@@ -1,12 +1,12 @@
 import { Figurita } from '../figuritas/Figurita';
 import { User } from '../auth/User';
 import { ProposalStatus } from './ProposalStatus';
-import { Publicacion } from '../publicaciones/Publicacion';
+import { Publication } from '../publications/Publication';
 
 export interface Proposal {
   id: string;
-  publicacion: Publicacion; // Publicación sobre la que se hizo la propuesta
+  publication: Publication;
   offeredFiguritas: Figurita[];
-  postor: User;
+  bidder: User;
   status: ProposalStatus;
 }

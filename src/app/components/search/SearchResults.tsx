@@ -11,6 +11,7 @@ import {
   FiguritaNumber,
   FiguritaInfo,
   EmptyMessage,
+  ProposeButton,
 } from './Search.styles';
 
 interface SearchResultsProps {
@@ -56,9 +57,9 @@ export default function SearchResults({
               </FiguritaInfo>
               <FiguritaInfo>{figurita.category}</FiguritaInfo>
               {currentUser && (
-                <button onClick={() => setModalFigurita(figurita)}>
+                <ProposeButton onClick={() => setModalFigurita(figurita)}>
                   Proponer intercambio
-                </button>
+                </ProposeButton>
               )}
             </FiguritaCard>
           ))}
@@ -69,7 +70,7 @@ export default function SearchResults({
         <MakeProposalModal
           userId={currentUser.id}
           figurita={modalFigurita}
-          publicacionId={String(modalFigurita.id)}
+          publicationId={String(modalFigurita.id)}
           onClose={() => setModalFigurita(null)}
           onSuccess={() => setModalFigurita(null)}
         />

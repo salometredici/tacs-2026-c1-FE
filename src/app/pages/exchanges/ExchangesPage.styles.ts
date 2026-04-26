@@ -1,18 +1,20 @@
 import styled from 'styled-components';
 import { ExchangeType } from '../../interfaces/exchanges/Exchange';
-import {  } from '../../interfaces/publicaciones/Publicacion';
 import { theme } from '../../styles/theme';
-import { TIPO_PARTICIPACION } from '../../interfaces/publicaciones/publicacionTypes';
+import { ParticipationType } from '../../interfaces/publications/publicationTypes';
 
 export const PageContainer = styled.div`
   max-width: 900px;
   margin: 0 auto;
   padding: ${theme.spacing.xl};
+
+  @media (max-width: 600px) { padding: ${theme.spacing.md}; }
 `;
 
 export const PageTitle = styled.h1`
-  color: ${theme.colors.primary};
-  font-size: 1.8rem;
+  color: ${theme.colors.onBackground};
+  font-size: ${theme.typography.headlineSmall.fontSize};
+  font-weight: 400;
   margin: 0 0 ${theme.spacing.xl} 0;
 `;
 
@@ -22,15 +24,21 @@ export const ExchangeList = styled.div`
   gap: ${theme.spacing.md};
 `;
 
+// M3 Elevated Card
 export const ExchangeCard = styled.div`
-  background: ${theme.colors.surface};
-  border-radius: ${theme.borderRadius.md};
+  background: ${theme.colors.surfaceContainerLow};
+  border-radius: ${theme.shape.medium};
   padding: ${theme.spacing.lg};
-  box-shadow: ${theme.shadows.sm};
+  box-shadow: ${theme.elevation[1]};
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: ${theme.spacing.lg};
+
+  @media (max-width: 480px) {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 `;
 
 export const ExchangeInfo = styled.div`
@@ -41,51 +49,71 @@ export const ExchangeInfo = styled.div`
 `;
 
 export const ExchangeTitle = styled.p`
-  font-weight: 600;
-  color: ${theme.colors.text};
+  font-weight: 500;
+  color: ${theme.colors.onSurface};
   margin: 0;
-  font-size: 1rem;
+  font-size: ${theme.typography.bodyLarge.fontSize};
 `;
 
 export const ExchangeDetail = styled.p`
-  color: ${theme.colors.textSecondary};
+  color: ${theme.colors.onSurfaceVariant};
   margin: 0;
-  font-size: 0.875rem;
+  font-size: ${theme.typography.bodyMedium.fontSize};
 `;
 
+// M3 Assist Chip
 export const TypeBadge = styled.span<{ $type: ExchangeType }>`
-  padding: 0.2rem 0.6rem;
-  border-radius: 999px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  background: ${({ $type }) => $type === 'SUBASTA' ? '#e3f2fd' : '#f3e5f5'};
-  color: ${({ $type }) => $type === 'SUBASTA' ? '#1565c0' : '#6a1b9a'};
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 10px;
+  border-radius: ${theme.shape.small};
+  font-size: ${theme.typography.labelSmall.fontSize};
+  font-weight: ${theme.typography.labelSmall.fontWeight};
+  letter-spacing: 0.04em;
+  background: ${({ $type }) => $type === 'SUBASTA' ? theme.colors.primaryContainer : theme.colors.secondaryContainer};
+  color: ${({ $type }) => $type === 'SUBASTA' ? theme.colors.onPrimaryContainer : theme.colors.onSecondaryContainer};
 `;
 
+// M3 Filled Tonal Button
 export const RateButton = styled.button`
-  padding: 0.4rem 1rem;
-  background: ${theme.colors.secondary};
-  color: white;
+  padding: 6px 16px;
+  background: ${theme.colors.tertiaryContainer};
+  color: ${theme.colors.onTertiaryContainer};
   border: none;
-  border-radius: ${theme.borderRadius.sm};
-  font-size: 0.875rem;
-  font-weight: 600;
+  border-radius: ${theme.shape.full};
+  font-size: ${theme.typography.labelMedium.fontSize};
+  font-weight: ${theme.typography.labelMedium.fontWeight};
+  letter-spacing: 0.04em;
   cursor: pointer;
   white-space: nowrap;
-  transition: opacity 0.15s;
-  &:hover { opacity: 0.85; }
+  transition: box-shadow 0.15s;
+  position: relative;
+  overflow: hidden;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: ${theme.colors.onTertiaryContainer};
+    opacity: 0;
+    transition: opacity 0.15s;
+    border-radius: inherit;
+  }
+
+  &:hover { box-shadow: ${theme.elevation[1]}; &::after { opacity: ${theme.state.hover}; } }
 `;
 
 export const RatedLabel = styled.span`
-  font-size: 0.875rem;
-  color: ${theme.colors.textSecondary};
+  font-size: ${theme.typography.bodySmall.fontSize};
+  color: ${theme.colors.onSurfaceVariant};
   font-style: italic;
 `;
 
 export const EmptyMessage = styled.p`
   text-align: center;
-  color: ${theme.colors.textSecondary};
+  color: ${theme.colors.onSurfaceVariant};
   padding: ${theme.spacing.xl};
+  font-size: ${theme.typography.bodyLarge.fontSize};
 `;
 
 export const SectionHeader = styled.div`
@@ -93,59 +121,84 @@ export const SectionHeader = styled.div`
   justify-content: space-between;
   align-items: center;
   margin-bottom: ${theme.spacing.md};
+  gap: ${theme.spacing.md};
 `;
 
 export const SectionTitle = styled.h2`
-  color: ${theme.colors.text};
-  font-size: 1.2rem;
+  color: ${theme.colors.onSurface};
+  font-size: ${theme.typography.titleMedium.fontSize};
+  font-weight: ${theme.typography.titleMedium.fontWeight};
   margin: 0;
 `;
 
+// M3 Filled Button
 export const PublishButton = styled.button`
-  padding: ${theme.spacing.sm} ${theme.spacing.lg};
+  padding: 10px ${theme.spacing.lg};
   background: ${theme.colors.primary};
-  color: white;
+  color: ${theme.colors.onPrimary};
   border: none;
-  border-radius: ${theme.borderRadius.sm};
-  font-size: 0.9rem;
-  font-weight: 600;
+  border-radius: ${theme.shape.full};
+  font-size: ${theme.typography.labelLarge.fontSize};
+  font-weight: ${theme.typography.labelLarge.fontWeight};
+  letter-spacing: 0.00625em;
   cursor: pointer;
-  transition: background 0.2s;
-  &:hover { background: #1565c0; }
+  white-space: nowrap;
+  transition: box-shadow 0.2s;
+  position: relative;
+  overflow: hidden;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: ${theme.colors.onPrimary};
+    opacity: 0;
+    transition: opacity 0.2s;
+    border-radius: inherit;
+  }
+
+  &:hover { box-shadow: ${theme.elevation[1]}; &::after { opacity: ${theme.state.hover}; } }
 `;
 
 export const PublicationCard = styled.div`
-  background: ${theme.colors.surface};
-  border-radius: ${theme.borderRadius.md};
+  background: ${theme.colors.surfaceContainerLow};
+  border-radius: ${theme.shape.medium};
   padding: ${theme.spacing.md} ${theme.spacing.lg};
-  box-shadow: ${theme.shadows.sm};
+  box-shadow: ${theme.elevation[1]};
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: ${theme.spacing.lg};
+
+  @media (max-width: 480px) {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 `;
 
-export const PublicationTypeBadge = styled.span<{ $tipo: TIPO_PARTICIPACION }>`
-  padding: 0.2rem 0.6rem;
-  border-radius: 999px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  background: ${({ $tipo }) => $tipo === 'SUBASTA' ? '#e3f2fd' : '#e8f5e9'};
-  color: ${({ $tipo }) => $tipo === 'SUBASTA' ? '#1565c0' : '#388e3c'};
+export const PublicationTypeBadge = styled.span<{ $type: ParticipationType }>`
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 10px;
+  border-radius: ${theme.shape.small};
+  font-size: ${theme.typography.labelSmall.fontSize};
+  font-weight: ${theme.typography.labelSmall.fontWeight};
+  letter-spacing: 0.04em;
+  background: ${({ $type }) => $type === 'SUBASTA' ? theme.colors.primaryContainer : theme.colors.successContainer};
+  color: ${({ $type }) => $type === 'SUBASTA' ? theme.colors.onPrimaryContainer : theme.colors.success};
 `;
 
 export const Divider = styled.hr`
   border: none;
-  border-top: 1px solid ${theme.colors.border};
+  border-top: 1px solid ${theme.colors.outlineVariant};
   margin: ${theme.spacing.xl} 0;
 `;
 
-// ─── Rating modal ────────────────────────────────────────────────────────────
-
+// M3 Dialog overlay
 export const Overlay = styled.div`
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.45);
+  background: ${theme.colors.scrim};
   display: flex;
   align-items: center;
   justify-content: center;
@@ -154,9 +207,9 @@ export const Overlay = styled.div`
 `;
 
 export const Modal = styled.div`
-  background: ${theme.colors.surface};
-  border-radius: ${theme.borderRadius.md};
-  box-shadow: ${theme.shadows.lg};
+  background: ${theme.colors.surfaceContainerHigh};
+  border-radius: ${theme.shape.extraLarge};
+  box-shadow: ${theme.elevation[3]};
   width: 100%;
   max-width: 420px;
   padding: ${theme.spacing.xl};
@@ -166,9 +219,10 @@ export const Modal = styled.div`
 `;
 
 export const ModalTitle = styled.h2`
-  color: ${theme.colors.primary};
+  color: ${theme.colors.onSurface};
   margin: 0;
-  font-size: 1.2rem;
+  font-size: ${theme.typography.headlineSmall.fontSize};
+  font-weight: 400;
 `;
 
 export const StarsRow = styled.div`
@@ -183,53 +237,93 @@ export const StarButton = styled.button<{ $active: boolean }>`
   cursor: pointer;
   padding: 0;
   line-height: 1;
-  color: ${({ $active }) => $active ? '#f57c00' : theme.colors.border};
+  color: ${({ $active }) => $active ? theme.colors.tertiary : theme.colors.outlineVariant};
   transition: color 0.1s;
-  &:hover { color: #f57c00; }
+  &:hover { color: ${theme.colors.tertiary}; }
 `;
 
 export const CommentInput = styled.textarea`
-  padding: ${theme.spacing.sm};
-  border: 1px solid ${theme.colors.border};
-  border-radius: ${theme.borderRadius.sm};
-  font-size: 0.9rem;
+  padding: ${theme.spacing.md};
+  border: 1px solid ${theme.colors.outline};
+  border-radius: ${theme.shape.extraSmall};
+  font-size: ${theme.typography.bodyMedium.fontSize};
+  background: ${theme.colors.surface};
+  color: ${theme.colors.onSurface};
   resize: vertical;
-  min-height: 72px;
+  min-height: 80px;
   font-family: inherit;
-  &:focus { outline: none; border-color: ${theme.colors.primary}; }
+
+  &:focus { outline: none; border: 2px solid ${theme.colors.primary}; }
+  &::placeholder { color: ${theme.colors.onSurfaceVariant}; }
 `;
 
 export const ModalActions = styled.div`
   display: flex;
   justify-content: flex-end;
-  gap: ${theme.spacing.md};
+  gap: ${theme.spacing.sm};
 `;
 
+// M3 Text Button
 export const CancelButton = styled.button`
-  padding: ${theme.spacing.sm} ${theme.spacing.lg};
+  padding: 10px ${theme.spacing.md};
   background: none;
-  border: 1px solid ${theme.colors.border};
-  border-radius: ${theme.borderRadius.sm};
-  color: ${theme.colors.textSecondary};
+  border: none;
+  border-radius: ${theme.shape.full};
+  color: ${theme.colors.primary};
+  font-size: ${theme.typography.labelLarge.fontSize};
+  font-weight: ${theme.typography.labelLarge.fontWeight};
+  letter-spacing: 0.00625em;
   cursor: pointer;
-  &:hover { border-color: ${theme.colors.text}; color: ${theme.colors.text}; }
+  position: relative;
+  overflow: hidden;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: ${theme.colors.primary};
+    opacity: 0;
+    transition: opacity 0.2s;
+    border-radius: inherit;
+  }
+
+  &:hover::after { opacity: ${theme.state.hover}; }
 `;
 
+// M3 Filled Button
 export const SubmitButton = styled.button`
-  padding: ${theme.spacing.sm} ${theme.spacing.lg};
+  padding: 10px ${theme.spacing.lg};
   background: ${theme.colors.primary};
   border: none;
-  border-radius: ${theme.borderRadius.sm};
-  color: white;
-  font-weight: 600;
+  border-radius: ${theme.shape.full};
+  color: ${theme.colors.onPrimary};
+  font-size: ${theme.typography.labelLarge.fontSize};
+  font-weight: ${theme.typography.labelLarge.fontWeight};
+  letter-spacing: 0.00625em;
   cursor: pointer;
-  transition: background 0.2s;
-  &:hover:not(:disabled) { background: #1565c0; }
-  &:disabled { background: ${theme.colors.border}; cursor: not-allowed; }
+  transition: box-shadow 0.2s;
+  position: relative;
+  overflow: hidden;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: ${theme.colors.onPrimary};
+    opacity: 0;
+    transition: opacity 0.2s;
+    border-radius: inherit;
+  }
+
+  &:hover { box-shadow: ${theme.elevation[1]}; &::after { opacity: ${theme.state.hover}; } }
+  &:disabled { background: rgba(26,28,30,0.12); color: rgba(26,28,30,0.38); cursor: not-allowed; box-shadow: none; }
 `;
 
 export const ErrorMsg = styled.p`
-  color: ${theme.colors.danger};
-  font-size: 0.85rem;
+  color: ${theme.colors.error};
+  font-size: ${theme.typography.bodySmall.fontSize};
   margin: 0;
+  background: ${theme.colors.errorContainer};
+  padding: ${theme.spacing.sm} ${theme.spacing.md};
+  border-radius: ${theme.shape.extraSmall};
 `;

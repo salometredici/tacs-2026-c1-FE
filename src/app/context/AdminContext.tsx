@@ -1,7 +1,8 @@
-import axios from 'axios';
 import { FC, ReactNode, createContext, useState } from 'react';
 import { AdminContextType } from './AdminContextType';
-import { API_CONFIG } from '../config/apiConfig';
+
+const ADMIN_USER = 'admin';
+const ADMIN_PASS = 'admin123';
 
 export const AdminContext = createContext<AdminContextType | null>(null);
 
@@ -10,17 +11,13 @@ export const AdminProvider: FC<{ children: ReactNode }> = ({ children }) => {
     return !!localStorage.getItem('adminToken');
   });
 
-  // Para descomentar cuando el backend tenga el endpoint de admin
   const adminLogin = async (username: string, password: string): Promise<boolean> => {
-    try {
-      const response = await axios.post(API_CONFIG.auth.adminLogin, { username, password });
-      const { token } = response.data;
-      localStorage.setItem('adminToken', token);
+    if (username === ADMIN_USER && password === ADMIN_PASS) {
+      localStorage.setItem('adminToken', 'admin-session');
       setIsAdminLoggedIn(true);
       return true;
-    } catch {
-      return false;
     }
+    return false;
   };
 
   const adminLogout = () => {

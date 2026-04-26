@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Categoria } from '../../interfaces/Categoria';
+import { Category } from '../../interfaces/Categoria';
 import { PublishFiguritaRequest } from '../../interfaces/exchanges/PublishFiguritaRequest';
 import { publishFigurita } from '../../api/ExchangesService';
 import {
@@ -7,19 +7,19 @@ import {
   Row, Field, Input, Select, TypeToggle, TypeOption,
   Footer, CancelButton, SubmitButton, ErrorMsg,
 } from './PublishFiguritaModal.styles';
-import { TIPO_PARTICIPACION } from '../../interfaces/publicaciones/publicacionTypes';
+import { ParticipationType } from '../../interfaces/publications/publicationTypes';
 
-const CATEGORIAS: Categoria[] = ['COMUN', 'EPICO', 'LEGENDARIO'];
+const CATEGORIES: Category[] = ['COMUN', 'EPICO', 'LEGENDARIO'];
 
 const emptyForm = (): PublishFiguritaRequest => ({
   number: '' as unknown as number,
-  jugador: '',
-  seleccion: '',
-  equipo: '',
-  descripcion: '',
-  categoria: 'COMUN',
-  cantidad: 1,
-  tipoParticipacion: 'INTERCAMBIO',
+  player: '',
+  country: '',
+  team: '',
+  description: '',
+  category: 'COMUN',
+  quantity: 1,
+  participationType: 'INTERCAMBIO',
 });
 
 interface Props {
@@ -38,9 +38,9 @@ export default function PublishFiguritaModal({ userId, onClose, onSuccess }: Pro
 
   const validate = (): string | null => {
     if (!form.number || (form.number as unknown as string) === '') return 'El número es obligatorio.';
-    if (!form.jugador.trim()) return 'El jugador es obligatorio.';
-    if (!form.seleccion.trim() && !form.equipo.trim()) return 'Completá al menos selección o equipo.';
-    if (!form.cantidad || form.cantidad < 1) return 'La cantidad debe ser al menos 1.';
+    if (!form.player.trim()) return 'El jugador es obligatorio.';
+    if (!form.country.trim() && !form.team.trim()) return 'Completá al menos selección o equipo.';
+    if (!form.quantity || form.quantity < 1) return 'La cantidad debe ser al menos 1.';
     return null;
   };
 
@@ -85,10 +85,10 @@ export default function PublishFiguritaModal({ userId, onClose, onSuccess }: Pro
             <label htmlFor="pf-categoria">Categoría *</label>
             <Select
               id="pf-categoria"
-              value={form.categoria}
-              onChange={e => set('categoria', e.target.value as Categoria)}
+              value={form.category}
+              onChange={e => set('category', e.target.value as Category)}
             >
-              {CATEGORIAS.map(c => <option key={c} value={c}>{c}</option>)}
+              {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
             </Select>
           </Field>
         </Row>
@@ -99,8 +99,8 @@ export default function PublishFiguritaModal({ userId, onClose, onSuccess }: Pro
             id="pf-jugador"
             type="text"
             placeholder="Ej: Lionel Messi"
-            value={form.jugador}
-            onChange={e => set('jugador', e.target.value)}
+            value={form.player}
+            onChange={e => set('player', e.target.value)}
           />
         </Field>
 
@@ -111,8 +111,8 @@ export default function PublishFiguritaModal({ userId, onClose, onSuccess }: Pro
               id="pf-seleccion"
               type="text"
               placeholder="Ej: Argentina"
-              value={form.seleccion}
-              onChange={e => set('seleccion', e.target.value)}
+              value={form.country}
+              onChange={e => set('country', e.target.value)}
             />
           </Field>
           <Field>
@@ -121,8 +121,8 @@ export default function PublishFiguritaModal({ userId, onClose, onSuccess }: Pro
               id="pf-equipo"
               type="text"
               placeholder="Ej: Inter Miami"
-              value={form.equipo}
-              onChange={e => set('equipo', e.target.value)}
+              value={form.team}
+              onChange={e => set('team', e.target.value)}
             />
           </Field>
         </Row>
@@ -134,8 +134,8 @@ export default function PublishFiguritaModal({ userId, onClose, onSuccess }: Pro
               id="pf-cantidad"
               type="number"
               min={1}
-              value={form.cantidad}
-              onChange={e => set('cantidad', parseInt(e.target.value) || 1)}
+              value={form.quantity}
+              onChange={e => set('quantity', parseInt(e.target.value) || 1)}
             />
           </Field>
           <Field>
@@ -144,8 +144,8 @@ export default function PublishFiguritaModal({ userId, onClose, onSuccess }: Pro
               id="pf-descripcion"
               type="text"
               placeholder="Info adicional"
-              value={form.descripcion ?? ''}
-              onChange={e => set('descripcion', e.target.value)}
+              value={form.description ?? ''}
+              onChange={e => set('description', e.target.value)}
             />
           </Field>
         </Row>
@@ -153,14 +153,14 @@ export default function PublishFiguritaModal({ userId, onClose, onSuccess }: Pro
         <Field>
           <label>Tipo de participación *</label>
           <TypeToggle>
-            {(['INTERCAMBIO', 'SUBASTA'] as TIPO_PARTICIPACION[]).map(tipo => (
+            {(['INTERCAMBIO', 'SUBASTA'] as ParticipationType[]).map(type => (
               <TypeOption
-                key={tipo}
+                key={type}
                 type="button"
-                $active={form.tipoParticipacion === tipo}
-                onClick={() => set('tipoParticipacion', tipo)}
+                $active={form.participationType === type}
+                onClick={() => set('participationType', type)}
               >
-                {tipo === 'INTERCAMBIO' ? '⇄ Intercambio directo' : '🔨 Subasta'}
+                {type === 'INTERCAMBIO' ? '⇄ Intercambio directo' : '🔨 Subasta'}
               </TypeOption>
             ))}
           </TypeToggle>

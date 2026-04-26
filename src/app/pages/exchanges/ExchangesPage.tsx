@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Exchange } from '../../interfaces/exchanges/Exchange';
-import { Publicacion } from '../../interfaces/publicaciones/Publicacion';
+import { Publication } from '../../interfaces/publications/Publication';
 import { getExchangesByUserId, getCardsForExchangeByUserId, submitFeedback } from '../../api/ExchangesService';
 import { useUserContext } from '../../context/useUserContext';
 import { toastError } from '../../utils/toast';
@@ -14,10 +14,10 @@ import {
   Overlay, Modal, ModalTitle, StarsRow, StarButton,
   CommentInput, ModalActions, CancelButton, SubmitButton,
 } from './ExchangesPage.styles';
-import { TIPO_PARTICIPACION } from '../../interfaces/publicaciones/publicacionTypes';
+import { ParticipationType } from '../../interfaces/publications/publicationTypes';
 
 const EXCHANGE_TYPE_LABEL = { PROPUESTA: 'Propuesta', SUBASTA: 'Subasta' };
-const TIPO_LABEL: Record<TIPO_PARTICIPACION, string> = {
+const PARTICIPATION_TYPE_LABEL: Record<ParticipationType, string> = {
   INTERCAMBIO: 'Intercambio',
   SUBASTA: 'Subasta',
 };
@@ -31,12 +31,11 @@ export default function ExchangesPage() {
     return null;
   }
 
-  const [publications, setPublications] = useState<Publicacion[]>([]);
+  const [publications, setPublications] = useState<Publication[]>([]);
   const [exchanges, setExchanges] = useState<Exchange[]>([]);
   const [loading, setLoading] = useState(true);
   const [showPublishModal, setShowPublishModal] = useState(false);
 
-  // Rating modal state
   const [ratingTarget, setRatingTarget] = useState<Exchange | null>(null);
   const [stars, setStars] = useState(0);
   const [comment, setComment] = useState('');
@@ -69,7 +68,7 @@ export default function ExchangesPage() {
     try {
       await submitFeedback(ratingTarget.id, {
         calificacion: stars,
-        publicacionId: ratingTarget.publicacionId,
+        publicacionId: ratingTarget.publicationId,
         comentario: comment.trim() || undefined,
       });
       setExchanges(prev =>
@@ -91,7 +90,6 @@ export default function ExchangesPage() {
         <EmptyMessage>Cargando...</EmptyMessage>
       ) : (
         <>
-          {/* ── Mis Publicaciones ── */}
           <SectionHeader>
             <SectionTitle>Mis Publicaciones activas ({publications.length})</SectionTitle>
             <PublishButton onClick={() => setShowPublishModal(true)}>
@@ -113,8 +111,8 @@ export default function ExchangesPage() {
                       {pub.figurita.country} · {pub.figurita.category} · ×{pub.count}
                     </ExchangeDetail>
                   </ExchangeInfo>
-                  <PublicationTypeBadge $tipo={pub.participationType}>
-                    {TIPO_LABEL[pub.participationType]}
+                  <PublicationTypeBadge $type={pub.participationType}>
+                    {PARTICIPATION_TYPE_LABEL[pub.participationType]}
                   </PublicationTypeBadge>
                 </PublicationCard>
               ))}
@@ -123,7 +121,6 @@ export default function ExchangesPage() {
 
           <Divider />
 
-          {/* ── Intercambios completados ── */}
           <SectionHeader>
             <SectionTitle>Intercambios completados ({exchanges.length})</SectionTitle>
           </SectionHeader>
@@ -154,7 +151,6 @@ export default function ExchangesPage() {
         </>
       )}
 
-      {/* ── Modal publicar figurita ── */}
       {showPublishModal && (
         <PublishFiguritaModal
           userId={currentUser.id}
@@ -163,7 +159,6 @@ export default function ExchangesPage() {
         />
       )}
 
-      {/* ── Modal calificar ── */}
       {ratingTarget && (
         <Overlay onClick={ev => { if (ev.target === ev.currentTarget) closeRatingModal(); }}>
           <Modal>
@@ -186,7 +181,7 @@ export default function ExchangesPage() {
               value={comment}
               onChange={e => setComment(e.target.value)}
             />
-<ModalActions>
+            <ModalActions>
               <CancelButton onClick={closeRatingModal}>Cancelar</CancelButton>
               <SubmitButton onClick={handleSubmitRating} disabled={stars === 0 || submitting}>
                 {submitting ? 'Enviando...' : 'Confirmar'}

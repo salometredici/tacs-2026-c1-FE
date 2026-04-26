@@ -1,20 +1,14 @@
-import axios from 'axios';
 import { Exchange } from '../interfaces/exchanges/Exchange';
 import { FeedbackRequest } from '../interfaces/exchanges/FeedbackRequest';
 import { PublishFiguritaRequest } from '../interfaces/exchanges/PublishFiguritaRequest';
-import { Publicacion } from '../interfaces/publicaciones/Publicacion';
+import { Publication } from '../interfaces/publications/Publication';
 import { getMockedExchanges } from '../../mocks/exchangesMock';
 import { getMockedMyPublications } from '../../mocks/proposalsMock';
-import { API_CONFIG } from '../config/apiConfig';
-import { PublicacionStatus } from '../interfaces/publicaciones/publicacionTypes';
-
-// NOTA: la ruta usada en el FE es /exchanges.
-// El backend actual usa rutas distintas (/publicaciones/intercambios, /feedback, etc.).
-// Pendiente: alinear rutas en backenda
+import { PublicationStatus } from '../interfaces/publications/publicationTypes';
 
 export const getExchangesByUserId = async (userId: string): Promise<Exchange[]> => {
   try {
-    /* En backend: ResponseEntity<List<IntercambioDTO>> — GET /api/exchanges?userId=
+    /* GET /api/exchanges?userId=
     const response = await axios.get<Exchange[]>(`${API_CONFIG.baseUrl}/api/exchanges`, { params: { userId } });
     return response.data; */
     return getMockedExchanges(userId);
@@ -26,11 +20,11 @@ export const getExchangesByUserId = async (userId: string): Promise<Exchange[]> 
 
 export const getCardsForExchangeByUserId = async (
   userId: string,
-  status?: PublicacionStatus
-): Promise<Publicacion[]> => {
+  status?: PublicationStatus
+): Promise<Publication[]> => {
   try {
-    /* En backend: ResponseEntity<List<PublicacionIntercambioDTO>> — GET /api/exchanges/publications?userId=&status=
-    const response = await axios.get<PublicacionIntercambio[]>(
+    /* GET /api/exchanges/publications?userId=&status=
+    const response = await axios.get<Publication[]>(
       `${API_CONFIG.baseUrl}/api/exchanges/publications`,
       { params: { userId, ...(status && { status }) } }
     );
@@ -43,10 +37,9 @@ export const getCardsForExchangeByUserId = async (
   }
 };
 
-// Crea una publicación de intercambio para una figurita que ya existe la colección del usuario
-export const publishFigurita = async (userId: string, data: PublishFiguritaRequest): Promise<void> => {
+export const publishFigurita = async (_userId: string, _data: PublishFiguritaRequest): Promise<void> => {
   try {
-    /* En backend: ResponseEntity<PublicacionIntercambioDTO> — POST /api/exchanges/publications
+    /* POST /api/exchanges/publications
     await axios.post(
       `${API_CONFIG.baseUrl}/api/exchanges/publications`,
       data,
@@ -59,13 +52,13 @@ export const publishFigurita = async (userId: string, data: PublishFiguritaReque
   }
 };
 
-export const submitFeedback = async (exchangeId: number, data: FeedbackRequest): Promise<void> => {
+export const submitFeedback = async (_exchangeId: number, _data: FeedbackRequest): Promise<void> => {
   try {
-    /* En backend: ResponseEntity<Void> — POST /api/exchanges/{exchangeId}/rating
+    /* POST /api/exchanges/{exchangeId}/rating
     await axios.post(`${API_CONFIG.baseUrl}/api/exchanges/${exchangeId}/rating`, data); */
     return;
   } catch (error) {
-    console.error('Error al enviar calificación:', error);
+    console.error('Error al enviar feedback:', error);
     throw error;
   }
 };

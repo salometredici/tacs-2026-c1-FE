@@ -1,10 +1,10 @@
-import { Categoria } from '../Categoria';
+import { Category } from '../Categoria';
 
 export interface AddMissingCardRequest {
   number: number;
-  jugador: string;
-  seleccion: string;
-  equipo: string;
-  descripcion?: string;
-  categoria: Categoria;
+  player: string;
+  country: string;
+  team: string;
+  description?: string;
+  category: Category;
 }

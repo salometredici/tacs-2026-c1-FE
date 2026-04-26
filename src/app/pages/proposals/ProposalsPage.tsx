@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Proposal } from '../../interfaces/proposals/Proposal';
 import { getProposals, acceptProposal, rejectProposal } from '../../api/ProposalsService';
@@ -28,31 +28,31 @@ export default function ProposalsPage() {
     return null;
   }
 
-  const [tab, setTab] = useState<'recibidas' | 'enviadas'>('recibidas');
-  const [recibidas, setRecibidas] = useState<Proposal[]>([]);
-  const [enviadas, setEnviadas] = useState<Proposal[]>([]);
+  const [tab, setTab] = useState<'received' | 'sent'>('received');
+  const [received, setReceived] = useState<Proposal[]>([]);
+  const [sent, setSent] = useState<Proposal[]>([]);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
 
   useEffect(() => {
     const load = async () => {
       const [rec, env] = await Promise.all([
-        getProposals(currentUser.id),        // Recibidas -> publisherId = el usuario (hizo la publicación)
-        getProposals('', currentUser.id),    // Enviadas -> postorId = el usuario (hizo la propuesta)
+        getProposals(currentUser.id),
+        getProposals('', currentUser.id),
       ]);
-      setRecibidas(rec);
-      setEnviadas(env);
+      setReceived(rec);
+      setSent(env);
       setLoading(false);
     };
     load();
   }, [currentUser.id]);
 
-  const handleAccept = async (propuesta: Proposal) => {
-    setActionLoading(propuesta.id);
+  const handleAccept = async (proposal: Proposal) => {
+    setActionLoading(proposal.id);
     try {
-      await acceptProposal(propuesta.id, currentUser.id);
-      setRecibidas(prev =>
-        prev.map(p => p.id === propuesta.id ? { ...p, status: 'ACEPTADA' } : p)
+      await acceptProposal(proposal.id, currentUser.id);
+      setReceived(prev =>
+        prev.map(p => p.id === proposal.id ? { ...p, status: 'ACEPTADA' } : p)
       );
     } catch {
       toastError('Error al aceptar la propuesta. Intentá de nuevo.');
@@ -61,12 +61,12 @@ export default function ProposalsPage() {
     }
   };
 
-  const handleReject = async (propuesta: Proposal) => {
-    setActionLoading(propuesta.id);
+  const handleReject = async (proposal: Proposal) => {
+    setActionLoading(proposal.id);
     try {
-      await rejectProposal(propuesta.id, currentUser.id);
-      setRecibidas(prev =>
-        prev.map(p => p.id === propuesta.id ? { ...p, status: 'RECHAZADA' } : p)
+      await rejectProposal(proposal.id, currentUser.id);
+      setReceived(prev =>
+        prev.map(p => p.id === proposal.id ? { ...p, status: 'RECHAZADA' } : p)
       );
     } catch {
       toastError('Error al rechazar la propuesta. Intentá de nuevo.');
@@ -75,7 +75,7 @@ export default function ProposalsPage() {
     }
   };
 
-  const lista = tab === 'recibidas' ? recibidas : enviadas;
+  const list = tab === 'received' ? received : sent;
 
   return (
     <PageContainer>
@@ -87,30 +87,30 @@ export default function ProposalsPage() {
       </Header>
 
       <TabNav>
-        <TabButton $active={tab === 'recibidas'} onClick={() => setTab('recibidas')}>
-          Recibidas {!loading && `(${recibidas.length})`}
+        <TabButton $active={tab === 'received'} onClick={() => setTab('received')}>
+          Recibidas {!loading && `(${received.length})`}
         </TabButton>
-        <TabButton $active={tab === 'enviadas'} onClick={() => setTab('enviadas')}>
-          Enviadas {!loading && `(${enviadas.length})`}
+        <TabButton $active={tab === 'sent'} onClick={() => setTab('sent')}>
+          Enviadas {!loading && `(${sent.length})`}
         </TabButton>
       </TabNav>
 
-{loading ? (
+      {loading ? (
         <EmptyMessage>Cargando propuestas...</EmptyMessage>
-      ) : lista.length === 0 ? (
-        <EmptyMessage>No hay propuestas {tab === 'recibidas' ? 'recibidas' : 'enviadas'}.</EmptyMessage>
+      ) : list.length === 0 ? (
+        <EmptyMessage>No hay propuestas {tab === 'received' ? 'recibidas' : 'enviadas'}.</EmptyMessage>
       ) : (
         <ProposalList>
-          {lista.map(p => (
+          {list.map(p => (
             <ProposalCard key={p.id}>
               <ProposalInfo>
                 <ProposalTitle>
-                  #{p.publicacion.figurita.number} · {p.publicacion.figurita.description}
+                  #{p.publication.figurita.number} · {p.publication.figurita.description}
                 </ProposalTitle>
                 <ProposalDetail>
-                  {tab === 'recibidas'
-                    ? `Propuesta de ${p.postor.name}`
-                    : `Publicado por ${p.publicacion.publisher.name}`}
+                  {tab === 'received'
+                    ? `Propuesta de ${p.bidder.name}`
+                    : `Publicado por ${p.publication.publisher.name}`}
                 </ProposalDetail>
                 <ProposalDetail>
                   Ofrece: {p.offeredFiguritas.map(f => `#${f.number} ${f.description}`).join(', ')}
@@ -120,7 +120,7 @@ export default function ProposalsPage() {
               <CardRight>
                 <StatusBadge $estado={p.status}>{STATUS_LABEL[p.status]}</StatusBadge>
 
-                {tab === 'recibidas' && p.status === 'PENDIENTE' && (
+                {tab === 'received' && p.status === 'PENDIENTE' && (
                   <ActionButtons>
                     <AcceptButton
                       disabled={actionLoading === p.id}

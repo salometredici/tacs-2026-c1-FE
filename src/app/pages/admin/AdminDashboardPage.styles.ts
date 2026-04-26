@@ -5,6 +5,8 @@ export const DashboardContainer = styled.div`
   max-width: 960px;
   margin: 0 auto;
   padding: ${theme.spacing.xl} ${theme.spacing.lg};
+
+  @media (max-width: 600px) { padding: ${theme.spacing.md}; }
 `;
 
 export const DashboardHeader = styled.header`
@@ -13,56 +15,78 @@ export const DashboardHeader = styled.header`
   justify-content: space-between;
   margin-bottom: ${theme.spacing.xl};
   padding-bottom: ${theme.spacing.md};
-  border-bottom: 2px solid ${theme.colors.border};
+  border-bottom: 1px solid ${theme.colors.outlineVariant};
+  gap: ${theme.spacing.md};
+
+  @media (max-width: 480px) {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 `;
 
 export const DashboardTitle = styled.h1`
-  font-size: 1.6rem;
-  font-weight: 700;
-  color: ${theme.colors.primary};
+  font-size: ${theme.typography.headlineSmall.fontSize};
+  font-weight: 400;
+  color: ${theme.colors.onBackground};
   margin: 0;
 `;
 
 export const DashboardSubtitle = styled.p`
-  font-size: 0.85rem;
-  color: ${theme.colors.textSecondary};
+  font-size: ${theme.typography.bodySmall.fontSize};
+  color: ${theme.colors.onSurfaceVariant};
   margin: ${theme.spacing.xs} 0 0;
 `;
 
+// M3 Filled Tonal Button (logout)
 export const LogoutButton = styled.button`
-  padding: ${theme.spacing.sm} ${theme.spacing.md};
-  background-color: ${theme.colors.danger};
-  color: white;
+  padding: 10px ${theme.spacing.lg};
+  background-color: ${theme.colors.errorContainer};
+  color: ${theme.colors.onErrorContainer};
   border: none;
-  border-radius: ${theme.borderRadius.sm};
-  font-size: 0.875rem;
+  border-radius: ${theme.shape.full};
+  font-size: ${theme.typography.labelLarge.fontSize};
+  font-weight: ${theme.typography.labelLarge.fontWeight};
+  letter-spacing: 0.00625em;
   cursor: pointer;
-  transition: opacity 0.2s;
+  white-space: nowrap;
+  transition: box-shadow 0.2s;
+  position: relative;
+  overflow: hidden;
 
-  &:hover {
-    opacity: 0.85;
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: ${theme.colors.onErrorContainer};
+    opacity: 0;
+    transition: opacity 0.2s;
+    border-radius: inherit;
   }
+
+  &:hover { box-shadow: ${theme.elevation[1]}; &::after { opacity: ${theme.state.hover}; } }
 `;
 
 export const SectionTitle = styled.h2`
-  font-size: 1rem;
-  font-weight: 600;
-  color: ${theme.colors.textSecondary};
+  font-size: ${theme.typography.labelLarge.fontSize};
+  font-weight: ${theme.typography.labelLarge.fontWeight};
+  color: ${theme.colors.onSurfaceVariant};
   text-transform: uppercase;
   letter-spacing: 0.08em;
   margin: 0 0 ${theme.spacing.md};
 `;
 
+// M3 responsive grid
 export const StatsGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
   gap: ${theme.spacing.md};
 `;
 
+// M3 Filled Card (tonal)
 export const StatCard = styled.div`
-  background: ${theme.colors.surface};
-  border-radius: ${theme.borderRadius.md};
-  box-shadow: ${theme.shadows.sm};
+  background: ${theme.colors.surfaceContainerLow};
+  border-radius: ${theme.shape.medium};
+  box-shadow: ${theme.elevation[1]};
   padding: ${theme.spacing.lg};
   display: flex;
   flex-direction: column;
@@ -70,9 +94,7 @@ export const StatCard = styled.div`
   gap: ${theme.spacing.xs};
   transition: box-shadow 0.2s;
 
-  &:hover {
-    box-shadow: ${theme.shadows.md};
-  }
+  &:hover { box-shadow: ${theme.elevation[2]}; }
 `;
 
 export const StatIcon = styled.span`
@@ -82,14 +104,14 @@ export const StatIcon = styled.span`
 `;
 
 export const StatValue = styled.span`
-  font-size: 2rem;
+  font-size: ${theme.typography.displaySmall.fontSize};
   font-weight: 700;
   color: ${theme.colors.primary};
   line-height: 1;
 `;
 
 export const StatLabel = styled.span`
-  font-size: 0.8rem;
-  color: ${theme.colors.textSecondary};
+  font-size: ${theme.typography.bodySmall.fontSize};
+  color: ${theme.colors.onSurfaceVariant};
   line-height: 1.3;
 `;

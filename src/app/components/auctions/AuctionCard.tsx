@@ -91,7 +91,7 @@ export default function AuctionCardComponent({ auction, onBid, hideBidButton = f
               {mejor.offeredFiguritas.length} figurita(s) ofrecidas
             </div>
             <div style={{ fontSize: '0.8rem', color: '#666', marginTop: '0.25rem' }}>
-              Por {mejor.postor.name}
+              Por {mejor.bidder.name}
             </div>
           </BestBidInfo>
         ) : null;

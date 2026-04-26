@@ -1,49 +1,78 @@
 import styled from 'styled-components';
 import { theme } from '../../styles/theme';
 
+// M3 Top App Bar – Small variant
 export const NavbarContainer = styled.nav`
-  background-color: ${theme.colors.primary};
-  color: white;
-  padding: ${theme.spacing.md} ${theme.spacing.lg};
+  background-color: ${theme.colors.surfaceContainer};
+  color: ${theme.colors.onSurface};
+  padding: 0 ${theme.spacing.md};
+  height: 64px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   position: sticky;
   top: 0;
   z-index: 1000;
-  box-shadow: ${theme.shadows.md};
+  box-shadow: ${theme.elevation[2]};
+
+  @media (max-width: 480px) {
+    padding: 0 ${theme.spacing.sm};
+  }
 `;
 
 export const BrandSection = styled.div`
   display: flex;
   align-items: center;
-  gap: ${theme.spacing.lg};
+  gap: ${theme.spacing.sm};
 `;
 
 export const BrandTitle = styled.h1`
   margin: 0;
-  font-size: 1.5rem;
-  font-weight: 600;
+  font-size: ${theme.typography.titleLarge.fontSize};
+  line-height: ${theme.typography.titleLarge.lineHeight};
+  font-weight: 500;
+  color: ${theme.colors.onSurface};
+  cursor: pointer;
+  user-select: none;
+
+  @media (max-width: 480px) {
+    font-size: ${theme.typography.titleMedium.fontSize};
+  }
 `;
 
 export const ActionsSection = styled.div`
   display: flex;
   align-items: center;
-  gap: ${theme.spacing.lg};
+  gap: ${theme.spacing.xs};
+
+  @media (max-width: 480px) {
+    gap: 0;
+  }
 `;
 
+// M3 Icon Button
 export const NavButton = styled.button`
   background: none;
   border: none;
-  color: white;
+  color: ${theme.colors.onSurfaceVariant};
   cursor: pointer;
-  font-size: 1rem;
-  padding: ${theme.spacing.sm} ${theme.spacing.md};
-  border-radius: ${theme.borderRadius.sm};
+  width: 40px;
+  height: 40px;
+  border-radius: ${theme.shape.full};
+  display: flex;
+  align-items: center;
+  justify-content: center;
   transition: background-color 0.2s;
+  position: relative;
+  font-size: 0.875rem;
+  font-weight: 500;
 
   &:hover {
-    background-color: rgba(255, 255, 255, 0.2);
+    background-color: rgba(67, 71, 78, ${theme.state.hover});
+  }
+
+  &:active {
+    background-color: rgba(67, 71, 78, ${theme.state.pressed});
   }
 `;
 
@@ -53,52 +82,60 @@ export const BellWrapper = styled.div`
   align-items: center;
 `;
 
+// M3 Badge
 export const Badge = styled.span`
   position: absolute;
   top: 4px;
   right: 4px;
-  background-color: ${theme.colors.danger};
-  color: white;
-  font-size: 0.65rem;
+  background-color: ${theme.colors.error};
+  color: ${theme.colors.onError};
+  font-size: 0.6rem;
   font-weight: 700;
   min-width: 16px;
   height: 16px;
-  border-radius: 8px;
+  border-radius: ${theme.shape.full};
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 0 3px;
   pointer-events: none;
+  letter-spacing: 0;
 `;
 
+// M3 Menu (dropdown)
 export const NotificationsDropdown = styled.div`
   position: absolute;
-  top: calc(100% + 8px);
+  top: calc(100% + 4px);
   right: 0;
-  width: 320px;
-  background: ${theme.colors.surface};
-  border: 1px solid ${theme.colors.border};
-  border-radius: ${theme.borderRadius.md};
-  box-shadow: ${theme.shadows.lg};
+  width: 300px;
+  background: ${theme.colors.surfaceContainerLow};
+  border: 1px solid ${theme.colors.outlineVariant};
+  border-radius: ${theme.shape.extraLarge};
+  box-shadow: ${theme.elevation[3]};
   z-index: 2000;
   overflow: hidden;
+
+  @media (max-width: 480px) {
+    width: 280px;
+    right: -8px;
+  }
 `;
 
 export const NotificationItem = styled.div<{ $read: boolean }>`
   padding: ${theme.spacing.md};
-  font-size: 0.875rem;
-  color: ${theme.colors.text};
-  border-bottom: 1px solid ${theme.colors.border};
-  background: ${({ $read }) => ($read ? 'transparent' : '#e3f2fd')};
+  font-size: ${theme.typography.bodyMedium.fontSize};
+  line-height: ${theme.typography.bodyMedium.lineHeight};
+  color: ${theme.colors.onSurface};
+  border-bottom: 1px solid ${theme.colors.outlineVariant};
+  background: ${({ $read }) =>
+    $read ? 'transparent' : theme.colors.secondaryContainer};
 
-  &:last-child {
-    border-bottom: none;
-  }
+  &:last-child { border-bottom: none; }
 `;
 
 export const EmptyNotification = styled.div`
   padding: ${theme.spacing.lg};
   text-align: center;
-  color: ${theme.colors.textSecondary};
-  font-size: 0.875rem;
+  color: ${theme.colors.onSurfaceVariant};
+  font-size: ${theme.typography.bodyMedium.fontSize};
 `;

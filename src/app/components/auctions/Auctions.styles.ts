@@ -5,6 +5,8 @@ export const AuctionsContainer = styled.div`
   max-width: 1200px;
   margin: 0 auto;
   padding: ${theme.spacing.xl};
+
+  @media (max-width: 600px) { padding: ${theme.spacing.md}; }
 `;
 
 export const AuctionsHeader = styled.div`
@@ -12,33 +14,44 @@ export const AuctionsHeader = styled.div`
   justify-content: space-between;
   align-items: center;
   margin-bottom: ${theme.spacing.xl};
+  gap: ${theme.spacing.md};
 `;
 
 export const AuctionsTitle = styled.h1`
-  color: ${theme.colors.primary};
-  font-size: 2rem;
+  color: ${theme.colors.onBackground};
+  font-size: ${theme.typography.headlineSmall.fontSize};
+  font-weight: 400;
+  margin: 0;
 `;
 
+// M3 Filled Button
 export const CreateButton = styled.button`
-  padding: ${theme.spacing.md} ${theme.spacing.lg};
+  padding: 10px ${theme.spacing.lg};
   background-color: ${theme.colors.primary};
-  color: white;
+  color: ${theme.colors.onPrimary};
   border: none;
-  border-radius: ${theme.borderRadius.sm};
-  font-size: 1rem;
-  font-weight: 600;
+  border-radius: ${theme.shape.full};
+  font-size: ${theme.typography.labelLarge.fontSize};
+  font-weight: ${theme.typography.labelLarge.fontWeight};
+  letter-spacing: 0.00625em;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: box-shadow 0.2s;
+  position: relative;
+  overflow: hidden;
+  white-space: nowrap;
 
-  &:hover {
-    background-color: #1565c0;
-    transform: translateY(-2px);
-    box-shadow: ${theme.shadows.md};
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: ${theme.colors.onPrimary};
+    opacity: 0;
+    transition: opacity 0.2s;
+    border-radius: inherit;
   }
 
-  &:active {
-    transform: translateY(0);
-  }
+  &:hover { box-shadow: ${theme.elevation[1]}; &::after { opacity: ${theme.state.hover}; } }
+  &:active::after { opacity: ${theme.state.pressed}; }
 `;
 
 export const AuctionsGrid = styled.div`
@@ -47,21 +60,32 @@ export const AuctionsGrid = styled.div`
   gap: ${theme.spacing.lg};
 `;
 
+// M3 Elevated Card
 export const AuctionCard = styled.div`
-  background: ${theme.colors.surface};
-  border-radius: ${theme.borderRadius.md};
+  background: ${theme.colors.surfaceContainerLow};
+  border-radius: ${theme.shape.medium};
   padding: ${theme.spacing.lg};
-  box-shadow: ${theme.shadows.sm};
-  transition: all 0.2s;
-  border: 2px solid transparent;
+  box-shadow: ${theme.elevation[1]};
+  transition: box-shadow 0.2s;
   display: flex;
   flex-direction: column;
   gap: ${theme.spacing.md};
+  position: relative;
+  overflow: hidden;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: ${theme.colors.primary};
+    opacity: 0;
+    transition: opacity 0.2s;
+    pointer-events: none;
+  }
 
   &:hover {
-    transform: translateY(-4px);
-    box-shadow: ${theme.shadows.md};
-    border-color: ${theme.colors.primary};
+    box-shadow: ${theme.elevation[2]};
+    &::after { opacity: ${theme.state.hover}; }
   }
 `;
 
@@ -69,28 +93,29 @@ export const FiguritaInfo = styled.div`
   display: flex;
   align-items: center;
   gap: ${theme.spacing.md};
-  border-bottom: 1px solid ${theme.colors.border};
+  border-bottom: 1px solid ${theme.colors.outlineVariant};
   padding-bottom: ${theme.spacing.md};
 `;
 
 export const FiguritaNumber = styled.h3`
   margin: 0;
   color: ${theme.colors.primary};
-  font-size: 1.8rem;
-  min-width: 60px;
+  font-size: ${theme.typography.headlineSmall.fontSize};
+  font-weight: 500;
+  min-width: 56px;
 `;
 
 export const FiguritaDetails = styled.div`
   flex: 1;
 
   p {
-    margin: 0.25rem 0;
-    font-size: 0.9rem;
-    color: ${theme.colors.textSecondary};
+    margin: 0.2rem 0;
+    font-size: ${theme.typography.bodyMedium.fontSize};
+    color: ${theme.colors.onSurfaceVariant};
 
     strong {
-      color: ${theme.colors.text};
-      font-weight: 600;
+      color: ${theme.colors.onSurface};
+      font-weight: 500;
     }
   }
 `;
@@ -99,21 +124,21 @@ export const SellerInfo = styled.div`
   display: flex;
   align-items: center;
   gap: ${theme.spacing.sm};
-  padding: ${theme.spacing.sm} 0;
+  flex-wrap: wrap;
 
   span {
-    font-size: 0.85rem;
-    color: ${theme.colors.textSecondary};
+    font-size: ${theme.typography.bodySmall.fontSize};
+    color: ${theme.colors.onSurfaceVariant};
   }
 
   .seller-name {
-    font-weight: 600;
-    color: ${theme.colors.text};
+    font-weight: 500;
+    color: ${theme.colors.onSurface};
   }
 
   .reputation {
-    color: #f57c00;
-    font-weight: 600;
+    color: ${theme.colors.tertiary};
+    font-weight: 500;
   }
 `;
 
@@ -121,95 +146,110 @@ export const AuctionStatus = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 0.9rem;
+  font-size: ${theme.typography.bodySmall.fontSize};
 `;
 
 export const StarsRating = styled.span`
   display: inline-block;
-  font-size: 0.8rem;
-  color: #f57c00;
+  font-size: ${theme.typography.bodySmall.fontSize};
+  color: ${theme.colors.tertiary};
 `;
 
 export const TimeRemaining = styled.div`
-  color: ${props => props.color || theme.colors.textSecondary};
-  font-weight: 600;
-  font-size: 0.9rem;
+  color: ${props => props.color || theme.colors.onSurfaceVariant};
+  font-weight: 500;
+  font-size: ${theme.typography.labelLarge.fontSize};
 `;
 
+// M3 Filled Card (tonal) – last bid info
 export const BestBidInfo = styled.div`
-  background: ${theme.colors.background};
-  padding: ${theme.spacing.md};
-  border-radius: ${theme.borderRadius.sm};
-  font-size: 0.9rem;
+  background: ${theme.colors.secondaryContainer};
+  padding: ${theme.spacing.sm} ${theme.spacing.md};
+  border-radius: ${theme.shape.small};
+  font-size: ${theme.typography.bodySmall.fontSize};
 
   .bid-label {
-    color: ${theme.colors.textSecondary};
-    margin-bottom: 0.25rem;
+    color: ${theme.colors.onSecondaryContainer};
+    opacity: 0.7;
+    margin-bottom: 0.15rem;
   }
 
   .bid-details {
-    color: ${theme.colors.text};
-    font-weight: 600;
+    color: ${theme.colors.onSecondaryContainer};
+    font-weight: 500;
   }
 `;
 
+// M3 Filled Card (tonal) – requirements
 export const RequirmentsInfo = styled.div`
-  background: ${theme.colors.background};
-  padding: ${theme.spacing.md};
-  border-radius: ${theme.borderRadius.sm};
-  font-size: 0.85rem;
-  border-left: 3px solid ${theme.colors.primary};
+  background: ${theme.colors.primaryContainer};
+  padding: ${theme.spacing.sm} ${theme.spacing.md};
+  border-radius: ${theme.shape.small};
+  font-size: ${theme.typography.bodySmall.fontSize};
 
   .requirement {
-    margin: 0.25rem 0;
-    color: ${theme.colors.text};
+    margin: 0.2rem 0;
 
     .label {
-      color: ${theme.colors.textSecondary};
-      margin-right: 0.5rem;
+      color: ${theme.colors.onPrimaryContainer};
+      opacity: 0.7;
+      margin-right: 0.4rem;
     }
 
     .value {
-      font-weight: 600;
-      color: ${theme.colors.primary};
+      font-weight: 500;
+      color: ${theme.colors.onPrimaryContainer};
     }
   }
 `;
 
+// M3 Filled Button
 export const BidButton = styled.button`
-  padding: ${theme.spacing.md};
+  padding: 10px ${theme.spacing.md};
   background: ${theme.colors.primary};
-  color: white;
+  color: ${theme.colors.onPrimary};
   border: none;
-  border-radius: ${theme.borderRadius.sm};
-  font-weight: 600;
+  border-radius: ${theme.shape.full};
+  font-size: ${theme.typography.labelLarge.fontSize};
+  font-weight: ${theme.typography.labelLarge.fontWeight};
+  letter-spacing: 0.00625em;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: box-shadow 0.2s;
   width: 100%;
+  position: relative;
+  overflow: hidden;
 
-  &:hover {
-    background: #1565c0;
-    transform: translateY(-2px);
-    box-shadow: ${theme.shadows.md};
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: ${theme.colors.onPrimary};
+    opacity: 0;
+    transition: opacity 0.2s;
+    border-radius: inherit;
   }
 
+  &:hover { box-shadow: ${theme.elevation[1]}; &::after { opacity: ${theme.state.hover}; } }
+  &:active::after { opacity: ${theme.state.pressed}; }
+
   &:disabled {
-    background: ${theme.colors.border};
+    background: rgba(26, 28, 30, 0.12);
+    color: rgba(26, 28, 30, 0.38);
     cursor: not-allowed;
-    opacity: 0.6;
+    box-shadow: none;
   }
 `;
 
 export const LoadingMessage = styled.p`
   text-align: center;
-  color: ${theme.colors.textSecondary};
-  font-size: 1.1rem;
+  color: ${theme.colors.onSurfaceVariant};
+  font-size: ${theme.typography.bodyLarge.fontSize};
   padding: ${theme.spacing.xl};
 `;
 
 export const EmptyMessage = styled.p`
   text-align: center;
-  color: ${theme.colors.textSecondary};
-  font-size: 1.1rem;
+  color: ${theme.colors.onSurfaceVariant};
+  font-size: ${theme.typography.bodyLarge.fontSize};
   padding: ${theme.spacing.xl};
 `;
