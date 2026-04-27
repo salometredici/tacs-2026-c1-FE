@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { CollectionCard } from '../../interfaces/cards/CollectionCard';
 import { getUserCollection } from '../../api/UsersService';
 import { createAuction } from '../../api/AuctionsService';
-import { theme } from '../../styles/theme';
+import { theme } from '../../styles/theme'; 
 import { AUCTION_DURATION_MIN, AUCTION_DURATION_MAX } from '../../constants/auctions';
 import { formatDuration } from '../../utils/utils';
 import { PageContainer, Header, BackButton, Title, Card, Field, Label, Hint, Select,
