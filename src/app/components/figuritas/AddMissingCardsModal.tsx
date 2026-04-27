@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Figurita } from '../../interfaces/figuritas/Figurita';
+import { Card } from '../../interfaces/cards/Card';
 import { Category } from '../../interfaces/Categoria';
 import { getCatalog } from '../../api/FiguritasService';
 import { addMissingCard } from '../../api/UsersService';
@@ -19,10 +19,10 @@ interface Props {
 }
 
 export default function AddMissingCardsModal({ userId, onClose, onSuccess }: Props) {
-  const [catalog, setCatalog] = useState<Figurita[]>([]);
+  const [catalog, setCatalog] = useState<Card[]>([]);
   const [query, setQuery] = useState('');
   const [category, setCategory] = useState<Category | ''>('');
-  const [pending, setPending] = useState<Figurita[]>([]);
+  const [pending, setPending] = useState<Card[]>([]);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -42,7 +42,7 @@ export default function AddMissingCardsModal({ userId, onClose, onSuccess }: Pro
     return matchesQuery && matchesCategory;
   });
 
-  const handleAdd = (f: Figurita) => setPending(prev => [...prev, f]);
+  const handleAdd = (f: Card) => setPending(prev => [...prev, f]);
   const handleRemove = (id: string) => setPending(prev => prev.filter(f => f.id !== id));
 
   const handleConfirm = async () => {

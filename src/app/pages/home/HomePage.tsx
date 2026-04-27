@@ -111,12 +111,12 @@ export default function HomePage() {
               >
                 {suggestions.map(s => (
                   <SuggestionCard key={s.id} onClick={() => { if (!isDragging.current) setSelected(s); }}>
-                    <CategoryBadge $category={s.figurita.category}>
-                      {s.figurita.category}
+                    <CategoryBadge $category={s.card.category}>
+                      {s.card.category}
                     </CategoryBadge>
-                    <CardNumber>#{s.figurita.number}</CardNumber>
-                    <CardPlayer>{s.figurita.description}</CardPlayer>
-                    <CardMeta>{s.figurita.country}</CardMeta>
+                    <CardNumber>#{s.card.number}</CardNumber>
+                    <CardPlayer>{s.card.description}</CardPlayer>
+                    <CardMeta>{s.card.country}</CardMeta>
                     <CardOwner>Ofrecida por {s.publisher.name}</CardOwner>
                   </SuggestionCard>
                 ))}
@@ -145,7 +145,7 @@ export default function HomePage() {
       {selected && currentUser && (
         <MakeProposalModal
           userId={currentUser.id}
-          figurita={selected.figurita}
+          figurita={selected.card}
           publicationId={selected.id}
           onClose={() => setSelected(null)}
           onSuccess={() => {

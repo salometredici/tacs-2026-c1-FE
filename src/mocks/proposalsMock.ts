@@ -8,7 +8,7 @@ import { mockUsers } from './usersMock';
 export const mockMyPublications: Publication[] = [
   {
     id: '11',
-    figurita: mockFiguritas[2],
+    card: mockFiguritas[2],
     publisher: mockUsers[0],
     status: 'ACTIVA',
     participationType: 'INTERCAMBIO',
@@ -16,7 +16,7 @@ export const mockMyPublications: Publication[] = [
   },
   {
     id: '12',
-    figurita: mockFiguritas[4],
+    card: mockFiguritas[4],
     publisher: mockUsers[0],
     status: 'ACTIVA',
     participationType: 'SUBASTA',
@@ -24,7 +24,7 @@ export const mockMyPublications: Publication[] = [
   },
   {
     id: '14',
-    figurita: mockFiguritas[7],
+    card: mockFiguritas[7],
     publisher: mockUsers[0],
     status: 'ACTIVA',
     participationType: 'INTERCAMBIO',
@@ -38,29 +38,29 @@ export const getMockedMyPublications = (userId: string): Publication[] =>
 export const mockReceivedProposals: Proposal[] = [
   {
     id: '201',
-    publication: { id: '11', figurita: mockFiguritas[2], publisher: mockUsers[0], status: 'ACTIVA', participationType: 'INTERCAMBIO', count: 2 },
-    offeredFiguritas: [mockFiguritas[5]],
+    publication: { id: '11', card: mockFiguritas[2], publisher: mockUsers[0], status: 'ACTIVA', participationType: 'INTERCAMBIO', count: 2 },
+    offeredCards: [mockFiguritas[5]],
     bidder: mockUsers[1],
     status: 'PENDIENTE',
   },
   {
     id: '202',
-    publication: { id: '12', figurita: mockFiguritas[4], publisher: mockUsers[0], status: 'ACTIVA', participationType: 'SUBASTA', count: 1 },
-    offeredFiguritas: [mockFiguritas[6], mockFiguritas[7]],
+    publication: { id: '12', card: mockFiguritas[4], publisher: mockUsers[0], status: 'ACTIVA', participationType: 'SUBASTA', count: 1 },
+    offeredCards: [mockFiguritas[6], mockFiguritas[7]],
     bidder: mockUsers[2],
     status: 'PENDIENTE',
   },
   {
     id: '203',
-    publication: { id: '13', figurita: mockFiguritas[0], publisher: mockUsers[0], status: 'FINALIZADA', participationType: 'INTERCAMBIO', count: 1 },
-    offeredFiguritas: [mockFiguritas[3]],
+    publication: { id: '13', card: mockFiguritas[0], publisher: mockUsers[0], status: 'FINALIZADA', participationType: 'INTERCAMBIO', count: 1 },
+    offeredCards: [mockFiguritas[3]],
     bidder: mockUsers[1],
     status: 'ACEPTADA',
   },
   {
     id: '204',
-    publication: { id: '14', figurita: mockFiguritas[2], publisher: mockUsers[0], status: 'ACTIVA', participationType: 'INTERCAMBIO', count: 2 },
-    offeredFiguritas: [mockFiguritas[1]],
+    publication: { id: '14', card: mockFiguritas[2], publisher: mockUsers[0], status: 'ACTIVA', participationType: 'INTERCAMBIO', count: 2 },
+    offeredCards: [mockFiguritas[1]],
     bidder: mockUsers[2],
     status: 'RECHAZADA',
   },
@@ -69,22 +69,22 @@ export const mockReceivedProposals: Proposal[] = [
 export const mockSentProposals: Proposal[] = [
   {
     id: '301',
-    publication: { id: '21', figurita: mockFiguritas[1], publisher: mockUsers[1], status: 'ACTIVA', participationType: 'INTERCAMBIO', count: 1 },
-    offeredFiguritas: [mockFiguritas[2]],
+    publication: { id: '21', card: mockFiguritas[1], publisher: mockUsers[1], status: 'ACTIVA', participationType: 'INTERCAMBIO', count: 1 },
+    offeredCards: [mockFiguritas[2]],
     bidder: mockUsers[0],
     status: 'PENDIENTE',
   },
   {
     id: '302',
-    publication: { id: '22', figurita: mockFiguritas[5], publisher: mockUsers[2], status: 'FINALIZADA', participationType: 'INTERCAMBIO', count: 1 },
-    offeredFiguritas: [mockFiguritas[0]],
+    publication: { id: '22', card: mockFiguritas[5], publisher: mockUsers[2], status: 'FINALIZADA', participationType: 'INTERCAMBIO', count: 1 },
+    offeredCards: [mockFiguritas[0]],
     bidder: mockUsers[0],
     status: 'ACEPTADA',
   },
   {
     id: '303',
-    publication: { id: '23', figurita: mockFiguritas[3], publisher: mockUsers[1], status: 'ACTIVA', participationType: 'SUBASTA', count: 1 },
-    offeredFiguritas: [mockFiguritas[4], mockFiguritas[6]],
+    publication: { id: '23', card: mockFiguritas[3], publisher: mockUsers[1], status: 'ACTIVA', participationType: 'SUBASTA', count: 1 },
+    offeredCards: [mockFiguritas[4], mockFiguritas[6]],
     bidder: mockUsers[0],
     status: 'RECHAZADA',
   },

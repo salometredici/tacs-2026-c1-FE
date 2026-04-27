@@ -1,5 +1,5 @@
 export interface MissingCard {
-  figuritaId: string;
+  cardId: string;
   number: number;
   description: string;
   country: string | null;

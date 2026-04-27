@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Figurita } from '../../interfaces/figuritas/Figurita';
+import { Card } from '../../interfaces/cards/Card';
 import { Category } from '../../interfaces/Categoria';
 import { getCatalog } from '../../api/FiguritasService';
 import { addToUserCollection } from '../../api/UsersService';
@@ -17,10 +17,10 @@ interface Props {
 }
 
 export default function AddToCollectionModal({ userId, onClose, onSuccess }: Props) {
-  const [catalog, setCatalog] = useState<Figurita[]>([]);
+  const [catalog, setCatalog] = useState<Card[]>([]);
   const [query, setQuery] = useState('');
   const [category, setCategory] = useState<Category | ''>('');
-  const [selected, setSelected] = useState<Figurita | null>(null);
+  const [selected, setSelected] = useState<Card | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 

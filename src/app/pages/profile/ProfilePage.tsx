@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { User } from '../../interfaces/auth/User';
-import { FiguritaColeccion } from '../../interfaces/figuritas/FiguritaColeccion';
-import { MissingCard } from '../../interfaces/figuritas/MissingCard';
+import { CollectionCard } from '../../interfaces/cards/CollectionCard';
+import { MissingCard } from '../../interfaces/cards/MissingCard';
 import { Proposal } from '../../interfaces/proposals/Proposal';
 import { Auction } from '../../interfaces/auctions/Auction';
 import { UserBid } from '../../interfaces/auctions/bid/UserBid';
@@ -42,7 +42,7 @@ export default function ProfilePage() {
   const user: User = currentUser;
 
   const [activeTab, setActiveTab] = useState<Tab>('collection');
-  const [collection, setCollection] = useState<FiguritaColeccion[]>([]);
+  const [collection, setCollection] = useState<CollectionCard[]>([]);
   const [faltantes, setFaltantes] = useState<MissingCard[]>([]);
   const [recibidas, setRecibidas] = useState<Proposal[]>([]);
   const [enviadas, setEnviadas] = useState<Proposal[]>([]);
@@ -135,7 +135,7 @@ export default function ProfilePage() {
                 ) : (
                   <CollectionContainer>
                     {faltantes.map(figurita => (
-                      <FiguritaCard key={figurita.figuritaId}>
+                      <FiguritaCard key={figurita.cardId}>
                         <h4>#{figurita.number}</h4>
                         <p><strong>{figurita.description}</strong></p>
                         <p>{figurita.country} - {figurita.team}</p>
@@ -163,7 +163,7 @@ export default function ProfilePage() {
                     {recibidas.slice(0, PREVIEW).map(p => (
                       <ProposalRow key={p.id}>
                         <ProposalText>
-                          <strong>#{p.publication.figurita.number} {p.publication.figurita.description}</strong>
+                          <strong>#{p.publication.card.number} {p.publication.card.description}</strong>
                           {' — '}de {p.bidder.name}
                         </ProposalText>
                         <StatusBadge $estado={p.status}>{STATUS_LABEL[p.status]}</StatusBadge>
@@ -192,7 +192,7 @@ export default function ProfilePage() {
                     {enviadas.slice(0, PREVIEW).map(p => (
                       <ProposalRow key={p.id}>
                         <ProposalText>
-                          <strong>#{p.publication.figurita.number} {p.publication.figurita.description}</strong>
+                          <strong>#{p.publication.card.number} {p.publication.card.description}</strong>
                           {' — '}a {p.publication.publisher.name}
                         </ProposalText>
                         <StatusBadge $estado={p.status}>{STATUS_LABEL[p.status]}</StatusBadge>

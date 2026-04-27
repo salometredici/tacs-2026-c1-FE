@@ -111,7 +111,7 @@ export const updateAuction = async (auctionId: string, _data: { rules: AuctionRu
 };
 
 // Para ofertar sobre una subasta (desde el detalle de la misma, con el botón "Ofertar")
-export const placeBid = async (auctionId: string, userId: string, figuritasIds: string[]): Promise<void> => {
+export const placeBid = async (auctionId: string, userId: string, _cardIds: string[]): Promise<void> => {
   try {
     /* En backend: ResponseEntity<String>
       Pendiente: alinear rutas en backend.

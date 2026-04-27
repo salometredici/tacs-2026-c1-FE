@@ -1,5 +1,5 @@
-export interface FiguritaColeccion {
-    figuritaId: string
+export interface CollectionCard {
+    cardId: string
     number: number
     description: string
     country: string | null

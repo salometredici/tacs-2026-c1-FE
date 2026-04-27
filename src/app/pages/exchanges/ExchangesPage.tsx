@@ -105,10 +105,10 @@ export default function ExchangesPage() {
                 <PublicationCard key={pub.id}>
                   <ExchangeInfo>
                     <ExchangeTitle>
-                      #{pub.figurita.number} · {pub.figurita.description}
+                      #{pub.card.number} · {pub.card.description}
                     </ExchangeTitle>
                     <ExchangeDetail>
-                      {pub.figurita.country} · {pub.figurita.category} · ×{pub.count}
+                      {pub.card.country} · {pub.card.category} · ×{pub.count}
                     </ExchangeDetail>
                   </ExchangeInfo>
                   <PublicationTypeBadge $type={pub.participationType}>
@@ -133,7 +133,7 @@ export default function ExchangesPage() {
                 <ExchangeCard key={e.id}>
                   <ExchangeInfo>
                     <ExchangeTitle>
-                      #{e.figurita.number} · {e.figurita.description}
+                      #{e.card.number} · {e.card.description}
                     </ExchangeTitle>
                     <ExchangeDetail>
                       Con {e.otherUser.name} · {new Date(e.date).toLocaleDateString('es-AR')}

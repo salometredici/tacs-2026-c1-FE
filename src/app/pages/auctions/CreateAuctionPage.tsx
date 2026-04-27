@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FiguritaColeccion } from '../../interfaces/figuritas/FiguritaColeccion';
+import { CollectionCard } from '../../interfaces/cards/CollectionCard';
 import { getUserCollection } from '../../api/UsersService';
 import { createAuction } from '../../api/AuctionsService';
 import { theme } from '../../styles/theme';
@@ -18,10 +18,10 @@ const CURRENT_USER_ID = '69e54c037de7f7e868da90f4'; // Para reemplazar por el us
 export default function CreateAuctionPage() {
   const navigate = useNavigate();
 
-  const [collection, setCollection] = useState<FiguritaColeccion[]>([]);
+  const [collection, setCollection] = useState<CollectionCard[]>([]);
   const [loadingCollection, setLoadingCollection] = useState(true);
 
-  const [figuritaId, setFiguritaId] = useState<number | ''>('');
+  const [cardId, setCardId] = useState<number | ''>('');
   const [duracionHoras, setDuracionHoras] = useState<number>(24);
   const [reputacionMinima, setReputacionMinima] = useState<number>(0);
   const [reputacionActiva, setReputacionActiva] = useState(false);
@@ -46,7 +46,7 @@ export default function CreateAuctionPage() {
     e.preventDefault();
     setError(null);
 
-    if (figuritaId === '') {
+    if (cardId === '') {
       setError('Seleccioná una figurita.');
       return;
     }
@@ -67,7 +67,7 @@ export default function CreateAuctionPage() {
       if (categoriaActiva)
         reglas.push({ type: 'CATEGORIA_MINIMA' as const, value: categoriaMinima });
       await createAuction({
-        figuritaId: figuritaId as number,
+        cardId: cardId as number,
         publisherId: CURRENT_USER_ID,
         duration: duracionHoras,
         rules: reglas,
@@ -100,13 +100,13 @@ export default function CreateAuctionPage() {
           ) : (
             <Select
               id="figurita-select"
-              value={figuritaId}
-              onChange={e => setFiguritaId(Number(e.target.value))}
+              value={cardId}
+              onChange={e => setCardId(Number(e.target.value))}
               required
             >
               <option value="">— Seleccioná una figurita —</option>
               {collection.map(fc => (
-                <option key={fc.figuritaId} value={fc.figuritaId}>
+                <option key={fc.cardId} value={fc.number}>
                   #{fc.number} · {fc.description} ({fc.country}) · {fc.category}
                   {fc.quantity > 1 ? ` ×${fc.quantity}` : ''}
                 </option>
@@ -252,7 +252,7 @@ export default function CreateAuctionPage() {
         {error && <ErrorMsg>{error}</ErrorMsg>}
 
         {/* Submit */}
-        <SubmitButton type="submit" disabled={submitting || figuritaId === ''}>
+        <SubmitButton type="submit" disabled={submitting || cardId === ''}>
           {submitting ? 'Creando...' : 'Crear Subasta'}
         </SubmitButton>
       </Card>

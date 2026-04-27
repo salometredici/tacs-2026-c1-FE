@@ -1,6 +1,6 @@
 import { User } from '../app/interfaces/auth/User';
-import { Figurita } from '../app/interfaces/figuritas/Figurita';
-import { FiguritaColeccion } from '../app/interfaces/figuritas/FiguritaColeccion';
+import { Card } from '../app/interfaces/cards/Card';
+import { CollectionCard } from '../app/interfaces/cards/CollectionCard';
 
 export const mockUser: User = {
   id: '69e54c037de7f7e868da90f4',
@@ -12,29 +12,29 @@ export const mockUser: User = {
   creationDate: '2025-01-15T00:00:00Z',
 };
 
-export const mockUserCollection: Figurita[] = [
-  { id: 'fig_001', number: 1,  description: 'Emiliano Martínez',      country: 'Argentina', team: 'Aston Villa',     category: 'EPICO' },
-  { id: 'fig_005', number: 5,  description: 'Lautaro Martínez',       country: 'Argentina', team: 'Inter de Milán',  category: 'EPICO' },
-  { id: 'fig_008', number: 8,  description: 'Jude Bellingham',        country: 'Inglaterra',team: 'Real Madrid',     category: 'EPICO' },
-  { id: 'fig_014', number: 14, description: 'Gavi',                   country: 'España',    team: 'FC Barcelona',    category: 'COMUN' },
-  { id: 'fig_021', number: 21, description: 'Bukayo Saka',            country: 'Inglaterra',team: 'Arsenal',         category: 'COMUN' },
-  { id: 'fig_022', number: 22, description: 'Rodri',                  country: 'España',    team: 'Manchester City', category: 'COMUN' },
-  { id: 'fig_030', number: 30, description: 'Rafael Leão',            country: 'Portugal',  team: 'AC Milan',        category: 'COMUN' },
-  { id: 'fig_033', number: 33, description: 'Rúben Dias',             country: 'Portugal',  team: 'Manchester City', category: 'COMUN' },
+export const mockUserCollection: Card[] = [
+  { id: 'fig_001', number: 1,  type: 'JUGADOR', description: 'Emiliano Martínez',      country: 'Argentina', team: 'Aston Villa',     category: 'EPICO' },
+  { id: 'fig_005', number: 5,  type: 'JUGADOR', description: 'Lautaro Martínez',       country: 'Argentina', team: 'Inter de Milán',  category: 'EPICO' },
+  { id: 'fig_008', number: 8,  type: 'JUGADOR', description: 'Jude Bellingham',        country: 'Inglaterra',team: 'Real Madrid',     category: 'EPICO' },
+  { id: 'fig_014', number: 14, type: 'JUGADOR', description: 'Gavi',                   country: 'España',    team: 'FC Barcelona',    category: 'COMUN' },
+  { id: 'fig_021', number: 21, type: 'JUGADOR', description: 'Bukayo Saka',            country: 'Inglaterra',team: 'Arsenal',         category: 'COMUN' },
+  { id: 'fig_022', number: 22, type: 'JUGADOR', description: 'Rodri',                  country: 'España',    team: 'Manchester City', category: 'COMUN' },
+  { id: 'fig_030', number: 30, type: 'JUGADOR', description: 'Rafael Leão',            country: 'Portugal',  team: 'AC Milan',        category: 'COMUN' },
+  { id: 'fig_033', number: 33, type: 'JUGADOR', description: 'Rúben Dias',             country: 'Portugal',  team: 'Manchester City', category: 'COMUN' },
 ];
 
-export const mockUserRepetidas: FiguritaColeccion[] = [
-  { figuritaId: 'fig_005', number: 5,  description: 'Lautaro Martínez', country: 'Argentina', team: 'Inter de Milán',  category: 'EPICO', quantity: 3, compromisedCount: 0 },
-  { figuritaId: 'fig_022', number: 22, description: 'Rodri',            country: 'España',    team: 'Manchester City', category: 'COMUN', quantity: 2, compromisedCount: 0 },
-  { figuritaId: 'fig_008', number: 8,  description: 'Jude Bellingham',  country: 'Inglaterra',team: 'Real Madrid',     category: 'EPICO', quantity: 2, compromisedCount: 0 },
-  { figuritaId: 'fig_014', number: 14, description: 'Gavi',             country: 'España',    team: 'FC Barcelona',    category: 'COMUN', quantity: 4, compromisedCount: 0 },
+export const mockUserRepetidas: CollectionCard[] = [
+  { cardId: 'fig_005', number: 5,  description: 'Lautaro Martínez', country: 'Argentina', team: 'Inter de Milán',  category: 'EPICO', quantity: 3, compromisedCount: 0 },
+  { cardId: 'fig_022', number: 22, description: 'Rodri',            country: 'España',    team: 'Manchester City', category: 'COMUN', quantity: 2, compromisedCount: 0 },
+  { cardId: 'fig_008', number: 8,  description: 'Jude Bellingham',  country: 'Inglaterra',team: 'Real Madrid',     category: 'EPICO', quantity: 2, compromisedCount: 0 },
+  { cardId: 'fig_014', number: 14, description: 'Gavi',             country: 'España',    team: 'FC Barcelona',    category: 'COMUN', quantity: 4, compromisedCount: 0 },
 ];
 
-export const mockUserMissingCards: Figurita[] = [
-  { id: 'fig_002', number: 2, description: 'Vinícius Jr.',          country: 'Brasil',   team: 'Real Madrid',      category: 'EPICO' },
-  { id: 'fig_003', number: 3, description: 'Florian Wirtz',         country: 'Alemania', team: 'Bayer Leverkusen', category: 'COMUN' },
-  { id: 'fig_006', number: 6, description: 'Sergi Roberto',         country: 'España',   team: 'FC Barcelona',     category: 'COMUN' },
-  { id: 'fig_010', number: 10, description: 'Khvicha Kvaratskhelia', country: 'Georgia',  team: 'Napoli',           category: 'COMUN' },
+export const mockUserMissingCards: Card[] = [
+  { id: 'fig_002', number: 2,  type: 'JUGADOR', description: 'Vinícius Jr.',          country: 'Brasil',   team: 'Real Madrid',      category: 'EPICO' },
+  { id: 'fig_003', number: 3,  type: 'JUGADOR', description: 'Florian Wirtz',         country: 'Alemania', team: 'Bayer Leverkusen', category: 'COMUN' },
+  { id: 'fig_006', number: 6,  type: 'JUGADOR', description: 'Sergi Roberto',         country: 'España',   team: 'FC Barcelona',     category: 'COMUN' },
+  { id: 'fig_010', number: 10, type: 'JUGADOR', description: 'Khvicha Kvaratskhelia', country: 'Georgia',  team: 'Napoli',           category: 'COMUN' },
 ];
 
 export const mockUsers: User[] = [
@@ -76,7 +76,7 @@ export const mockUsers: User[] = [
   }
 ];
 
-export const getMockedUserCollection = (): FiguritaColeccion[] => mockUserRepetidas;
-export const getMockedUserMissingCards = (): Figurita[] => mockUserMissingCards;
+export const getMockedUserCollection = (): CollectionCard[] => mockUserRepetidas;
+export const getMockedUserMissingCards = (): Card[] => mockUserMissingCards;
 export const getMockedUser = (): User => mockUser;
 export const getMockedUsers = (): User[] => mockUsers;

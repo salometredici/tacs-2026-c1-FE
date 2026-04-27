@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { Figurita } from '../../interfaces/figuritas/Figurita';
-import { FiguritaColeccion } from '../../interfaces/figuritas/FiguritaColeccion';
+import { Card } from '../../interfaces/cards/Card';
+import { CollectionCard } from '../../interfaces/cards/CollectionCard';
 import { getUserCollection } from '../../api/UsersService';
 import { makeProposal } from '../../api/ProposalsService';
 import {
@@ -25,14 +25,14 @@ import {
 
 interface Props {
   userId: string;
-  figurita: Figurita;
+  figurita: Card;
   publicationId: string;
   onClose: () => void;
   onSuccess: () => void;
 }
 
 export default function MakeProposalModal({ userId, figurita, publicationId, onClose, onSuccess }: Props) {
-  const [collection, setCollection] = useState<FiguritaColeccion[]>([]);
+  const [collection, setCollection] = useState<CollectionCard[]>([]);
   const [selected, setSelected] = useState<Record<number, number>>({});
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -120,7 +120,7 @@ export default function MakeProposalModal({ userId, figurita, publicationId, onC
                 {available.length === 0 ? (
                   <EmptyItem>No hay figuritas disponibles</EmptyItem>
                 ) : available.map(fc => (
-                  <FiguritaItem key={fc.figuritaId}>
+                  <FiguritaItem key={fc.cardId}>
                     <FiguritaNum>#{fc.number}</FiguritaNum>
                     <FiguritaDesc>{fc.description}</FiguritaDesc>
                     <FiguritaQtyLabel>x{fc.quantity}</FiguritaQtyLabel>
@@ -136,7 +136,7 @@ export default function MakeProposalModal({ userId, figurita, publicationId, onC
                 {offered.length === 0 ? (
                   <EmptyItem>Ninguna seleccionada aún</EmptyItem>
                 ) : offered.map(fc => (
-                  <FiguritaItem key={fc.figuritaId}>
+                  <FiguritaItem key={fc.cardId}>
                     <FiguritaNum>#{fc.number}</FiguritaNum>
                     <FiguritaDesc>{fc.description}</FiguritaDesc>
                     <QtyRow>

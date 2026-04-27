@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Figurita } from '../../interfaces/figuritas/Figurita';
-import { FiguritaColeccion } from '../../interfaces/figuritas/FiguritaColeccion';
+import { Card } from '../../interfaces/cards/Card';
+import { CollectionCard } from '../../interfaces/cards/CollectionCard';
 import { getUserCollection } from '../../api/UsersService';
 import { placeBid } from '../../api/AuctionsService';
 import {
@@ -11,14 +11,14 @@ import {
 
 interface Props {
   userId: string;
-  figurita: Figurita;
+  figurita: Card;
   auctionId: string;
   onClose: () => void;
   onSuccess: () => void;
 }
 
 export default function PlaceBidModal({ userId, figurita, auctionId, onClose, onSuccess }: Props) {
-  const [coleccion, setColeccion] = useState<FiguritaColeccion[]>([]);
+  const [coleccion, setColeccion] = useState<CollectionCard[]>([]);
   const [seleccionadas, setSeleccionadas] = useState<Record<number, number>>({});
   const [loading, setLoading] = useState(true);
   const [busqueda, setBusqueda] = useState('');
@@ -111,7 +111,7 @@ export default function PlaceBidModal({ userId, figurita, auctionId, onClose, on
                 {disponibles.length === 0 ? (
                   <tr><td colSpan={4} style={{ padding: '0.5rem', color: '#888' }}>No hay figuritas disponibles</td></tr>
                 ) : disponibles.map(fc => (
-                  <tr key={fc.figuritaId} style={{ borderBottom: '1px solid #eee' }}>
+                  <tr key={fc.cardId} style={{ borderBottom: '1px solid #eee' }}>
                     <td style={{ padding: '0.5rem' }}>#{fc.number}</td>
                     <td style={{ padding: '0.5rem' }}>{fc.description}</td>
                     <td style={{ padding: '0.5rem' }}>{fc.quantity}</td>
@@ -134,7 +134,7 @@ export default function PlaceBidModal({ userId, figurita, auctionId, onClose, on
                 {ofrecidas.length === 0 ? (
                   <tr><td colSpan={5} style={{ padding: '0.5rem', color: '#888' }}>Ninguna seleccionada aún</td></tr>
                 ) : ofrecidas.map(fc => (
-                  <tr key={fc.figuritaId} style={{ borderBottom: '1px solid #eee' }}>
+                  <tr key={fc.cardId} style={{ borderBottom: '1px solid #eee' }}>
                     <td style={{ padding: '0.5rem' }}>#{fc.number}</td>
                     <td style={{ padding: '0.5rem' }}>{fc.description}</td>
                     <td style={{ padding: '0.5rem' }}>{fc.quantity}</td>

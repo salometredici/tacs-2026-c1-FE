@@ -1,10 +1,10 @@
-import { Figurita } from '../figuritas/Figurita';
+import { Card } from '../cards/Card';
 import { User } from '../auth/User';
 import { PublicationStatus, ParticipationType } from './publicationTypes';
 
 export interface Publication {
   id: string;
-  figurita: Figurita;
+  card: Card;
   publisher: User;
   status: PublicationStatus;
   participationType: ParticipationType;

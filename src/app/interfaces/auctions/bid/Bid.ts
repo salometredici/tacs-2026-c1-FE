@@ -1,5 +1,5 @@
 import { BidStatus } from './BidStatus';
-import { Figurita } from '../../figuritas/Figurita';
+import { Card } from '../../cards/Card';
 
 export interface Bid {
   bidId: string;
@@ -9,7 +9,7 @@ export interface Bid {
     rating: number;
     avatarId: string;
   };
-  offeredFiguritas: Figurita[];
+  offeredFiguritas: Card[];
   status: BidStatus;
   bidDate: string;
 }

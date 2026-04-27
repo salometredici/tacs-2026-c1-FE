@@ -1,10 +1,10 @@
 import axios from 'axios';
 import { API_CONFIG } from '../config/apiConfig';
 import { User } from '../interfaces/auth/User';
-import { FiguritaColeccion } from '../interfaces/figuritas/FiguritaColeccion';
+import { CollectionCard } from '../interfaces/cards/CollectionCard';
 import { Publication } from '../interfaces/publications/Publication';
 import { getMockedSuggestions } from '../../mocks/suggestionsMock';
-import { MissingCard } from '../interfaces/figuritas/MissingCard';
+import { MissingCard } from '../interfaces/cards/MissingCard';
 
 const BASE_URL = API_CONFIG.users.base;
 
@@ -28,9 +28,9 @@ export const getById = async (userId: string): Promise<User | null> => {
   }
 };
 
-export const getUserCollection = async (userId: string): Promise<FiguritaColeccion[]> => {
+export const getUserCollection = async (userId: string): Promise<CollectionCard[]> => {
   try {
-    const response = await axios.get<FiguritaColeccion[]>(`${BASE_URL}/${userId}/collection`);
+    const response = await axios.get<CollectionCard[]>(`${BASE_URL}/${userId}/collection`);
     return response.data;
   } catch (error) {
     console.error(`Error al obtener la colección del usuario ${userId}:`, error);
@@ -38,8 +38,8 @@ export const getUserCollection = async (userId: string): Promise<FiguritaColecci
   }
 };
 
-export const addToUserCollection = async (userId: string, figuritaId: string): Promise<void> => {
-  await axios.post(`${BASE_URL}/${userId}/collection`, { figuritaId });
+export const addToUserCollection = async (userId: string, cardId: string): Promise<void> => {
+  await axios.post(`${BASE_URL}/${userId}/collection`, { cardId });
 };
 
 export const getUserMissingCards = async (userId: string): Promise<MissingCard[]> => {
@@ -52,8 +52,8 @@ export const getUserMissingCards = async (userId: string): Promise<MissingCard[]
   }
 };
 
-export const addMissingCard = async (userId: string, figuritaId: string): Promise<MissingCard> => {
-  const response = await axios.post<MissingCard>(`${BASE_URL}/${userId}/missing-cards`, { figuritaId });
+export const addMissingCard = async (userId: string, cardId: string): Promise<MissingCard> => {
+  const response = await axios.post<MissingCard>(`${BASE_URL}/${userId}/missing-cards`, { cardId });
   return response.data;
 };
 

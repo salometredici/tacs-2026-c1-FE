@@ -1,43 +1,44 @@
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
+const API = `${API_BASE_URL}/api`;
 
-// Todavía no están todos implementados, pero vamos dejando algunas rutas acá
 export const API_CONFIG = {
   baseUrl: API_BASE_URL,
 
   auth: {
-    login: `${API_BASE_URL}/auth/login`,
-    register: `${API_BASE_URL}/auth/register`,
-    logout: `${API_BASE_URL}/auth/logout`,
-    adminLogin: `${API_BASE_URL}/auth/admin/login`,
+    login: `${API}/auth/login`,
+    register: `${API}/auth/register`,
+    logout: `${API}/auth/logout`,
+    adminLogin: `${API}/auth/admin/login`,
   },
 
   users: {
-    base: `${API_BASE_URL}/users`,
+    base: `${API}/users`,
+    byId: (id: string) => `${API}/users/${id}`,
+    collection: (id: string) => `${API}/users/${id}/collection`,
+    collectionCard: (id: string, cardId: string) => `${API}/users/${id}/collection/${cardId}`,
+    missingCards: (id: string) => `${API}/users/${id}/missing-cards`,
   },
 
-  catalog: {
-    base: `${API_BASE_URL}/catalog`,
-  },
-
-  figuritas: {
-    base: `${API_BASE_URL}/figuritas`,
-    catalog: `${API_BASE_URL}/figuritas/catalog`,
-    search: `${API_BASE_URL}/figuritas/search`,
+  cards: {
+    base: `${API}/cards`,
+    catalog: `${API}/cards/catalog`,
+    byId: (id: string) => `${API}/cards/catalog/${id}`,
+    search: `${API}/cards/search`,
   },
 
   auctions: {
-    base: `${API_BASE_URL}/auctions`,
+    base: `${API}/auctions`,
   },
 
   proposals: {
-    base: `${API_BASE_URL}/proposals`,
+    base: `${API}/proposals`,
   },
 
   exchanges: {
-    base: `${API_BASE_URL}/exchanges`,
+    base: `${API}/exchanges`,
   },
 
   publications: {
-    base: `${API_BASE_URL}/publications`,
+    base: `${API}/publications`,
   },
 };

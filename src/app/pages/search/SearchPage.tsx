@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { theme } from '../../styles/theme';
 import SearchFiguritas from '../../components/search/SearchFiguritas';
 import SearchResults from '../../components/search/SearchResults';
-import { Figurita } from '../../interfaces/figuritas/Figurita';
+import { Card } from '../../interfaces/cards/Card';
 
 const SearchPageContainer = styled.div`
   max-width: 1400px;
@@ -12,12 +12,12 @@ const SearchPageContainer = styled.div`
 `;
 
 export default function SearchPage() {
-  const [results, setResults] = useState<Figurita[]>([]);
+  const [results, setResults] = useState<Card[]>([]);
   const [searched, setSearched] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const handleSearch = (
-    figuritas: Figurita[],
+    figuritas: Card[],
     hasSearched: boolean,
     isLoading: boolean
   ) => {

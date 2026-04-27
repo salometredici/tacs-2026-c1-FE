@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useUserContext } from '../../context/useUserContext';
 import MakeProposalModal from '../proposals/MakeProposalModal';
-import { Figurita } from '../../interfaces/figuritas/Figurita';
+import { Card } from '../../interfaces/cards/Card';
 import {
   ResultsContainer,
   ResultsHeader,
@@ -15,7 +15,7 @@ import {
 } from './Search.styles';
 
 interface SearchResultsProps {
-  results: Figurita[];
+  results: Card[];
   searched: boolean;
   loading: boolean;
 }
@@ -26,7 +26,7 @@ export default function SearchResults({
   loading,
 }: SearchResultsProps) {
   const { currentUser } = useUserContext();
-  const [modalFigurita, setModalFigurita] = useState<Figurita | null>(null);
+  const [modalFigurita, setModalFigurita] = useState<Card | null>(null);
 
   if (!searched || loading) {
     return null;

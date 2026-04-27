@@ -1,6 +1,6 @@
 import React from 'react';
 import { getUserCollection } from '../../api/UsersService';
-import { FiguritaColeccion } from '../../interfaces/figuritas/FiguritaColeccion';
+import { CollectionCard } from '../../interfaces/cards/CollectionCard';
 import AddToCollectionModal from '../figuritas/AddToCollectionModal';
 import {
   CollectionContainer,
@@ -16,7 +16,7 @@ interface CollectionProps {
 
 export default function Collection({ userId: userId }: CollectionProps) {
   const [tab, setTab] = React.useState<'todas' | 'repetidas'>('todas');
-  const [collection, setCollection] = React.useState<FiguritaColeccion[]>([]);
+  const [collection, setCollection] = React.useState<CollectionCard[]>([]);
   const [loading, setLoading] = React.useState(true);
   const [showAddModal, setShowAddModal] = React.useState(false);
 
@@ -69,7 +69,7 @@ export default function Collection({ userId: userId }: CollectionProps) {
 
       <CollectionContainer>
         {tab === 'todas' && collection.map((fc) => (
-          <FiguritaCard key={fc.figuritaId}>
+          <FiguritaCard key={fc.cardId}>
             <h4>#{fc.number}</h4>
             <p><strong>{fc.description}</strong></p>
             <p>{fc.country} - {fc.team}</p>
@@ -79,7 +79,7 @@ export default function Collection({ userId: userId }: CollectionProps) {
         ))}
 
         {tab === 'repetidas' && repetidas.map((fc) => (
-          <FiguritaCard key={fc.figuritaId}>
+          <FiguritaCard key={fc.cardId}>
             <h4>#{fc.number} · x{fc.quantity}</h4>
             <p><strong>{fc.description}</strong></p>
           </FiguritaCard>

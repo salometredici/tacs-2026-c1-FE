@@ -1,19 +1,19 @@
 import axios from "axios";
 import { API_CONFIG } from "../config/apiConfig";
-import { Figurita } from "../interfaces/figuritas/Figurita";
+import { Card } from "../interfaces/cards/Card";
 import { mockSearchFiguritas } from "../../mocks/figuritasMock";
 import { SearchFiguritasResponse } from "../interfaces/search/SearchFiguritasResponse";
 
-const BASE_URL = API_CONFIG.figuritas;
+const BASE_URL = API_CONFIG.cards;
 
 // Catálogo completo — se cachea en sessionStorage para no repetir el request
 // El filtrado se hace en el FE sobre los datos cacheados
 const CATALOG_KEY = 'figuritas_catalog';
-export const getCatalog = async (): Promise<Figurita[]> => {
+export const getCatalog = async (): Promise<Card[]> => {
     const cached = sessionStorage.getItem(CATALOG_KEY);
-    if (cached) return JSON.parse(cached) as Figurita[];
+    if (cached) return JSON.parse(cached) as Card[];
     try {
-        const response = await axios.get<Figurita[]>(BASE_URL.catalog);
+        const response = await axios.get<Card[]>(BASE_URL.catalog);
         sessionStorage.setItem(CATALOG_KEY, JSON.stringify(response.data));
         return response.data;
     } catch (error) {
@@ -23,9 +23,9 @@ export const getCatalog = async (): Promise<Figurita[]> => {
 };
 export const clearCatalogCache = () => sessionStorage.removeItem(CATALOG_KEY);
 
-export const getCatalogCardById = async (id: string): Promise<Figurita | null> => {
+export const getCatalogCardById = async (id: string): Promise<Card | null> => {
     try {
-        const response = await axios.get<Figurita>(`${BASE_URL.catalog}/${id}`);
+        const response = await axios.get<Card>(`${BASE_URL.catalog}/${id}`);
         return response.data;
     } catch (error) {
         console.error(`Error al obtener figurita ${id}:`, error);
@@ -35,7 +35,7 @@ export const getCatalogCardById = async (id: string): Promise<Figurita | null> =
 
 /*
     Búsqueda de figuritas disponibles en publicaciones y subastas activas.
-    Agrupa por figuritaId — devuelve una card por figurita con su disponibilidad.
+    Agrupa por cardId — devuelve una card por figurita con su disponibilidad.
     TODO: implementar cuando el backend migre PublicacionesService y SubastasService a mongo
     por ahora devuelve mock
 */

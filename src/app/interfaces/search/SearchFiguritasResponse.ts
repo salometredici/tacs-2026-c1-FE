@@ -1,7 +1,7 @@
-import { Figurita } from "../figuritas/Figurita";
+import { Card } from "../cards/Card";
 
 export interface SearchFiguritasResponse {
-    content: Figurita[];
+    content: Card[];
     page: number;
     size: number;
     totalElements: number;

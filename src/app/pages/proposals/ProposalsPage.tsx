@@ -105,7 +105,7 @@ export default function ProposalsPage() {
             <ProposalCard key={p.id}>
               <ProposalInfo>
                 <ProposalTitle>
-                  #{p.publication.figurita.number} · {p.publication.figurita.description}
+                  #{p.publication.card.number} · {p.publication.card.description}
                 </ProposalTitle>
                 <ProposalDetail>
                   {tab === 'received'
@@ -113,7 +113,7 @@ export default function ProposalsPage() {
                     : `Publicado por ${p.publication.publisher.name}`}
                 </ProposalDetail>
                 <ProposalDetail>
-                  Ofrece: {p.offeredFiguritas.map(f => `#${f.number} ${f.description}`).join(', ')}
+                  Ofrece: {p.offeredCards.map(f => `#${f.number} ${f.description}`).join(', ')}
                 </ProposalDetail>
               </ProposalInfo>
 

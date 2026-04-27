@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Figurita } from '../../interfaces/figuritas/Figurita';
+import { Card } from '../../interfaces/cards/Card';
 import { defaultSearchFilters, SearchFiguritasFilters } from '../../interfaces/search/SearchFiguritasFilters';
 import { SearchFiguritasResponse } from '../../interfaces/search/SearchFiguritasResponse';
 import { searchAvailable } from '../../api/FiguritasService';
@@ -17,7 +17,7 @@ import {
 } from './Search.styles';
 
 interface SearchFiguritasProps {
-  onSearch: (results: Figurita[], searched: boolean, loading: boolean) => void;
+  onSearch: (results: Card[], searched: boolean, loading: boolean) => void;
 }
 
 export default function SearchFiguritas({ onSearch }: SearchFiguritasProps) {
