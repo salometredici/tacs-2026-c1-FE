@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { CollectionCard } from '../../interfaces/cards/CollectionCard';
 import { getUserCollection } from '../../api/UsersService';
 import { createAuction } from '../../api/AuctionsService';
-import { theme } from '../../styles/theme'; 
+import { theme } from '../../styles/theme';
 import { AUCTION_DURATION_MIN, AUCTION_DURATION_MAX } from '../../constants/auctions';
 import { formatDuration } from '../../utils/utils';
 import { PageContainer, Header, BackButton, Title, Card, Field, Label, Hint, Select,
@@ -21,7 +21,7 @@ export default function CreateAuctionPage() {
   const [collection, setCollection] = useState<CollectionCard[]>([]);
   const [loadingCollection, setLoadingCollection] = useState(true);
 
-  const [cardId, setCardId] = useState<number | ''>('');
+  const [cardId, setFiguritaId] = useState<number | ''>('');
   const [duracionHoras, setDuracionHoras] = useState<number>(24);
   const [reputacionMinima, setReputacionMinima] = useState<number>(0);
   const [reputacionActiva, setReputacionActiva] = useState(false);
@@ -101,12 +101,12 @@ export default function CreateAuctionPage() {
             <Select
               id="figurita-select"
               value={cardId}
-              onChange={e => setCardId(Number(e.target.value))}
+              onChange={e => setFiguritaId(Number(e.target.value))}
               required
             >
               <option value="">— Seleccioná una figurita —</option>
               {collection.map(fc => (
-                <option key={fc.cardId} value={fc.number}>
+                <option key={fc.cardId} value={fc.cardId}>
                   #{fc.number} · {fc.description} ({fc.country}) · {fc.category}
                   {fc.quantity > 1 ? ` ×${fc.quantity}` : ''}
                 </option>
