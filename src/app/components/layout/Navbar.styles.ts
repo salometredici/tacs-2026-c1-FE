@@ -1,10 +1,10 @@
 import styled from 'styled-components';
 import { theme } from '../../styles/theme';
 
-// M3 Top App Bar – Small variant
+// M3 Top App Bar – Small variant (primary container variant)
 export const NavbarContainer = styled.nav`
-  background-color: ${theme.colors.surfaceContainer};
-  color: ${theme.colors.onSurface};
+  background-color: ${theme.colors.primary};
+  color: ${theme.colors.onPrimary};
   padding: 0 ${theme.spacing.md};
   height: 64px;
   display: flex;
@@ -31,7 +31,7 @@ export const BrandTitle = styled.h1`
   font-size: ${theme.typography.titleLarge.fontSize};
   line-height: ${theme.typography.titleLarge.lineHeight};
   font-weight: 500;
-  color: ${theme.colors.onSurface};
+  color: ${theme.colors.onPrimary};
   cursor: pointer;
   user-select: none;
 
@@ -50,11 +50,11 @@ export const ActionsSection = styled.div`
   }
 `;
 
-// M3 Icon Button
+// M3 Icon Button (on primary surface)
 export const NavButton = styled.button`
   background: none;
   border: none;
-  color: ${theme.colors.onSurfaceVariant};
+  color: ${theme.colors.onPrimary};
   cursor: pointer;
   width: 40px;
   height: 40px;
@@ -67,12 +67,16 @@ export const NavButton = styled.button`
   font-size: 0.875rem;
   font-weight: 500;
 
+  & .material-symbols-outlined {
+    font-size: 22px;
+  }
+
   &:hover {
-    background-color: rgba(67, 71, 78, ${theme.state.hover});
+    background-color: rgba(255, 255, 255, ${theme.state.hover});
   }
 
   &:active {
-    background-color: rgba(67, 71, 78, ${theme.state.pressed});
+    background-color: rgba(255, 255, 255, ${theme.state.pressed});
   }
 `;
 
