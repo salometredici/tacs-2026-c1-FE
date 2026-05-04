@@ -4,10 +4,13 @@ import { Publication } from '../../interfaces/publications/Publication';
 import { getUserSuggestions } from '../../api/UsersService';
 import { useUserContext } from '../../context/useUserContext';
 import MakeProposalModal from '../../components/proposals/MakeProposalModal';
+import CatalogPage from '../catalog/CatalogPage';
 import {
   HomeContainer,
   Title,
   Subtitle,
+  CatalogSection,
+  CatalogSectionTitle,
   CardsGrid,
   Card,
   CardTitle,
@@ -126,6 +129,11 @@ export default function HomePage() {
           )}
         </SuggestionsSection>
       )}
+
+      <CatalogSection>
+        <CatalogSectionTitle>Catálogo de Figuritas</CatalogSectionTitle>
+        <CatalogPage />
+      </CatalogSection>
 
       <CardsGrid>
         <Card onClick={() => navigate('/search')}>

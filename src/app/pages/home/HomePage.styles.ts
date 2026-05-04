@@ -87,6 +87,17 @@ export const CardDescription = styled.p`
   line-height: 1.5;
 `;
 
+export const CatalogSection = styled.div`
+  margin-bottom: ${theme.spacing.xl};
+`;
+
+export const CatalogSectionTitle = styled.h2`
+  margin: 0 0 ${theme.spacing.md} 0;
+  font-size: ${theme.typography.titleMedium.fontSize};
+  font-weight: ${theme.typography.titleMedium.fontWeight};
+  color: ${theme.colors.onBackground};
+`;
+
 // M3 Filled Card (sugerencias)
 export const SuggestionsSection = styled.div`
   background: ${theme.colors.surfaceContainerLow};

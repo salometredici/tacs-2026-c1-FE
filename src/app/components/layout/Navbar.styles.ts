@@ -40,6 +40,54 @@ export const BrandTitle = styled.h1`
   }
 `;
 
+// Center nav links section
+export const NavLinksSection = styled.div`
+  display: flex;
+  align-items: center;
+  gap: ${theme.spacing.xs};
+
+  @media (max-width: 600px) {
+    display: none;
+  }
+`;
+
+// M3 Text Button used for nav links
+export const NavTextLink = styled.button`
+  background: none;
+  border: none;
+  color: ${theme.colors.onSurfaceVariant};
+  cursor: pointer;
+  height: 40px;
+  padding: 0 12px;
+  border-radius: ${theme.shape.full};
+  display: flex;
+  align-items: center;
+  font-size: ${theme.typography.labelLarge.fontSize};
+  font-weight: ${theme.typography.labelLarge.fontWeight};
+  letter-spacing: 0.00625em;
+  transition: background-color 0.15s, color 0.15s;
+  position: relative;
+  overflow: hidden;
+  white-space: nowrap;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: currentColor;
+    opacity: 0;
+    transition: opacity 0.15s;
+    border-radius: inherit;
+  }
+
+  &:hover {
+    color: ${theme.colors.onSurface};
+    &::after { opacity: ${theme.state.hover}; }
+  }
+
+  &:active::after { opacity: ${theme.state.pressed}; }
+`;
+
 export const ActionsSection = styled.div`
   display: flex;
   align-items: center;

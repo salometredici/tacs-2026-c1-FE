@@ -63,7 +63,7 @@ export default function Navbar({ onHomeClick, onProfileClick, onLogout }: Navbar
         </BrandTitle>
       </BrandSection>
 
-      <ActionsSection>
+<ActionsSection>
         {currentUser && (
           <BellWrapper ref={bellRef}>
             <NavButton title="Notificaciones" onClick={handleBellClick}>
