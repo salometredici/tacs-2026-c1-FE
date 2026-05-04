@@ -9,4 +9,5 @@ export interface Card {
     country: string | null;
     team: string | null;
     category: Category;
+    imageUrl?: string;
 }

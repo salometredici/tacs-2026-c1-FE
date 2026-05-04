@@ -4,13 +4,14 @@ import { Exchange } from '../../interfaces/exchanges/Exchange';
 import { Publication } from '../../interfaces/publications/Publication';
 import { getExchangesByUserId, getCardsForExchangeByUserId, submitFeedback } from '../../api/ExchangesService';
 import { useUserContext } from '../../context/useUserContext';
-import { toastError } from '../../utils/toast';
+import { useSnackbar } from '../../context/useSnackbar';
 import PublishFiguritaModal from '../../components/exchanges/PublishFiguritaModal';
+import { SectionActionButton } from '../../components/auctions/Auctions.styles';
 import {
   PageContainer, PageTitle, ExchangeList, ExchangeCard,
   ExchangeInfo, ExchangeTitle, ExchangeDetail, TypeBadge,
   RateButton, RatedLabel, EmptyMessage,
-  SectionHeader, SectionTitle, PublishButton, PublicationCard, PublicationTypeBadge, Divider,
+  SectionHeader, SectionTitle, PublicationCard, PublicationTypeBadge, Divider,
   Overlay, Modal, ModalTitle, StarsRow, StarButton,
   CommentInput, ModalActions, CancelButton, SubmitButton,
 } from './ExchangesPage.styles';
@@ -25,6 +26,7 @@ const PARTICIPATION_TYPE_LABEL: Record<ParticipationType, string> = {
 export default function ExchangesPage() {
   const navigate = useNavigate();
   const { currentUser } = useUserContext();
+  const { showError } = useSnackbar();
 
   if (!currentUser) {
     navigate('/login');
@@ -76,7 +78,7 @@ export default function ExchangesPage() {
       );
       closeRatingModal();
     } catch {
-      toastError('Error al enviar la calificación. Intentá de nuevo.');
+      showError('Error al enviar la calificación. Intentá nuevamente.');
     } finally {
       setSubmitting(false);
     }
@@ -92,9 +94,10 @@ export default function ExchangesPage() {
         <>
           <SectionHeader>
             <SectionTitle>Mis Publicaciones activas ({publications.length})</SectionTitle>
-            <PublishButton onClick={() => setShowPublishModal(true)}>
-              + Publicar Figurita
-            </PublishButton>
+            <SectionActionButton onClick={() => setShowPublishModal(true)}>
+              <span className="material-symbols-outlined" aria-hidden="true">add</span>
+              Publicar Figurita
+            </SectionActionButton>
           </SectionHeader>
 
           {publications.length === 0 ? (

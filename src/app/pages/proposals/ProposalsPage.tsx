@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Proposal } from '../../interfaces/proposals/Proposal';
 import { getProposals, acceptProposal, rejectProposal } from '../../api/ProposalsService';
 import { useUserContext } from '../../context/useUserContext';
-import { toastError } from '../../utils/toast';
+import { useSnackbar } from '../../context/useSnackbar';
 import {
   PageContainer, Header, BackButton, Title,
   TabNav, TabButton, ProposalList, ProposalCard,
@@ -22,6 +22,7 @@ const STATUS_LABEL: Record<ProposalStatus, string> = {
 export default function ProposalsPage() {
   const navigate = useNavigate();
   const { currentUser } = useUserContext();
+  const { showError } = useSnackbar();
 
   if (!currentUser) {
     navigate('/login');
@@ -55,7 +56,7 @@ export default function ProposalsPage() {
         prev.map(p => p.id === proposal.id ? { ...p, status: 'ACEPTADA' } : p)
       );
     } catch {
-      toastError('Error al aceptar la propuesta. Intentá de nuevo.');
+      showError('Error al aceptar la propuesta. Intentá nuevamente.');
     } finally {
       setActionLoading(null);
     }
@@ -69,7 +70,7 @@ export default function ProposalsPage() {
         prev.map(p => p.id === proposal.id ? { ...p, status: 'RECHAZADA' } : p)
       );
     } catch {
-      toastError('Error al rechazar la propuesta. Intentá de nuevo.');
+      showError('Error al rechazar la propuesta. Intentá nuevamente.');
     } finally {
       setActionLoading(null);
     }

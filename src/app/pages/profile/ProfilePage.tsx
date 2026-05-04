@@ -12,13 +12,14 @@ import { getProposals } from '../../api/ProposalsService';
 import { useUserContext } from '../../context/useUserContext';
 import {
   ProfileContainer, ProfileHeader, ProfileTitle, ProfileEmail,
-  TabSection, TabNav, TabButton, AddButton,
+  TabSection, TabNav, TabButton,
   SectionHeader, SectionTitle, SeeAllLink, RowList,
   ProposalRow, ProposalText, StatusBadge, Divider,
   CompactAuctionCard, AuctionText, AuctionStatus,
 } from './ProfilePage.styles';
 import Collection from '../../components/collection/Collection';
 import AddMissingCardsModal from '../../components/figuritas/AddMissingCardsModal';
+import { SectionActionButton } from '../../components/auctions/Auctions.styles';
 import {
   CollectionContainer,
   FiguritaCard,
@@ -125,11 +126,13 @@ export default function ProfilePage() {
             {/* Faltantes */}
             {activeTab === 'faltantes' && (
               <>
-                <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '1rem' }}>
-                  <AddButton onClick={() => setShowAddMissingModal(true)}>
-                    + Agregar Faltantes
-                  </AddButton>
-                </div>
+                <SectionHeader>
+                  <SectionTitle>Mis faltantes ({faltantes.length})</SectionTitle>
+                  <SectionActionButton onClick={() => setShowAddMissingModal(true)}>
+                    <span className="material-symbols-outlined" aria-hidden="true">add</span>
+                    Agregar Faltantes
+                  </SectionActionButton>
+                </SectionHeader>
                 {faltantes.length === 0 ? (
                   <EmptyMessage>No tienes figuritas faltantes.</EmptyMessage>
                 ) : (

@@ -10,10 +10,10 @@ import {
   AuctionsContainer,
   AuctionsHeader,
   AuctionsTitle,
-  CreateButton,
   AuctionsGrid,
   LoadingMessage,
   EmptyMessage,
+  SectionActionButton,
 } from '../../components/auctions/Auctions.styles';
 import { theme } from '../../styles/theme';
 import { TabNav, TabBtn, MyBidCard, StatusBadge } from './AuctionsPage.styles';
@@ -52,7 +52,10 @@ export default function AuctionsPage() {
     <AuctionsContainer>
       <AuctionsHeader>
         <AuctionsTitle>Subastas</AuctionsTitle>
-        <CreateButton onClick={() => navigate('/auctions/create')}>+ Crear Subasta</CreateButton>
+        <SectionActionButton onClick={() => navigate('/auctions/create')}>
+          <span className="material-symbols-outlined" aria-hidden="true">gavel</span>
+          Crear Subasta
+        </SectionActionButton>
       </AuctionsHeader>
 
       <TabNav>

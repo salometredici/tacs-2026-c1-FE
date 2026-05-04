@@ -61,7 +61,8 @@ export const FiguritaNum = styled.span`
 `;
 
 export const FiguritaDesc = styled.span`
-  font-size: ${theme.typography.bodyMedium.fontSize};
+  font-size: ${theme.typography.bodySmall.fontSize};
+  line-height: ${theme.typography.bodySmall.lineHeight};
   color: ${theme.colors.onSurface};
   flex: 1;
 `;

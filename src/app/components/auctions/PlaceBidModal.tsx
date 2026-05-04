@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Card } from '../../interfaces/cards/Card';
 import { CollectionCard } from '../../interfaces/cards/CollectionCard';
 import { getUserCollection } from '../../api/UsersService';
@@ -7,7 +7,21 @@ import {
   Overlay, Modal, ModalHeader, ModalTitle, CloseButton,
   Footer, CancelButton, SubmitButton, ErrorMsg,
 } from '../exchanges/PublishFiguritaModal.styles';
-
+import {
+  SearchInput,
+  SectionLabel,
+  FiguritaList,
+  FiguritaItem,
+  FiguritaNum,
+  FiguritaDesc,
+  FiguritaQtyLabel,
+  AddButton,
+  RemoveButton,
+  QtyRow,
+  QtyButton,
+  QtyDisplay,
+  EmptyItem,
+} from '../proposals/MakeProposalModal.styles';
 
 interface Props {
   userId: string;
@@ -18,22 +32,22 @@ interface Props {
 }
 
 export default function PlaceBidModal({ userId, figurita, auctionId, onClose, onSuccess }: Props) {
-  const [coleccion, setColeccion] = useState<CollectionCard[]>([]);
-  const [seleccionadas, setSeleccionadas] = useState<Record<number, number>>({});
+  const [collection, setCollection] = useState<CollectionCard[]>([]);
+  const [selected, setSelected] = useState<Record<number, number>>({});
   const [loading, setLoading] = useState(true);
-  const [busqueda, setBusqueda] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     getUserCollection(userId).then(col => {
-      setColeccion(col);
+      setCollection(col);
       setLoading(false);
     });
   }, [userId]);
 
   const toggleFigurita = (cardNumber: number) => {
-    setSeleccionadas(prev => {
+    setSelected(prev => {
       if (cardNumber in prev) {
         const { [cardNumber]: _, ...rest } = prev;
         return rest;
@@ -43,33 +57,33 @@ export default function PlaceBidModal({ userId, figurita, auctionId, onClose, on
   };
 
   const updateQuantity = (cardNumber: number, delta: number) => {
-    setSeleccionadas(prev => {
-      const currentQty = prev[cardNumber] || 0;
-      const newQty = currentQty + delta;
-
+    setSelected(prev => {
+      const newQty = (prev[cardNumber] || 0) + delta;
       if (newQty <= 0) {
         const { [cardNumber]: _, ...rest } = prev;
         return rest;
       }
-
       return { ...prev, [cardNumber]: newQty };
     });
   };
 
-  const disponibles = coleccion
-    .filter(fc => !(fc.number in seleccionadas))
+  const available = collection
+    .filter(fc => !(fc.number in selected))
     .filter(fc =>
-      fc.description.toLowerCase().includes(busqueda.toLowerCase()) ||
-      String(fc.number).includes(busqueda)
+      fc.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      String(fc.number).includes(searchQuery)
     );
 
-  const ofrecidas = coleccion.filter(fc => fc.number in seleccionadas);
+  const offered = collection.filter(fc => fc.number in selected);
 
   const handleSubmit = async () => {
-    if (Object.keys(seleccionadas).length === 0) { setError('Seleccioná al menos una figurita para ofrecer.'); return; }
+    if (Object.keys(selected).length === 0) {
+      setError('Seleccioná al menos una figurita para ofrecer.');
+      return;
+    }
     setSubmitting(true);
     try {
-      await placeBid(auctionId, userId, Object.keys(seleccionadas));
+      await placeBid(auctionId, userId, Object.keys(selected));
       onSuccess();
       onClose();
     } catch {
@@ -84,72 +98,65 @@ export default function PlaceBidModal({ userId, figurita, auctionId, onClose, on
       <Modal>
         <ModalHeader>
           <ModalTitle>Ofertar</ModalTitle>
-          <CloseButton type="button" onClick={onClose}>✕</CloseButton>
+          <CloseButton type="button" onClick={onClose} aria-label="Cerrar">
+            <span className="material-symbols-outlined" aria-hidden="true">close</span>
+          </CloseButton>
         </ModalHeader>
 
-        <p>Querés: <strong>#{figurita.number} {figurita.description}</strong> ({figurita.country})</p>
+        <p style={{ margin: 0 }}>
+          Querés: <strong>#{figurita.number} {figurita.description}</strong> ({figurita.country})
+        </p>
 
-        {loading ? <p>Cargando tu colección...</p> : coleccion.length === 0 ? (
-          <p>No tenés figuritas para ofertar.</p>
+        {loading ? (
+          <p style={{ margin: 0 }}>Cargando tu colección...</p>
+        ) : collection.length === 0 ? (
+          <p style={{ margin: 0 }}>No tenés figuritas para ofertar.</p>
         ) : (
           <>
-            <input
-              placeholder="Buscar por nombre o número..."
-              value={busqueda}
-              onChange={e => setBusqueda(e.target.value)}
-              style={{ width: '100%', padding: '0.5rem', marginBottom: '1rem', boxSizing: 'border-box' }}
+            <SearchInput
+              placeholder="Buscar por descripción o número..."
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
             />
 
-            <p><strong>Disponibles:</strong></p>
-            <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '1.5rem' }}>
-              <thead>
-                <tr style={{ borderBottom: '2px solid #ccc', textAlign: 'left' }}>
-                  <th>ID</th><th>Nombre</th><th>Disponible</th><th></th>
-                </tr>
-              </thead>
-              <tbody>
-                {disponibles.length === 0 ? (
-                  <tr><td colSpan={4} style={{ padding: '0.5rem', color: '#888' }}>No hay figuritas disponibles</td></tr>
-                ) : disponibles.map(fc => (
-                  <tr key={fc.cardId} style={{ borderBottom: '1px solid #eee' }}>
-                    <td style={{ padding: '0.5rem' }}>#{fc.number}</td>
-                    <td style={{ padding: '0.5rem' }}>{fc.description}</td>
-                    <td style={{ padding: '0.5rem' }}>{fc.quantity}</td>
-                    <td style={{ padding: '0.5rem' }}>
-                      <button onClick={() => toggleFigurita(fc.number)}>Agregar</button>
-                    </td>
-                  </tr>
+            <div>
+              <SectionLabel>Disponibles</SectionLabel>
+              <FiguritaList>
+                {available.length === 0 ? (
+                  <EmptyItem>No hay figuritas disponibles</EmptyItem>
+                ) : available.map(fc => (
+                  <FiguritaItem key={fc.cardId}>
+                    <FiguritaNum>#{fc.number}</FiguritaNum>
+                    <FiguritaDesc>{fc.description}</FiguritaDesc>
+                    <FiguritaQtyLabel>x{fc.quantity}</FiguritaQtyLabel>
+                    <AddButton onClick={() => toggleFigurita(fc.number)}>Agregar</AddButton>
+                  </FiguritaItem>
                 ))}
-              </tbody>
-            </table>
+              </FiguritaList>
+            </div>
 
-            <p><strong>Ofrecidas ({ofrecidas.length}):</strong></p>
-            <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '1rem' }}>
-              <thead>
-                <tr style={{ borderBottom: '2px solid #ccc', textAlign: 'left' }}>
-                  <th>ID</th><th>Nombre</th><th>Disponible</th><th>Cantidad</th><th></th>
-                </tr>
-              </thead>
-              <tbody>
-                {ofrecidas.length === 0 ? (
-                  <tr><td colSpan={5} style={{ padding: '0.5rem', color: '#888' }}>Ninguna seleccionada aún</td></tr>
-                ) : ofrecidas.map(fc => (
-                  <tr key={fc.cardId} style={{ borderBottom: '1px solid #eee' }}>
-                    <td style={{ padding: '0.5rem' }}>#{fc.number}</td>
-                    <td style={{ padding: '0.5rem' }}>{fc.description}</td>
-                    <td style={{ padding: '0.5rem' }}>{fc.quantity}</td>
-                    <td style={{ padding: '0.5rem' }}>
-                      <button onClick={() => updateQuantity(fc.number, -1)}>-</button>
-                      {' '}{seleccionadas[fc.number]}{' '}
-                      <button onClick={() => updateQuantity(fc.number, +1)} disabled={seleccionadas[fc.number] >= fc.quantity}>+</button>
-                    </td>
-                    <td style={{ padding: '0.5rem' }}>
-                      <button onClick={() => toggleFigurita(fc.number)}>Quitar</button>
-                    </td>
-                  </tr>
+            <div>
+              <SectionLabel>Ofrecidas ({offered.length})</SectionLabel>
+              <FiguritaList>
+                {offered.length === 0 ? (
+                  <EmptyItem>Ninguna seleccionada aún</EmptyItem>
+                ) : offered.map(fc => (
+                  <FiguritaItem key={fc.cardId}>
+                    <FiguritaNum>#{fc.number}</FiguritaNum>
+                    <FiguritaDesc>{fc.description}</FiguritaDesc>
+                    <QtyRow>
+                      <QtyButton onClick={() => updateQuantity(fc.number, -1)}>−</QtyButton>
+                      <QtyDisplay>{selected[fc.number]}</QtyDisplay>
+                      <QtyButton
+                        onClick={() => updateQuantity(fc.number, +1)}
+                        disabled={selected[fc.number] >= fc.quantity}
+                      >+</QtyButton>
+                    </QtyRow>
+                    <RemoveButton onClick={() => toggleFigurita(fc.number)}>Quitar</RemoveButton>
+                  </FiguritaItem>
                 ))}
-              </tbody>
-            </table>
+              </FiguritaList>
+            </div>
           </>
         )}
 
@@ -157,7 +164,7 @@ export default function PlaceBidModal({ userId, figurita, auctionId, onClose, on
 
         <Footer>
           <CancelButton onClick={onClose}>Cancelar</CancelButton>
-          <SubmitButton onClick={handleSubmit} disabled={submitting || Object.keys(seleccionadas).length === 0}>
+          <SubmitButton onClick={handleSubmit} disabled={submitting || Object.keys(selected).length === 0}>
             {submitting ? 'Enviando...' : 'Confirmar oferta'}
           </SubmitButton>
         </Footer>

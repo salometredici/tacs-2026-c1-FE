@@ -88,34 +88,6 @@ export const TabButton = styled.button<{ $active: boolean }>`
   }
 `;
 
-// M3 Filled Button
-export const AddButton = styled.button`
-  padding: 10px ${theme.spacing.lg};
-  background: ${theme.colors.primary};
-  color: ${theme.colors.onPrimary};
-  border: none;
-  border-radius: ${theme.shape.full};
-  font-size: ${theme.typography.labelLarge.fontSize};
-  font-weight: ${theme.typography.labelLarge.fontWeight};
-  letter-spacing: 0.00625em;
-  cursor: pointer;
-  transition: box-shadow 0.2s;
-  position: relative;
-  overflow: hidden;
-
-  &::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: ${theme.colors.onPrimary};
-    opacity: 0;
-    transition: opacity 0.2s;
-    border-radius: inherit;
-  }
-
-  &:hover { box-shadow: ${theme.elevation[1]}; &::after { opacity: ${theme.state.hover}; } }
-`;
-
 export const SectionHeader = styled.div`
   display: flex;
   justify-content: space-between;
