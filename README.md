@@ -2,56 +2,33 @@
 
 Frontend en React + TypeScript para la plataforma de intercambio de figuritas.
 
-## Levantar con Docker (stack completo)
+## Levantar el stack completo
 
-**Requisitos:** [Docker Desktop](https://www.docker.com/products/docker-desktop/) corriendo + [`mongosh`](https://www.mongodb.com/try/download/shell) en el PATH
+El stack completo (mongo + backend + frontend) se levanta desde el repo del backend. Ver [README del backend](https://github.com/Leo-de-Riv3r/tp1c2026).
 
-Ambos repos deben estar clonados en la misma carpeta padre tal cual se clonan de GitHub:
-
-```
-carpeta-padre/
-├── tacs-2026-c1-FE/   ← este repo
-└── tp1c2026/          ← repo del backend
-```
-
-Desde dentro de `tacs-2026-c1-FE/`:
-
-**Primera vez (o al resetear la base):**
-```bash
-docker compose up --build -d
-# esperar ~10 segundos a que Mongo esté listo
-mongosh "mongodb://localhost:27018/tacs_db" --file ../tp1c2026/backend/seed/seed.js
-```
-
-**Levantar sin resetear:**
-```bash
-docker compose up -d
-```
-
-| Servicio  | URL                                       |
-|-----------|-------------------------------------------|
-| Frontend  | http://localhost (puerto 80, default HTTP) |
-| Backend   | http://localhost:8080                     |
-| MongoDB   | localhost:27018                           |
-
-## Levantar en modo local (dev)
+## Desarrollar en local
 
 **Requisitos:** Node.js 22+
+
+El backend debe estar corriendo en el puerto 8080 antes de arrancar el frontend (ver README del backend).
 
 ```bash
 npm install
 npm run dev
 ```
 
-La app estará disponible en http://localhost:5173.  
-Asegurarse de que el backend esté corriendo por separado en el puerto 8080, o ajustar `VITE_API_BASE_URL` en `.env`.
+La app estará disponible en http://localhost:5173.
+
+El dev server tiene un proxy configurado que redirige `/api` → `http://localhost:8080`, por lo que no hace falta configurar ninguna variable de entorno.
 
 ## Variables de entorno
 
-| Variable           | Valor por defecto        | Descripción              |
-|--------------------|--------------------------|--------------------------|
-| VITE_API_BASE_URL  | http://localhost:8080    | URL base del backend     |
+| Variable          | Valor por defecto     | Descripción                                      |
+|-------------------|-----------------------|--------------------------------------------------|
+| VITE_API_BASE_URL | http://localhost:8080 | URL base del backend (solo para el build Docker) |
+
+En modo dev no hace falta — el proxy de Vite lo maneja automáticamente.
 
 ## Documentación
 
-La guía de setup completa, decisiones de arquitectura y lineamientos de desarrollo están en la [Wiki del proyecto](https://github.com/salometredici/tacs-2026-c1-FE/wiki).
+Decisiones de arquitectura y lineamientos de desarrollo en la [Wiki del proyecto](https://github.com/salometredici/tacs-2026-c1-FE/wiki).
