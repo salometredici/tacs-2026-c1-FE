@@ -15,3 +15,16 @@ export function formatDuration(horas: number): string {
   const resto = horas % 24;
   return resto > 0 ? `${dias}d ${resto}h` : `${dias}d`;
 }
+
+export function formatTimeAgo(isoDate: string): string {
+  const days = Math.floor((Date.now() - new Date(isoDate).getTime()) / 86400000);
+  if (days <= 0) return 'hoy';
+  if (days === 1) return 'ayer';
+  if (days < 7) return `hace ${days} días`;
+  if (days < 30) {
+    const weeks = Math.floor(days / 7);
+    return weeks === 1 ? 'hace 1 semana' : `hace ${weeks} semanas`;
+  }
+  const months = Math.floor(days / 30);
+  return months === 1 ? 'hace 1 mes' : `hace ${months} meses`;
+}

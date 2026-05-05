@@ -69,12 +69,6 @@ export const CloseButton = styled.button`
   &:hover { color: ${theme.colors.onSurface}; &::after { opacity: ${theme.state.hover}; } }
 `;
 
-export const Row = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: ${theme.spacing.md};
-`;
-
 export const Field = styled.div`
   display: flex;
   flex-direction: column;
@@ -84,6 +78,12 @@ export const Field = styled.div`
     font-weight: ${theme.typography.labelLarge.fontWeight};
     color: ${theme.colors.onSurface};
   }
+`;
+
+export const Hint = styled.p`
+  margin: 0;
+  font-size: ${theme.typography.bodySmall.fontSize};
+  color: ${theme.colors.onSurfaceVariant};
 `;
 
 // M3 Outlined Text Field
@@ -102,39 +102,26 @@ export const Input = styled.input`
   &::placeholder { color: ${theme.colors.onSurfaceVariant}; }
 `;
 
-export const Select = styled.select`
-  padding: ${theme.spacing.md};
-  border: 1px solid ${theme.colors.outline};
-  border-radius: ${theme.shape.extraSmall};
-  font-size: ${theme.typography.bodyLarge.fontSize};
-  background: ${theme.colors.surface};
-  color: ${theme.colors.onSurface};
-  cursor: pointer;
-  outline: none;
-  transition: border 0.2s;
-
-  &:hover { border-color: ${theme.colors.onSurface}; }
-  &:focus { border: 2px solid ${theme.colors.primary}; }
-`;
-
-export const TypeToggle = styled.div`
+// M3 List Item — selectable (mismo patrón que CreateAuctionPage)
+export const SelectableItem = styled.div<{ $selected: boolean; $disabled?: boolean }>`
   display: flex;
-  gap: ${theme.spacing.sm};
+  align-items: center;
+  gap: ${theme.spacing.md};
+  padding: ${theme.spacing.sm} ${theme.spacing.md};
+  background: ${({ $selected }) => $selected ? theme.colors.secondaryContainer : theme.colors.surfaceContainerLowest};
+  border-radius: ${theme.shape.small};
+  cursor: ${({ $disabled }) => $disabled ? 'not-allowed' : 'pointer'};
+  opacity: ${({ $disabled }) => $disabled ? 0.5 : 1};
+  transition: background 0.15s;
+  &:hover { background: ${({ $selected, $disabled }) =>
+    $disabled ? undefined :
+    $selected ? theme.colors.secondaryContainer : theme.colors.surfaceContainerLow}; }
 `;
 
-// M3 Filter Chip
-export const TypeOption = styled.button<{ $active: boolean }>`
-  flex: 1;
-  padding: 6px 16px;
-  border: 1px solid ${({ $active }) => $active ? theme.colors.primary : theme.colors.outlineVariant};
-  background: ${({ $active }) => $active ? theme.colors.secondaryContainer : theme.colors.surface};
-  color: ${({ $active }) => $active ? theme.colors.onSecondaryContainer : theme.colors.onSurfaceVariant};
-  border-radius: ${theme.shape.small};
-  font-size: ${theme.typography.labelLarge.fontSize};
-  font-weight: ${theme.typography.labelLarge.fontWeight};
-  letter-spacing: 0.04em;
-  cursor: pointer;
-  transition: all 0.15s;
+export const SelectIndicator = styled.span<{ $selected: boolean }>`
+  display: inline-flex;
+  align-items: center;
+  color: ${({ $selected }) => $selected ? theme.colors.primary : theme.colors.onSurfaceVariant};
 `;
 
 export const Footer = styled.div`

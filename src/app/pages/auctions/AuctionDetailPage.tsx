@@ -4,13 +4,15 @@ import { Auction } from '../../interfaces/auctions/Auction';
 import { Bid } from '../../interfaces/auctions/bid/Bid';
 import { getAuctionById, endAuction, cancelAuction } from '../../api/AuctionsService';
 import PlaceBidModal from '../../components/auctions/PlaceBidModal';
-import { mockUsers } from '../../../mocks/usersMock';
+import { useUserContext } from '../../context/useUserContext';
 import { theme } from '../../styles/theme';
 import { RULE_LABELS } from '../../interfaces/auctions/auctionRule/AuctionRule';
 import { formatCountdown } from '../../utils/utils';
 import {
   Page,
   BackButton,
+  PageTitle,
+  TopGrid,
   Card,
   FiguritaHeader,
   FiguritaNumero,
@@ -20,7 +22,14 @@ import {
   SectionTitle,
   InfoRow,
   ReglaItem,
-  OfertaRow,
+  OfertasGrid,
+  OfertaCard,
+  OfertaHeader,
+  OfertaBidder,
+  OfertaRating,
+  OfertaFiguritas,
+  OfertaDate,
+  ChooseWinnerButton,
   OfertaEstadoBadge,
   ConfirmOverlay,
   ConfirmModal,
@@ -37,7 +46,7 @@ import {
 export default function AuctionDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const currentUser = mockUsers[0];
+  const { currentUser } = useUserContext();
 
   const [auction, setAuction] = useState<Auction | null>(null);
   const [loading, setLoading] = useState(true);
@@ -48,7 +57,7 @@ export default function AuctionDetailPage() {
   const [confirmCancel, setConfirmCancel] = useState(false);
   const [cancelling, setCancelling] = useState(false);
 
-  const isOwner = auction !== null && currentUser.id === auction.publisherId.id;
+  const isOwner = auction !== null && currentUser?.id === auction.publisherId.id;
 
   useEffect(() => {
     getAuctionById(id!)
@@ -90,120 +99,135 @@ export default function AuctionDetailPage() {
   };
 
   if (loading) return <Page><p>Cargando...</p></Page>;
-  if (!auction) return <Page><BackButton onClick={() => navigate('/auctions')}>← Volver</BackButton><p>Subasta no encontrada.</p></Page>;
+  if (!auction) return (
+    <Page>
+      <BackButton onClick={() => navigate('/auctions')}>
+        <span className="material-symbols-outlined" aria-hidden="true">arrow_back</span>
+        Volver
+      </BackButton>
+      <p>Subasta no encontrada.</p>
+    </Page>
+  );
 
   const { texto: countdown, urgente } = formatCountdown(auction.endDate);
   const isActive = auction.status === 'ACTIVA';
   return (
     <Page>
-      <BackButton onClick={() => navigate('/auctions')}>← Volver a subastas</BackButton>
+      <BackButton onClick={() => navigate('/auctions')}>
+        <span className="material-symbols-outlined" aria-hidden="true">arrow_back</span>
+        Volver a subastas
+      </BackButton>
 
-      <Card>
-        <FiguritaHeader>
-          <FiguritaNumero>#{auction.figurita.number}</FiguritaNumero>
-          <FiguritaInfo>
-            <h2>{auction.figurita.description}</h2>
-            <p>{auction.figurita.country} · {auction.figurita.team}</p>
-            <div style={{ marginTop: '0.5rem', display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-              <CategoriaBadge $cat={auction.figurita.category}>{auction.figurita.category}</CategoriaBadge>
-              <EstadoBadge $estado={auction.status}>{auction.status}</EstadoBadge>
-            </div>
-          </FiguritaInfo>
-        </FiguritaHeader>
+      <PageTitle>Subasta #{auction.id}</PageTitle>
 
-        <InfoRow>
-          <span className="label">Publicante</span>
-          <span className="value">
-            {auction.publisherId.name}
-            {' '}{'★'.repeat(Math.round(auction.publisherId.rating || 0))}
-            <span style={{ color: theme.colors.textSecondary, fontWeight: 400 }}>
-              {' '}({(auction.publisherId.rating ?? 0).toFixed(1)})
+      <TopGrid>
+        <Card>
+          <FiguritaHeader>
+            <FiguritaNumero>#{auction.figurita.number}</FiguritaNumero>
+            <FiguritaInfo>
+              <h2>{auction.figurita.description}</h2>
+              <p>{auction.figurita.country} · {auction.figurita.team}</p>
+              <div style={{ marginTop: '0.5rem', display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                <CategoriaBadge $cat={auction.figurita.category}>{auction.figurita.category}</CategoriaBadge>
+                <EstadoBadge $estado={auction.status}>{auction.status}</EstadoBadge>
+              </div>
+            </FiguritaInfo>
+          </FiguritaHeader>
+
+          <InfoRow>
+            <span className="label">Publicante</span>
+            <span className="value">
+              {auction.publisherId.name}
+              {' '}{'★'.repeat(Math.round(auction.publisherId.rating || 0))}
+              <span style={{ color: theme.colors.textSecondary, fontWeight: 400 }}>
+                {' '}({(auction.publisherId.rating ?? 0).toFixed(1)})
+              </span>
             </span>
-          </span>
-        </InfoRow>
-        <InfoRow>
-          <span className="label">Cierre</span>
-          <div style={{ textAlign: 'right' }}>
-            <div style={{ fontSize: '0.85rem', color: theme.colors.textSecondary }}>
-              {new Date(auction.endDate).toLocaleString('es-AR')}
+          </InfoRow>
+          <InfoRow>
+            <span className="label">Cierre</span>
+            <div style={{ textAlign: 'right' }}>
+              <div style={{ fontSize: '0.85rem', color: theme.colors.textSecondary }}>
+                {new Date(auction.endDate).toLocaleString('es-AR')}
+              </div>
+              <Countdown $urgente={urgente}>{countdown}</Countdown>
             </div>
-            <Countdown $urgente={urgente}>{countdown}</Countdown>
-          </div>
-        </InfoRow>
-        <InfoRow>
-          <span className="label">Ofertas recibidas</span>
-          <span className="value">{auction.bids.length}</span>
-        </InfoRow>
-      </Card>
+          </InfoRow>
+          <InfoRow>
+            <span className="label">Ofertas recibidas</span>
+            <span className="value">{auction.bids.length}</span>
+          </InfoRow>
+        </Card>
 
-      <Card>
-        <SectionTitle>Condiciones de participación</SectionTitle>
-        {auction.rules.length === 0 ? (
-          <p style={{ color: theme.colors.textSecondary, fontSize: '0.9rem' }}>Sin restricciones — cualquiera puede ofertar.</p>
-        ) : (
-          auction.rules.map(r => (
-            <ReglaItem key={r.type}>
-              <strong>{RULE_LABELS[r.type] ?? r.type}:</strong> {r.value}
-            </ReglaItem>
-          ))
-        )}
-        {isActive && !isOwner && (
-          <BidButton onClick={() => setShowBidModal(true)}>
-            Hacer oferta
-          </BidButton>
-        )}
-        {isActive && isOwner && (
-          <BidButton
-            style={{ background: theme.colors.danger }}
-            onClick={() => setConfirmCancel(true)}
-          >
-            Cancelar subasta
-          </BidButton>
-        )}
-      </Card>
+        <Card>
+          <SectionTitle>Condiciones de participación</SectionTitle>
+          {auction.rules.length === 0 ? (
+            <p style={{ color: theme.colors.textSecondary, fontSize: '0.9rem' }}>Sin restricciones — cualquiera puede ofertar.</p>
+          ) : (
+            auction.rules.map(r => (
+              <ReglaItem key={r.type}>
+                <strong>{RULE_LABELS[r.type] ?? r.type}:</strong> {r.value}
+              </ReglaItem>
+            ))
+          )}
+          {isActive && !isOwner && (
+            <BidButton onClick={() => setShowBidModal(true)}>
+              Hacer oferta
+            </BidButton>
+          )}
+          {isActive && isOwner && (
+            <BidButton
+              style={{ background: theme.colors.danger }}
+              onClick={() => setConfirmCancel(true)}
+            >
+              Cancelar subasta
+            </BidButton>
+          )}
+        </Card>
+      </TopGrid>
 
       <Card>
         <SectionTitle>Ofertas ({auction.bids.length})</SectionTitle>
         {auction.bids.length === 0 ? (
-          <p style={{ color: theme.colors.textSecondary, fontSize: '0.9rem' }}>
+          <p style={{ color: theme.colors.onSurfaceVariant, fontSize: theme.typography.bodyMedium.fontSize }}>
             {isOwner ? 'Todavía no recibiste ofertas.' : 'Todavía no hay ofertas. ¡Sé el primero!'}
           </p>
         ) : (
           <>
-            {auction.bids
-              .slice()
-              .sort((a, b) => (b.bidId === auction.lastBidId ? 1 : 0) - (a.bidId === auction.lastBidId ? 1 : 0))
-              .map((o: Bid) => (
-                <OfertaRow key={o.bidId} $estado={o.status}>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ fontWeight: 600 }}>{o.bidder.name}</div>
-                    <div style={{ fontSize: '0.85rem', color: theme.colors.textSecondary, marginTop: '0.2rem' }}>
-                      {'★'.repeat(Math.round(o.bidder.rating))} ({o.bidder.rating.toFixed(1)})
-                    </div>
-                    <div style={{ fontSize: '0.85rem', marginTop: '0.4rem' }}>
-                      {o.offeredFiguritas.length} figurita(s):{' '}
+            <OfertasGrid>
+              {auction.bids
+                .slice()
+                .sort((a, b) => (b.bidId === auction.lastBidId ? 1 : 0) - (a.bidId === auction.lastBidId ? 1 : 0))
+                .map((o: Bid) => (
+                  <OfertaCard key={o.bidId} $estado={o.status}>
+                    <OfertaHeader>
+                      <div>
+                        <OfertaBidder>{o.bidder.name}</OfertaBidder>
+                        <OfertaRating>
+                          {'★'.repeat(Math.round(o.bidder.rating))}
+                          <span className="num">({o.bidder.rating.toFixed(1)})</span>
+                        </OfertaRating>
+                      </div>
+                      <OfertaEstadoBadge $estado={o.status}>{o.status}</OfertaEstadoBadge>
+                    </OfertaHeader>
+                    <OfertaFiguritas>
+                      <strong>{o.offeredFiguritas.length} figurita(s):</strong>{' '}
                       {o.offeredFiguritas.map(f => `#${f.number} ${f.description}`).join(', ')}
-                    </div>
-                    <div style={{ fontSize: '0.8rem', color: theme.colors.textSecondary, marginTop: '0.2rem' }}>
-                      {new Date(o.bidDate).toLocaleString('es-AR')}
-                    </div>
-                  </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '0.5rem' }}>
-                    <OfertaEstadoBadge $estado={o.status}>{o.status}</OfertaEstadoBadge>
+                    </OfertaFiguritas>
+                    <OfertaDate>{new Date(o.bidDate).toLocaleString('es-AR')}</OfertaDate>
                     {isOwner && isActive && o.status === 'ACTIVA' && (
-                      <BidButton
-                        style={{ width: 'auto', padding: '0.3rem 0.9rem', fontSize: '0.85rem', marginTop: 0 }}
+                      <ChooseWinnerButton
                         onClick={() => setPendingBid(o)}
                         disabled={finalizing}
                       >
                         Elegir ganadora
-                      </BidButton>
+                      </ChooseWinnerButton>
                     )}
-                  </div>
-                </OfertaRow>
-              ))}
+                  </OfertaCard>
+                ))}
+            </OfertasGrid>
             {finalizeError && (
-              <p style={{ color: theme.colors.danger, fontSize: '0.9rem', marginTop: '0.5rem' }}>{finalizeError}</p>
+              <p style={{ color: theme.colors.error, fontSize: theme.typography.bodyMedium.fontSize, marginTop: theme.spacing.sm }}>{finalizeError}</p>
             )}
           </>
         )}
@@ -276,7 +300,7 @@ export default function AuctionDetailPage() {
         </ConfirmOverlay>
       )}
 
-      {showBidModal && (
+      {showBidModal && currentUser && (
         <PlaceBidModal
           userId={currentUser.id}
           figurita={auction.figurita}

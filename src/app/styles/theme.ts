@@ -1,25 +1,25 @@
 import { createGlobalStyle } from 'styled-components';
 
-// ─── M3 Color Tokens ────────────────────────────────────────────────────────
+// ─── M3 Color Tokens (FIFA World Cup 2026 palette: deep purple + gold accent)
 export const theme = {
   colors: {
-    // Primary
-    primary:              '#1B5FA8',
+    // Primary – deep purple (Mundial 2026 brand)
+    primary:              '#4B2D7F',
     onPrimary:            '#FFFFFF',
-    primaryContainer:     '#D3E4FF',
-    onPrimaryContainer:   '#001B3D',
+    primaryContainer:     '#E9DDFF',
+    onPrimaryContainer:   '#190064',
 
-    // Secondary (neutral blue-gray)
-    secondary:            '#545F71',
+    // Secondary (neutral with slight warm tint)
+    secondary:            '#625B71',
     onSecondary:          '#FFFFFF',
-    secondaryContainer:   '#D8E3F8',
-    onSecondaryContainer: '#111C2B',
+    secondaryContainer:   '#E8DEF8',
+    onSecondaryContainer: '#1D192B',
 
-    // Tertiary (warm amber – keeps existing "secondary" orange feel)
-    tertiary:             '#B25B04',
+    // Tertiary – trophy gold accent
+    tertiary:             '#7E5700',
     onTertiary:           '#FFFFFF',
-    tertiaryContainer:    '#FFDCC2',
-    onTertiaryContainer:  '#3A1700',
+    tertiaryContainer:    '#FFDF9E',
+    onTertiaryContainer:  '#281800',
 
     // Error
     error:                '#BA1A1A',
@@ -27,29 +27,29 @@ export const theme = {
     errorContainer:       '#FFDAD6',
     onErrorContainer:     '#410002',
 
-    // Surface tones
-    background:           '#F3F3FA',
-    onBackground:         '#1A1C1E',
-    surface:              '#FAFAFF',
-    onSurface:            '#1A1C1E',
-    surfaceVariant:       '#DFE2EB',
-    onSurfaceVariant:     '#43474E',
+    // Surface tones – background pure white, containers tinted with subtle purple
+    background:           '#FFFFFF',
+    onBackground:         '#1D1B20',
+    surface:              '#FFFBFF',
+    onSurface:            '#1D1B20',
+    surfaceVariant:       '#E7E0EC',
+    onSurfaceVariant:     '#49454F',
 
     // Surface containers (low → high = subtle → prominent)
     surfaceContainerLowest:  '#FFFFFF',
-    surfaceContainerLow:     '#F3F3FA',
-    surfaceContainer:        '#EDEEF4',
-    surfaceContainerHigh:    '#E7E8EE',
-    surfaceContainerHighest: '#E2E2E9',
+    surfaceContainerLow:     '#F7F2FA',
+    surfaceContainer:        '#F1ECF4',
+    surfaceContainerHigh:    '#EBE6EE',
+    surfaceContainerHighest: '#E5E0E8',
 
     // Outline
-    outline:        '#73777F',
-    outlineVariant: '#C3C7CF',
+    outline:        '#79747E',
+    outlineVariant: '#CAC4D0',
 
     // Inverse
-    inverseSurface:   '#2F3033',
-    inverseOnSurface: '#F1F0F7',
-    inversePrimary:   '#A5C8FF',
+    inverseSurface:   '#322F35',
+    inverseOnSurface: '#F5EFF7',
+    inversePrimary:   '#CFBCFF',
 
     // Semantic status (M3 container pattern)
     success:          '#386A20',
@@ -59,9 +59,9 @@ export const theme = {
 
     // ─── Legacy aliases (keeps existing components working) ─────────────────
     danger:        '#BA1A1A',    // = error
-    text:          '#1A1C1E',   // = onBackground
-    textSecondary: '#43474E',   // = onSurfaceVariant
-    border:        '#C3C7CF',   // = outlineVariant
+    text:          '#1D1B20',   // = onBackground
+    textSecondary: '#49454F',   // = onSurfaceVariant
+    border:        '#CAC4D0',   // = outlineVariant
     scrim:         'rgba(0,0,0,0.5)',
   },
 

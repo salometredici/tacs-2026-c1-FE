@@ -7,6 +7,7 @@ export interface Proposal {
   id: string;
   publication: Publication;
   offeredCards: Card[];
+  requestedCount: number;
   bidder: User;
   status: ProposalStatus;
 }

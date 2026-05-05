@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useUserContext } from '../../context/useUserContext';
 import MakeProposalModal from '../proposals/MakeProposalModal';
-import { Card } from '../../interfaces/cards/Card';
+import { Publication } from '../../interfaces/publications/Publication';
 import {
   ResultsContainer,
   ResultsHeader,
@@ -15,7 +15,7 @@ import {
 } from './Search.styles';
 
 interface SearchResultsProps {
-  results: Card[];
+  results: Publication[];
   searched: boolean;
   loading: boolean;
 }
@@ -26,7 +26,7 @@ export default function SearchResults({
   loading,
 }: SearchResultsProps) {
   const { currentUser } = useUserContext();
-  const [modalFigurita, setModalFigurita] = useState<Card | null>(null);
+  const [selected, setSelected] = useState<Publication | null>(null);
 
   if (!searched || loading) {
     return null;
@@ -37,8 +37,8 @@ export default function SearchResults({
       <ResultsHeader>
         <ResultCount>
           {results.length === 0
-            ? 'No se encontraron figuritas'
-            : `Se encontraron ${results.length} figurita/s`}
+            ? 'No se encontraron publicaciones activas'
+            : `Se encontraron ${results.length} publicación/es activa/s`}
         </ResultCount>
       </ResultsHeader>
 
@@ -46,18 +46,21 @@ export default function SearchResults({
         <EmptyMessage>Intenta con otros filtros de búsqueda</EmptyMessage>
       ) : (
         <ResultsGrid>
-          {results.map((figurita) => (
-            <FiguritaCard key={figurita.id}>
-              <FiguritaNumber>#{figurita.number}</FiguritaNumber>
+          {results.map((pub) => (
+            <FiguritaCard key={pub.id}>
+              <FiguritaNumber>#{pub.card.number}</FiguritaNumber>
               <FiguritaInfo>
-                <strong>{figurita.description}</strong>
+                <strong>{pub.card.description}</strong>
               </FiguritaInfo>
               <FiguritaInfo>
-                {figurita.country} - {figurita.team}
+                {[pub.card.country, pub.card.team].filter(Boolean).join(' - ')}
               </FiguritaInfo>
-              <FiguritaInfo>{figurita.category}</FiguritaInfo>
-              {currentUser && (
-                <ProposeButton onClick={() => setModalFigurita(figurita)}>
+              <FiguritaInfo>{pub.card.category}</FiguritaInfo>
+              <FiguritaInfo>
+                Quedan <strong>{pub.remainingCount}</strong> de {pub.initialCount}
+              </FiguritaInfo>
+              {currentUser && pub.remainingCount > 0 && (
+                <ProposeButton onClick={() => setSelected(pub)}>
                   Proponer intercambio
                 </ProposeButton>
               )}
@@ -66,13 +69,14 @@ export default function SearchResults({
         </ResultsGrid>
       )}
 
-      {modalFigurita && currentUser && (
+      {selected && currentUser && (
         <MakeProposalModal
           userId={currentUser.id}
-          figurita={modalFigurita}
-          publicationId={String(modalFigurita.id)}
-          onClose={() => setModalFigurita(null)}
-          onSuccess={() => setModalFigurita(null)}
+          card={selected.card}
+          publicationId={selected.id}
+          maxRequestable={selected.remainingCount}
+          onClose={() => setSelected(null)}
+          onSuccess={() => setSelected(null)}
         />
       )}
     </ResultsContainer>

@@ -19,15 +19,20 @@ export const AuctionsHeader = styled.div`
 
 export const AuctionsTitle = styled.h1`
   color: ${theme.colors.onBackground};
-  font-size: ${theme.typography.headlineSmall.fontSize};
+  font-size: ${theme.typography.headlineMedium.fontSize};
+  line-height: ${theme.typography.headlineMedium.lineHeight};
   font-weight: 400;
   margin: 0;
 `;
 
-// M3 Filled Button
-export const CreateButton = styled.button`
-  padding: 10px ${theme.spacing.lg};
-  background-color: ${theme.colors.primary};
+// M3 Filled Button – section primary action (matches "Ofertar" weight)
+export const SectionActionButton = styled.button`
+  display: inline-flex;
+  align-items: center;
+  gap: ${theme.spacing.sm};
+  height: 40px;
+  padding: 0 ${theme.spacing.lg} 0 ${theme.spacing.md};
+  background: ${theme.colors.primary};
   color: ${theme.colors.onPrimary};
   border: none;
   border-radius: ${theme.shape.full};
@@ -35,10 +40,12 @@ export const CreateButton = styled.button`
   font-weight: ${theme.typography.labelLarge.fontWeight};
   letter-spacing: 0.00625em;
   cursor: pointer;
-  transition: box-shadow 0.2s;
+  white-space: nowrap;
   position: relative;
   overflow: hidden;
-  white-space: nowrap;
+  transition: box-shadow 0.2s;
+
+  & .material-symbols-outlined { font-size: 20px; }
 
   &::after {
     content: '';
@@ -47,7 +54,6 @@ export const CreateButton = styled.button`
     background: ${theme.colors.onPrimary};
     opacity: 0;
     transition: opacity 0.2s;
-    border-radius: inherit;
   }
 
   &:hover { box-shadow: ${theme.elevation[1]}; &::after { opacity: ${theme.state.hover}; } }
@@ -60,16 +66,16 @@ export const AuctionsGrid = styled.div`
   gap: ${theme.spacing.lg};
 `;
 
-// M3 Elevated Card
+// M3 Elevated Card – compact density
 export const AuctionCard = styled.div`
   background: ${theme.colors.surfaceContainerLow};
   border-radius: ${theme.shape.medium};
-  padding: ${theme.spacing.lg};
+  padding: ${theme.spacing.md};
   box-shadow: ${theme.elevation[1]};
   transition: box-shadow 0.2s;
   display: flex;
   flex-direction: column;
-  gap: ${theme.spacing.md};
+  gap: ${theme.spacing.sm};
   position: relative;
   overflow: hidden;
 
@@ -94,30 +100,84 @@ export const FiguritaInfo = styled.div`
   align-items: center;
   gap: ${theme.spacing.md};
   border-bottom: 1px solid ${theme.colors.outlineVariant};
-  padding-bottom: ${theme.spacing.md};
+  padding-bottom: ${theme.spacing.sm};
+`;
+
+// Figurita visual (image when available, themed placeholder otherwise)
+export const FiguritaImage = styled.div<{ $imageUrl?: string; $category: string }>`
+  width: 64px;
+  height: 64px;
+  flex-shrink: 0;
+  border-radius: ${theme.shape.small};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: ${({ $category }) =>
+    $category === 'LEGENDARIO' ? theme.colors.tertiaryContainer :
+    $category === 'EPICO'      ? theme.colors.primaryContainer :
+                                  theme.colors.surfaceContainerHighest};
+  color: ${({ $category }) =>
+    $category === 'LEGENDARIO' ? theme.colors.onTertiaryContainer :
+    $category === 'EPICO'      ? theme.colors.onPrimaryContainer :
+                                  theme.colors.onSurfaceVariant};
+  background-image: ${({ $imageUrl }) => $imageUrl ? `url(${$imageUrl})` : 'none'};
+  background-size: cover;
+  background-position: center;
+  overflow: hidden;
+
+  & .material-symbols-outlined {
+    font-size: 32px;
+    opacity: 0.6;
+  }
 `;
 
 export const FiguritaNumber = styled.h3`
   margin: 0;
   color: ${theme.colors.primary};
-  font-size: ${theme.typography.headlineSmall.fontSize};
+  font-size: ${theme.typography.titleLarge.fontSize};
   font-weight: 500;
-  min-width: 56px;
+  min-width: 48px;
 `;
 
 export const FiguritaDetails = styled.div`
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 
   p {
-    margin: 0.2rem 0;
-    font-size: ${theme.typography.bodyMedium.fontSize};
+    margin: 0;
+    font-size: ${theme.typography.bodySmall.fontSize};
+    line-height: ${theme.typography.bodySmall.lineHeight};
     color: ${theme.colors.onSurfaceVariant};
 
     strong {
       color: ${theme.colors.onSurface};
       font-weight: 500;
+      font-size: ${theme.typography.bodyMedium.fontSize};
     }
   }
+`;
+
+// M3 Assist Chip – category indicator (used in card header)
+export const CategoryChip = styled.span<{ $category: string }>`
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 10px;
+  margin-top: 2px;
+  align-self: flex-start;
+  border-radius: ${theme.shape.small};
+  font-size: ${theme.typography.labelSmall.fontSize};
+  font-weight: ${theme.typography.labelSmall.fontWeight};
+  letter-spacing: 0.04em;
+  background: ${({ $category }) =>
+    $category === 'LEGENDARIO' ? theme.colors.tertiaryContainer :
+    $category === 'EPICO'      ? theme.colors.primaryContainer :
+                                  theme.colors.surfaceContainerHighest};
+  color: ${({ $category }) =>
+    $category === 'LEGENDARIO' ? theme.colors.onTertiaryContainer :
+    $category === 'EPICO'      ? theme.colors.onPrimaryContainer :
+                                  theme.colors.onSurfaceVariant};
 `;
 
 export const SellerInfo = styled.div`
@@ -203,9 +263,9 @@ export const RequirmentsInfo = styled.div`
   }
 `;
 
-// M3 Filled Button
+// M3 Filled Button – compact (card primary action). Pinned to bottom of card.
 export const BidButton = styled.button`
-  padding: 10px ${theme.spacing.md};
+  padding: 8px ${theme.spacing.md};
   background: ${theme.colors.primary};
   color: ${theme.colors.onPrimary};
   border: none;
@@ -216,6 +276,7 @@ export const BidButton = styled.button`
   cursor: pointer;
   transition: box-shadow 0.2s;
   width: 100%;
+  margin-top: auto;
   position: relative;
   overflow: hidden;
 
@@ -233,8 +294,9 @@ export const BidButton = styled.button`
   &:active::after { opacity: ${theme.state.pressed}; }
 
   &:disabled {
-    background: rgba(26, 28, 30, 0.12);
-    color: rgba(26, 28, 30, 0.38);
+    background: ${theme.colors.surfaceContainerHighest};
+    color: ${theme.colors.onSurface};
+    opacity: ${theme.state.disabled};
     cursor: not-allowed;
     box-shadow: none;
   }

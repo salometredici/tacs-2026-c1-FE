@@ -1,7 +1,7 @@
 import { Outlet, useNavigate } from 'react-router-dom';
-import { Toaster } from 'react-hot-toast';
 import Navbar from './Navbar';
 import Footer from './Footer';
+import SnackbarHost from '../feedback/SnackbarHost';
 import { LayoutContainer, MainContent } from './AppLayout.styles';
 import { useUserContext } from '../../context/useUserContext';
 import { mockUser } from '../../../mocks/usersMock';
@@ -30,7 +30,7 @@ export default function AppLayout() {
         <Outlet />
       </MainContent>
       <Footer />
-      <Toaster position="bottom-right" />
+      <SnackbarHost />
     </LayoutContainer>
   );
 }

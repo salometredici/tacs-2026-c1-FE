@@ -1,1 +1,1 @@
-export type ProposalStatus = 'PENDIENTE' | 'ACEPTADA' | 'RECHAZADA';
+export type ProposalStatus = 'PENDIENTE' | 'ACEPTADA' | 'RECHAZADA' | 'CANCELADA';

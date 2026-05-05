@@ -234,6 +234,24 @@ export const EmptyMessage = styled.p`
   font-size: ${theme.typography.bodyLarge.fontSize};
 `;
 
+// M3 Text Button — link a la publi relacionada
+export const ViewPublicationLink = styled.button`
+  align-self: flex-start;
+  margin-top: ${theme.spacing.xs};
+  padding: 4px 8px;
+  background: none;
+  border: none;
+  color: ${theme.colors.primary};
+  font-size: ${theme.typography.labelMedium.fontSize};
+  font-weight: ${theme.typography.labelMedium.fontWeight};
+  cursor: pointer;
+  border-radius: ${theme.shape.small};
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  &:hover { text-decoration: underline; }
+`;
+
 export const ErrorMsg = styled.p`
   color: ${theme.colors.error};
   font-size: ${theme.typography.bodySmall.fontSize};

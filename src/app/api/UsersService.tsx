@@ -57,6 +57,10 @@ export const addMissingCard = async (userId: string, cardId: string): Promise<Mi
   return response.data;
 };
 
+export const removeMissingCard = async (userId: string, cardId: string): Promise<void> => {
+  await axios.delete(`${BASE_URL}/${userId}/missing-cards/${cardId}`);
+};
+
 export const getUserSuggestions = async (userId: string): Promise<Publication[]> => {
   try {
     /* GET /api/users/{userId}/suggestions

@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useUserContext } from '../../context/useUserContext';
 import { API_CONFIG } from '../../config/apiConfig';
-import { mockUsers } from '../../../mocks/usersMock';
+import { register } from '../../api/AuthService';
 import {
   LoginContainer,
   LoginCard,
@@ -36,30 +36,40 @@ export default function LoginPage() {
     e.preventDefault();
     setError('');
     setLoading(true);
-
-    // Para reemplazar el mock del user por la invocación real cuando esté elendpoint
-    // try {
-    //   const response = await axios.post(API_CONFIG.auth.login, {
-    //     email: form.email,
-    //     password: form.password,
-    //   });
-    //   const { token, user } = response.data;
-    //   login(user, token);
-    //   navigate('/');
-    // } catch {
-    //   setError('Email o contraseña incorrectos.');
-    // } finally {
-    //   setLoading(false);
-    // }
-
-    // linea a borrar!
-    login(mockUsers[3], 'mock-token');
-    navigate('/');
-    setLoading(false);
+    try {
+      const response = await axios.post(API_CONFIG.auth.login, {
+        email: form.email,
+        password: form.password,
+      });
+      const { token, user } = response.data;
+      login(user, token);
+      navigate('/');
+    } catch {
+      setError('Email o contraseña incorrectos');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  void axios;
-  void API_CONFIG;
+  // Para agregar el botón de Registrar con su form!
+  // const handleRegister = async () => {
+  //   setError('');
+  //   setLoading(true);
+  //   try {
+  //     const { token, user } = await register({
+  //       name: 'salo',
+  //       email: 'salo@mail.com',
+  //       password: '1234',
+  //       avatarId: 'avatar_1',
+  //     });
+  //     login(user, token);
+  //     navigate('/');
+  //   } catch {
+  //     setError('No se pudo registrar el usuario.');
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   return (
     <LoginContainer>

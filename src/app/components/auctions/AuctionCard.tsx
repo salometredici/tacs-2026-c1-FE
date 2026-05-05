@@ -1,13 +1,15 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Auction } from '../../interfaces/auctions/Auction';
+import { theme } from '../../styles/theme';
 import {
   AuctionCard,
   FiguritaInfo,
   FiguritaNumber,
   FiguritaDetails,
+  FiguritaImage,
+  CategoryChip,
   SellerInfo,
-  StarsRating,
   AuctionStatus,
   TimeRemaining,
   BestBidInfo,
@@ -30,18 +32,18 @@ export default function AuctionCardComponent({ auction, onBid, hideBidButton = f
     const diferencia = new Date(auction.endDate).getTime() - ahora.getTime();
 
     if (diferencia <= 0) {
-      return { texto: 'Finalizada', color: '#d32f2f' };
+      return { texto: 'Finalizada', color: theme.colors.error };
     }
 
     const dias = Math.floor(diferencia / (1000 * 60 * 60 * 24));
     const horas = Math.floor((diferencia % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
 
     if (dias > 0) {
-      return { texto: `${dias}d ${horas}h`, color: '#388e3c' };
+      return { texto: `${dias}d ${horas}h`, color: theme.colors.success };
     } else if (horas > 1) {
-      return { texto: `${horas}h`, color: '#388e3c' };
+      return { texto: `${horas}h`, color: theme.colors.success };
     } else {
-      return { texto: 'Termina pronto', color: '#f57c00' };
+      return { texto: 'Termina pronto', color: theme.colors.warning };
     }
   };
 
@@ -57,10 +59,20 @@ export default function AuctionCardComponent({ auction, onBid, hideBidButton = f
             <strong>{auction.figurita.description}</strong>
           </p>
           <p>{auction.figurita.country} - {auction.figurita.team}</p>
-          <p style={{ fontSize: '0.8rem', marginTop: '0.25rem' }}>
-            Categoría: <span style={{ color: '#1976d2' }}>{auction.figurita.category}</span>
-          </p>
+          <CategoryChip $category={auction.figurita.category}>
+            {auction.figurita.category}
+          </CategoryChip>
         </FiguritaDetails>
+        <FiguritaImage
+          $imageUrl={auction.figurita.imageUrl}
+          $category={auction.figurita.category}
+        >
+          {!auction.figurita.imageUrl && (
+            <span className="material-symbols-outlined" aria-hidden="true">
+              sports_soccer
+            </span>
+          )}
+        </FiguritaImage>
       </FiguritaInfo>
 
       <SellerInfo>
@@ -69,7 +81,7 @@ export default function AuctionCardComponent({ auction, onBid, hideBidButton = f
         <span className="reputation">
           {'★'.repeat(Math.round(auction.publisherId.rating || 4))}
           {' '}
-          <span style={{ color: '#666' }}>
+          <span style={{ color: theme.colors.onSurfaceVariant }}>
             ({(auction.publisherId.rating || 0).toFixed(1)})
           </span>
         </span>
@@ -90,7 +102,7 @@ export default function AuctionCardComponent({ auction, onBid, hideBidButton = f
             <div className="bid-details">
               {mejor.offeredFiguritas.length} figurita(s) ofrecidas
             </div>
-            <div style={{ fontSize: '0.8rem', color: '#666', marginTop: '0.25rem' }}>
+            <div style={{ fontSize: theme.typography.bodySmall.fontSize, color: theme.colors.onSurfaceVariant, marginTop: '0.25rem' }}>
               Por {mejor.bidder.name}
             </div>
           </BestBidInfo>

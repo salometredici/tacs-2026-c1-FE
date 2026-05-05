@@ -4,6 +4,7 @@ import { AppProvider } from './app/context/AppContext'
 import { UserProvider } from './app/context/UserContext'
 import { NotificationsProvider } from './app/context/NotificationsContext'
 import { AdminProvider } from './app/context/AdminContext'
+import { SnackbarProvider } from './app/context/SnackbarContext'
 
 const App: FC = () => {
   return (
@@ -11,11 +12,13 @@ const App: FC = () => {
     <AdminProvider>
       <UserProvider>
         <NotificationsProvider>
-          <AppProvider>
-            <div className='tacs-front-container'>
-              <AppRouter/>
-            </div>
-          </AppProvider>
+          <SnackbarProvider>
+            <AppProvider>
+              <div className='tacs-front-container'>
+                <AppRouter/>
+              </div>
+            </AppProvider>
+          </SnackbarProvider>
         </NotificationsProvider>
       </UserProvider>
     </AdminProvider>

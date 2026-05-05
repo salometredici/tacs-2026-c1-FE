@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
-import { Card } from '../../interfaces/cards/Card';
 import { defaultSearchFilters, SearchFiguritasFilters } from '../../interfaces/search/SearchFiguritasFilters';
-import { SearchFiguritasResponse } from '../../interfaces/search/SearchFiguritasResponse';
-import { searchAvailable } from '../../api/FiguritasService';
+import { Publication } from '../../interfaces/publications/Publication';
+import { searchActivePublications } from '../../api/PublicationsService';
 import {
   SearchContainer,
   SearchTitle,
@@ -17,7 +16,7 @@ import {
 } from './Search.styles';
 
 interface SearchFiguritasProps {
-  onSearch: (results: Card[], searched: boolean, loading: boolean) => void;
+  onSearch: (results: Publication[], searched: boolean, loading: boolean) => void;
 }
 
 export default function SearchFiguritas({ onSearch }: SearchFiguritasProps) {
@@ -35,11 +34,17 @@ export default function SearchFiguritas({ onSearch }: SearchFiguritasProps) {
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    const res: SearchFiguritasResponse = await searchAvailable(
-      filters.number, filters.description, filters.country, filters.category, filters.type
-    );
+    const pubs = await searchActivePublications({
+      name: filters.description,
+      country: filters.country,
+      category: filters.category,
+    });
+    // El backend de publications no filtra por número; lo aplico en cliente.
+    const filtered = filters.number != null
+      ? pubs.filter(p => p.card.number === filters.number)
+      : pubs;
     setLoading(false);
-    onSearch(res.content, true, false);
+    onSearch(filtered, true, false);
   };
 
   const handleReset = () => {

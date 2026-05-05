@@ -6,15 +6,16 @@ import { makeProposal } from '../../api/ProposalsService';
 import {
   Overlay, Modal, ModalHeader, ModalTitle, CloseButton,
   Footer, CancelButton, SubmitButton, ErrorMsg,
-} from '../exchanges/PublishFiguritaModal.styles';
+  Field, Hint, Input,
+} from '../exchanges/PublishCardModal.styles';
 import {
   SearchInput,
   SectionLabel,
-  FiguritaList,
+  CardList,
   FiguritaItem,
-  FiguritaNum,
-  FiguritaDesc,
-  FiguritaQtyLabel,
+  CardNum,
+  CardDescription,
+  CardQuantityLabel,
   AddButton,
   RemoveButton,
   QtyRow,
@@ -25,15 +26,20 @@ import {
 
 interface Props {
   userId: string;
-  figurita: Card;
+  card: Card;
   publicationId: string;
+  maxRequestable: number;
   onClose: () => void;
   onSuccess: () => void;
 }
 
-export default function MakeProposalModal({ userId, figurita, publicationId, onClose, onSuccess }: Props) {
+const clamp = (n: number, min: number, max: number) => Math.min(Math.max(n, min), max);
+const availableOf = (c: CollectionCard) => c.quantity - c.compromisedCount;
+
+export default function MakeProposalModal({ userId, card, publicationId, maxRequestable, onClose, onSuccess }: Props) {
   const [collection, setCollection] = useState<CollectionCard[]>([]);
-  const [selected, setSelected] = useState<Record<number, number>>({});
+  const [selected, setSelected] = useState<Record<string, number>>({});
+  const [requestedCount, setRequestedCount] = useState(1);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -46,45 +52,57 @@ export default function MakeProposalModal({ userId, figurita, publicationId, onC
     });
   }, [userId]);
 
-  const toggleFigurita = (cardNumber: number) => {
+  const toggleFigurita = (cardId: string) => {
     setSelected(prev => {
-      if (cardNumber in prev) {
-        const { [cardNumber]: _, ...rest } = prev;
+      if (cardId in prev) {
+        const { [cardId]: _, ...rest } = prev;
         return rest;
       }
-      return { ...prev, [cardNumber]: 1 };
+      return { ...prev, [cardId]: 1 };
     });
   };
 
-  const updateQuantity = (cardNumber: number, delta: number) => {
+  const updateQuantity = (cardId: string, delta: number) => {
     setSelected(prev => {
-      const newQty = (prev[cardNumber] || 0) + delta;
+      const newQty = (prev[cardId] || 0) + delta;
       if (newQty <= 0) {
-        const { [cardNumber]: _, ...rest } = prev;
+        const { [cardId]: _, ...rest } = prev;
         return rest;
       }
-      return { ...prev, [cardNumber]: newQty };
+      return { ...prev, [cardId]: newQty };
     });
   };
 
   const available = collection
-    .filter(fc => !(fc.number in selected))
+    .filter(fc => availableOf(fc) > 0)
+    .filter(fc => !(fc.cardId in selected))
     .filter(fc =>
       fc.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
       String(fc.number).includes(searchQuery)
     );
 
-  const offered = collection.filter(fc => fc.number in selected);
+  const offered = collection.filter(fc => fc.cardId in selected);
+  const totalOffered = Object.values(selected).reduce((acc, qty) => acc + qty, 0);
 
   const handleSubmit = async () => {
-    if (Object.keys(selected).length === 0) { setError('Seleccioná al menos una figurita para ofrecer.'); return; }
+    if (totalOffered === 0) { setError('Seleccioná al menos una figurita para ofrecer.'); return; }
+    if (requestedCount < 1 || requestedCount > maxRequestable) {
+      setError(`Pedí entre 1 y ${maxRequestable} figurita${maxRequestable !== 1 ? 's' : ''}.`);
+      return;
+    }
     setSubmitting(true);
     try {
-      await makeProposal(publicationId, userId, Object.keys(selected).map(Number));
+      // Expandimos por cantidad: si selected[<id>] = 3, mandamos [<id>, <id>, <id>].
+      // Así offeredCards.length en el Proposal refleja el total real.
+      const cardIds = Object.entries(selected).flatMap(
+        ([id, qty]) => Array(qty).fill(id)
+      );
+      await makeProposal(publicationId, userId, cardIds, requestedCount);
       onSuccess();
       onClose();
-    } catch {
-      setError('Error al enviar la propuesta. Intentá de nuevo.');
+    } catch (err: any) {
+      const beMsg = err?.response?.data?.message ?? err?.response?.data?.error;
+      setError(beMsg ?? 'Error al enviar la propuesta. Intentá de nuevo.');
     } finally {
       setSubmitting(false);
     }
@@ -99,8 +117,26 @@ export default function MakeProposalModal({ userId, figurita, publicationId, onC
         </ModalHeader>
 
         <p style={{ margin: 0 }}>
-          Querés: <strong>#{figurita.number} {figurita.description}</strong> ({figurita.country})
+          Querés: <strong>#{card.number} {card.description}</strong>
+          {card.country && ` (${card.country})`}
         </p>
+
+        <Field>
+          <label htmlFor="mp-requested">¿Cuántas pedís?</label>
+          <Hint>Disponibles en la publicación: {maxRequestable}</Hint>
+          <Input
+            id="mp-requested"
+            type="number"
+            min={1}
+            max={maxRequestable}
+            value={requestedCount}
+            onChange={e => {
+              const n = parseInt(e.target.value) || 1;
+              setRequestedCount(clamp(n, 1, maxRequestable));
+            }}
+            style={{ width: '120px' }}
+          />
+        </Field>
 
         {loading ? (
           <p style={{ margin: 0 }}>Cargando tu colección...</p>
@@ -116,41 +152,44 @@ export default function MakeProposalModal({ userId, figurita, publicationId, onC
 
             <div>
               <SectionLabel>Disponibles</SectionLabel>
-              <FiguritaList>
+              <CardList>
                 {available.length === 0 ? (
                   <EmptyItem>No hay figuritas disponibles</EmptyItem>
                 ) : available.map(fc => (
                   <FiguritaItem key={fc.cardId}>
-                    <FiguritaNum>#{fc.number}</FiguritaNum>
-                    <FiguritaDesc>{fc.description}</FiguritaDesc>
-                    <FiguritaQtyLabel>x{fc.quantity}</FiguritaQtyLabel>
-                    <AddButton onClick={() => toggleFigurita(fc.number)}>Agregar</AddButton>
+                    <CardNum>#{fc.number}</CardNum>
+                    <CardDescription>{fc.description}</CardDescription>
+                    <CardQuantityLabel>{availableOf(fc)} disp. / {fc.quantity} tot.</CardQuantityLabel>
+                    <AddButton onClick={() => toggleFigurita(fc.cardId)}>Agregar</AddButton>
                   </FiguritaItem>
                 ))}
-              </FiguritaList>
+              </CardList>
             </div>
 
             <div>
-              <SectionLabel>Ofrecidas ({offered.length})</SectionLabel>
-              <FiguritaList>
+              <SectionLabel>
+                Ofrecidas — {totalOffered} figurita{totalOffered !== 1 ? 's' : ''}
+                {totalOffered !== offered.length && ` (${offered.length} únicas)`}
+              </SectionLabel>
+              <CardList>
                 {offered.length === 0 ? (
                   <EmptyItem>Ninguna seleccionada aún</EmptyItem>
                 ) : offered.map(fc => (
                   <FiguritaItem key={fc.cardId}>
-                    <FiguritaNum>#{fc.number}</FiguritaNum>
-                    <FiguritaDesc>{fc.description}</FiguritaDesc>
+                    <CardNum>#{fc.number}</CardNum>
+                    <CardDescription>{fc.description}</CardDescription>
                     <QtyRow>
-                      <QtyButton onClick={() => updateQuantity(fc.number, -1)}>−</QtyButton>
-                      <QtyDisplay>{selected[fc.number]}</QtyDisplay>
+                      <QtyButton onClick={() => updateQuantity(fc.cardId, -1)}>−</QtyButton>
+                      <QtyDisplay>{selected[fc.cardId]}</QtyDisplay>
                       <QtyButton
-                        onClick={() => updateQuantity(fc.number, +1)}
-                        disabled={selected[fc.number] >= fc.quantity}
+                        onClick={() => updateQuantity(fc.cardId, +1)}
+                        disabled={selected[fc.cardId] >= availableOf(fc)}
                       >+</QtyButton>
                     </QtyRow>
-                    <RemoveButton onClick={() => toggleFigurita(fc.number)}>Quitar</RemoveButton>
+                    <RemoveButton onClick={() => toggleFigurita(fc.cardId)}>Quitar</RemoveButton>
                   </FiguritaItem>
                 ))}
-              </FiguritaList>
+              </CardList>
             </div>
           </>
         )}
@@ -159,8 +198,12 @@ export default function MakeProposalModal({ userId, figurita, publicationId, onC
 
         <Footer>
           <CancelButton onClick={onClose}>Cancelar</CancelButton>
-          <SubmitButton onClick={handleSubmit} disabled={submitting || Object.keys(selected).length === 0}>
-            {submitting ? 'Enviando...' : 'Confirmar propuesta'}
+          <SubmitButton onClick={handleSubmit} disabled={submitting || totalOffered === 0}>
+            {submitting
+              ? 'Enviando...'
+              : totalOffered > 0
+                ? `Confirmar — ofrecer ${totalOffered} por ${requestedCount}`
+                : 'Confirmar propuesta'}
           </SubmitButton>
         </Footer>
       </Modal>

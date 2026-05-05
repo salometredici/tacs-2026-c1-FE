@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react';
 import { Card } from '../../interfaces/cards/Card';
 import { Category } from '../../interfaces/Categoria';
-import { getCatalog } from '../../api/FiguritasService';
-import { addToUserCollection } from '../../api/UsersService';
+import { getCatalog } from '../../api/CardsService';
+import { addMissingCard } from '../../api/UsersService';
 import {
   Overlay, Modal, ModalHeader, ModalTitle, CloseButton,
-  Input, Select, Row, Footer, CancelButton, ConfirmButton, ErrorMsg,
+  Input, Select, Row,
+  PendingList, PendingListTitle, PendingItem, PendingItemInfo, RemoveButton,
+  Footer, CancelButton, ConfirmButton, ErrorMsg,
 } from './AddMissingCardsModal.styles';
 
 const CATEGORIES: Category[] = ['COMUN', 'EPICO', 'LEGENDARIO'];
@@ -16,11 +18,11 @@ interface Props {
   onSuccess: () => void;
 }
 
-export default function AddToCollectionModal({ userId, onClose, onSuccess }: Props) {
+export default function AddMissingCardsModal({ userId, onClose, onSuccess }: Props) {
   const [catalog, setCatalog] = useState<Card[]>([]);
   const [query, setQuery] = useState('');
   const [category, setCategory] = useState<Category | ''>('');
-  const [selected, setSelected] = useState<Card | null>(null);
+  const [pending, setPending] = useState<Card[]>([]);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -28,7 +30,10 @@ export default function AddToCollectionModal({ userId, onClose, onSuccess }: Pro
     getCatalog().then(setCatalog);
   }, []);
 
+  const pendingIds = new Set(pending.map(f => f.id));
+
   const filtered = catalog.filter(f => {
+    if (pendingIds.has(f.id)) return false;
     const matchesQuery =
       !query ||
       f.description.toLowerCase().includes(query.toLowerCase()) ||
@@ -37,16 +42,21 @@ export default function AddToCollectionModal({ userId, onClose, onSuccess }: Pro
     return matchesQuery && matchesCategory;
   });
 
+  const handleAdd = (f: Card) => setPending(prev => [...prev, f]);
+  const handleRemove = (id: string) => setPending(prev => prev.filter(f => f.id !== id));
+
   const handleConfirm = async () => {
-    if (!selected) return;
+    if (pending.length === 0) return;
     setSubmitting(true);
     setError(null);
     try {
-      await addToUserCollection(userId, selected.id);
+      for (const f of pending) {
+        await addMissingCard(userId, f.id);
+      }
       onSuccess();
       onClose();
     } catch {
-      setError('Error al agregar la figurita. Intentá de nuevo.');
+      setError('Error al registrar los faltantes. Intentá de nuevo.');
     } finally {
       setSubmitting(false);
     }
@@ -56,7 +66,7 @@ export default function AddToCollectionModal({ userId, onClose, onSuccess }: Pro
     <Overlay onClick={e => { if (e.target === e.currentTarget) onClose(); }}>
       <Modal>
         <ModalHeader>
-          <ModalTitle>Agregar figurita a mi colección</ModalTitle>
+          <ModalTitle>Agregar Figuritas Faltantes</ModalTitle>
           <CloseButton onClick={onClose} title="Cerrar">✕</CloseButton>
         </ModalHeader>
 
@@ -65,19 +75,19 @@ export default function AddToCollectionModal({ userId, onClose, onSuccess }: Pro
             type="text"
             placeholder="Buscar por nombre o número..."
             value={query}
-            onChange={e => { setQuery(e.target.value); setSelected(null); }}
+            onChange={e => setQuery(e.target.value)}
             autoFocus
           />
           <Select
             value={category}
-            onChange={e => { setCategory(e.target.value as Category | ''); setSelected(null); }}
+            onChange={e => setCategory(e.target.value as Category | '')}
           >
             <option value="">Todas las categorías</option>
             {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
           </Select>
         </Row>
 
-        <div style={{ maxHeight: '300px', overflowY: 'auto', border: '1px solid #e0e0e0', borderRadius: '4px' }}>
+        <div style={{ maxHeight: '260px', overflowY: 'auto', border: '1px solid #e0e0e0', borderRadius: '4px' }}>
           {catalog.length === 0 ? (
             <p style={{ padding: '1rem', color: '#888', margin: 0 }}>Cargando catálogo...</p>
           ) : filtered.length === 0 ? (
@@ -90,23 +100,19 @@ export default function AddToCollectionModal({ userId, onClose, onSuccess }: Pro
                   <th style={{ padding: '0.5rem' }}>Nombre</th>
                   <th style={{ padding: '0.5rem' }}>País</th>
                   <th style={{ padding: '0.5rem' }}>Cat.</th>
+                  <th></th>
                 </tr>
               </thead>
               <tbody>
                 {filtered.map(f => (
-                  <tr
-                    key={f.id}
-                    onClick={() => setSelected(f)}
-                    style={{
-                      borderBottom: '1px solid #eee',
-                      background: selected?.id === f.id ? '#e3f2fd' : 'transparent',
-                      cursor: 'pointer',
-                    }}
-                  >
+                  <tr key={f.id} style={{ borderBottom: '1px solid #eee' }}>
                     <td style={{ padding: '0.5rem' }}>#{f.number}</td>
                     <td style={{ padding: '0.5rem' }}>{f.description}</td>
                     <td style={{ padding: '0.5rem' }}>{f.country}</td>
                     <td style={{ padding: '0.5rem' }}>{f.category}</td>
+                    <td style={{ padding: '0.5rem' }}>
+                      <button onClick={() => handleAdd(f)} style={{ cursor: 'pointer' }}>+</button>
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -114,18 +120,27 @@ export default function AddToCollectionModal({ userId, onClose, onSuccess }: Pro
           )}
         </div>
 
-        {selected && (
-          <p style={{ margin: 0, fontSize: '0.9rem', color: '#555' }}>
-            Seleccionada: <strong>#{selected.number} {selected.description}</strong>
-          </p>
+        {pending.length > 0 && (
+          <PendingList>
+            <PendingListTitle>Para registrar ({pending.length}):</PendingListTitle>
+            {pending.map(f => (
+              <PendingItem key={f.id}>
+                <PendingItemInfo>
+                  <strong>#{f.number}</strong> · {f.description}
+                  <span> · {f.category}</span>
+                </PendingItemInfo>
+                <RemoveButton onClick={() => handleRemove(f.id)} title="Quitar">✕</RemoveButton>
+              </PendingItem>
+            ))}
+          </PendingList>
         )}
 
         {error && <ErrorMsg>{error}</ErrorMsg>}
 
         <Footer>
           <CancelButton onClick={onClose}>Cancelar</CancelButton>
-          <ConfirmButton onClick={handleConfirm} disabled={!selected || submitting}>
-            {submitting ? 'Agregando...' : 'Confirmar'}
+          <ConfirmButton onClick={handleConfirm} disabled={pending.length === 0 || submitting}>
+            {submitting ? 'Registrando...' : `Confirmar (${pending.length})`}
           </ConfirmButton>
         </Footer>
       </Modal>
