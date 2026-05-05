@@ -29,12 +29,13 @@ interface TradePublicationDto {
   cardCountry: string | null;
   cardTeam: string | null;
   cardCategory: string;
+  publisherUserId: string | null;
+  publisherName: string | null;
+  publisherAvatarId: string | null;
 }
 interface Paginated<T> { data: T[]; currentPage: number; totalPages: number }
 
-// TradePublicationDto no expone `publisher` ni `cardId` — placeholders.
-// `ownerId` viene del flujo (filtro por userId o intersección con getMyPublications).
-const mapPublication = (dto: TradePublicationDto, ownerId?: string): Publication => ({
+const mapPublication = (dto: TradePublicationDto): Publication => ({
   id: dto.publicationId,
   card: {
     id: '',
@@ -46,12 +47,12 @@ const mapPublication = (dto: TradePublicationDto, ownerId?: string): Publication
     category: dto.cardCategory as Publication['card']['category'],
   },
   publisher: {
-    id: ownerId ?? '',
-    name: '',
+    id: dto.publisherUserId ?? '',
+    name: dto.publisherName ?? '',
     email: '',
     rating: null,
     exchangesAmount: 0,
-    avatarId: 'avatar_1',
+    avatarId: (dto.publisherAvatarId as Publication['publisher']['avatarId']) ?? 'avatar_1',
     creationDate: '',
   },
   status: STATUS_BE_TO_FE[dto.status] ?? 'ACTIVA',
@@ -88,7 +89,7 @@ export const getMyPublications = async (userId: string, status?: PublicationStat
     if (status) params.status = STATUS_FE_TO_BE[status];
     const response = await axios.get<Paginated<TradePublicationDto> | TradePublicationDto[]>(BASE, { params });
     const list = Array.isArray(response.data) ? response.data : (response.data?.data ?? []);
-    return list.map(p => mapPublication(p, userId));
+    return list.map(mapPublication);
   } catch (error: any) {
     console.error(
       'Error al obtener publicaciones del usuario:',
@@ -99,16 +100,10 @@ export const getMyPublications = async (userId: string, status?: PublicationStat
   }
 };
 
-export const getPublicationById = async (id: string, asUserId?: string): Promise<Publication | null> => {
+export const getPublicationById = async (id: string, _asUserId?: string): Promise<Publication | null> => {
   try {
-    const [pubRes, mineRes] = await Promise.all([
-      axios.get<TradePublicationDto>(API_CONFIG.publications.byId(id)),
-      asUserId
-        ? axios.get<Paginated<TradePublicationDto>>(BASE, { params: { userId: asUserId } }).catch(() => null)
-        : Promise.resolve(null),
-    ]);
-    const isMine = mineRes?.data.data.some(p => p.publicationId === id) ?? false;
-    return mapPublication(pubRes.data, isMine ? asUserId : undefined);
+    const res = await axios.get<TradePublicationDto>(API_CONFIG.publications.byId(id));
+    return mapPublication(res.data);
   } catch (error) {
     console.error(`Error al obtener publicación ${id}:`, error);
     return null;

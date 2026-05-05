@@ -27,6 +27,7 @@ import Collection from '../../components/collection/Collection';
 import AddMissingCardsModal from '../../components/cards/AddMissingCardsModal';
 import PublishCardModal from '../../components/exchanges/PublishCardModal';
 import ExchangeDetailModal from '../../components/exchanges/ExchangeDetailModal';
+import ProposalDetailModal from '../../components/proposals/ProposalDetailModal';
 import { SectionActionButton } from '../../components/auctions/Auctions.styles';
 import {
   CollectionContainer,
@@ -67,6 +68,7 @@ export default function ProfilePage() {
   const [showAddMissingModal, setShowAddMissingModal] = useState(false);
   const [showPublishModal, setShowPublishModal] = useState(false);
   const [exchangeDetail, setExchangeDetail] = useState<Exchange | null>(null);
+  const [proposalDetail, setProposalDetail] = useState<Proposal | null>(null);
 
   useEffect(() => {
     setLoading(true);
@@ -253,7 +255,7 @@ export default function ProfilePage() {
                 ) : (
                   <RowList>
                     {recibidas.slice(0, PREVIEW).map(p => (
-                      <CompactAuctionCard key={p.id} onClick={() => navigate(`/publications/${p.publication.id}`)}>
+                      <CompactAuctionCard key={p.id} onClick={() => setProposalDetail(p)}>
                         <AuctionText>
                           <strong>#{p.publication.card.number} {p.publication.card.description}</strong>
                           {' — '}de {p.bidder.name}
@@ -282,7 +284,7 @@ export default function ProfilePage() {
                 ) : (
                   <RowList>
                     {enviadas.slice(0, PREVIEW).map(p => (
-                      <CompactAuctionCard key={p.id} onClick={() => navigate(`/publications/${p.publication.id}`)}>
+                      <CompactAuctionCard key={p.id} onClick={() => setProposalDetail(p)}>
                         <AuctionText>
                           <strong>#{p.publication.card.number} {p.publication.card.description}</strong>
                           {' — '}a {p.publication.publisher.name}
@@ -425,6 +427,13 @@ export default function ProfilePage() {
           userId={user.id}
           onClose={() => setShowPublishModal(false)}
           onSuccess={loadUserPublications}
+        />
+      )}
+
+      {proposalDetail && (
+        <ProposalDetailModal
+          proposal={proposalDetail}
+          onClose={() => setProposalDetail(null)}
         />
       )}
 

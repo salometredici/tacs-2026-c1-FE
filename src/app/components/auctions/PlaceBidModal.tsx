@@ -31,9 +31,11 @@ interface Props {
   onSuccess: () => void;
 }
 
+const availableOf = (c: CollectionCard) => c.quantity - c.compromisedCount;
+
 export default function PlaceBidModal({ userId, figurita, auctionId, onClose, onSuccess }: Props) {
   const [collection, setCollection] = useState<CollectionCard[]>([]);
-  const [selected, setSelected] = useState<Record<number, number>>({});
+  const [selected, setSelected] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -46,48 +48,53 @@ export default function PlaceBidModal({ userId, figurita, auctionId, onClose, on
     });
   }, [userId]);
 
-  const toggleFigurita = (cardNumber: number) => {
+  const toggleFigurita = (cardId: string) => {
     setSelected(prev => {
-      if (cardNumber in prev) {
-        const { [cardNumber]: _, ...rest } = prev;
+      if (cardId in prev) {
+        const { [cardId]: _, ...rest } = prev;
         return rest;
       }
-      return { ...prev, [cardNumber]: 1 };
+      return { ...prev, [cardId]: 1 };
     });
   };
 
-  const updateQuantity = (cardNumber: number, delta: number) => {
+  const updateQuantity = (cardId: string, delta: number) => {
     setSelected(prev => {
-      const newQty = (prev[cardNumber] || 0) + delta;
+      const newQty = (prev[cardId] || 0) + delta;
       if (newQty <= 0) {
-        const { [cardNumber]: _, ...rest } = prev;
+        const { [cardId]: _, ...rest } = prev;
         return rest;
       }
-      return { ...prev, [cardNumber]: newQty };
+      return { ...prev, [cardId]: newQty };
     });
   };
 
   const available = collection
-    .filter(fc => !(fc.number in selected))
+    .filter(fc => availableOf(fc) > 0)
+    .filter(fc => !(fc.cardId in selected))
     .filter(fc =>
       fc.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
       String(fc.number).includes(searchQuery)
     );
 
-  const offered = collection.filter(fc => fc.number in selected);
+  const offered = collection.filter(fc => fc.cardId in selected);
+  const totalOffered = Object.values(selected).reduce((acc, qty) => acc + qty, 0);
 
   const handleSubmit = async () => {
-    if (Object.keys(selected).length === 0) {
+    if (totalOffered === 0) {
       setError('Seleccioná al menos una figurita para ofrecer.');
       return;
     }
     setSubmitting(true);
     try {
-      await placeBid(auctionId, userId, Object.keys(selected));
+      // Expandimos por qty (se agrupa en el service al armar items).
+      const cardIds = Object.entries(selected).flatMap(([id, qty]) => Array(qty).fill(id));
+      await placeBid(auctionId, userId, cardIds);
       onSuccess();
       onClose();
-    } catch {
-      setError('Error al enviar la propuesta. Intentá de nuevo.');
+    } catch (err: any) {
+      const beMsg = err?.response?.data?.message ?? err?.response?.data?.error;
+      setError(beMsg ?? 'Error al enviar la oferta. Intentá de nuevo.');
     } finally {
       setSubmitting(false);
     }
@@ -104,7 +111,8 @@ export default function PlaceBidModal({ userId, figurita, auctionId, onClose, on
         </ModalHeader>
 
         <p style={{ margin: 0 }}>
-          Querés: <strong>#{figurita.number} {figurita.description}</strong> ({figurita.country})
+          Querés: <strong>#{figurita.number} {figurita.description}</strong>
+          {figurita.country && ` (${figurita.country})`}
         </p>
 
         {loading ? (
@@ -128,15 +136,18 @@ export default function PlaceBidModal({ userId, figurita, auctionId, onClose, on
                   <FiguritaItem key={fc.cardId}>
                     <CardNum>#{fc.number}</CardNum>
                     <CardDescription>{fc.description}</CardDescription>
-                    <CardQuantityLabel>x{fc.quantity}</CardQuantityLabel>
-                    <AddButton onClick={() => toggleFigurita(fc.number)}>Agregar</AddButton>
+                    <CardQuantityLabel>{availableOf(fc)} disp. / {fc.quantity} tot.</CardQuantityLabel>
+                    <AddButton onClick={() => toggleFigurita(fc.cardId)}>Agregar</AddButton>
                   </FiguritaItem>
                 ))}
               </CardList>
             </div>
 
             <div>
-              <SectionLabel>Ofrecidas ({offered.length})</SectionLabel>
+              <SectionLabel>
+                Ofrecidas — {totalOffered} figurita{totalOffered !== 1 ? 's' : ''}
+                {totalOffered !== offered.length && ` (${offered.length} únicas)`}
+              </SectionLabel>
               <CardList>
                 {offered.length === 0 ? (
                   <EmptyItem>Ninguna seleccionada aún</EmptyItem>
@@ -145,14 +156,14 @@ export default function PlaceBidModal({ userId, figurita, auctionId, onClose, on
                     <CardNum>#{fc.number}</CardNum>
                     <CardDescription>{fc.description}</CardDescription>
                     <QtyRow>
-                      <QtyButton onClick={() => updateQuantity(fc.number, -1)}>−</QtyButton>
-                      <QtyDisplay>{selected[fc.number]}</QtyDisplay>
+                      <QtyButton onClick={() => updateQuantity(fc.cardId, -1)}>−</QtyButton>
+                      <QtyDisplay>{selected[fc.cardId]}</QtyDisplay>
                       <QtyButton
-                        onClick={() => updateQuantity(fc.number, +1)}
-                        disabled={selected[fc.number] >= fc.quantity}
+                        onClick={() => updateQuantity(fc.cardId, +1)}
+                        disabled={selected[fc.cardId] >= availableOf(fc)}
                       >+</QtyButton>
                     </QtyRow>
-                    <RemoveButton onClick={() => toggleFigurita(fc.number)}>Quitar</RemoveButton>
+                    <RemoveButton onClick={() => toggleFigurita(fc.cardId)}>Quitar</RemoveButton>
                   </FiguritaItem>
                 ))}
               </CardList>
@@ -164,8 +175,12 @@ export default function PlaceBidModal({ userId, figurita, auctionId, onClose, on
 
         <Footer>
           <CancelButton onClick={onClose}>Cancelar</CancelButton>
-          <SubmitButton onClick={handleSubmit} disabled={submitting || Object.keys(selected).length === 0}>
-            {submitting ? 'Enviando...' : 'Confirmar oferta'}
+          <SubmitButton onClick={handleSubmit} disabled={submitting || totalOffered === 0}>
+            {submitting
+              ? 'Enviando...'
+              : totalOffered > 0
+                ? `Confirmar oferta (${totalOffered} figurita${totalOffered !== 1 ? 's' : ''})`
+                : 'Confirmar oferta'}
           </SubmitButton>
         </Footer>
       </Modal>

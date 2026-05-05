@@ -4,6 +4,7 @@ import { Proposal } from '../../interfaces/proposals/Proposal';
 import { getProposals, acceptProposal, rejectProposal } from '../../api/ProposalsService';
 import { useUserContext } from '../../context/useUserContext';
 import { useSnackbar } from '../../context/useSnackbar';
+import ProposalDetailModal from '../../components/proposals/ProposalDetailModal';
 import {
   PageContainer, Header, BackButton, Title,
   TabNav, TabButton, ProposalList, ProposalCard,
@@ -35,6 +36,7 @@ export default function ProposalsPage() {
   const [sent, setSent] = useState<Proposal[]>([]);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
+  const [detail, setDetail] = useState<Proposal | null>(null);
 
   useEffect(() => {
     const load = async () => {
@@ -104,7 +106,7 @@ export default function ProposalsPage() {
       ) : (
         <ProposalList>
           {list.map(p => (
-            <ProposalCard key={p.id}>
+            <ProposalCard key={p.id} onClick={() => setDetail(p)} style={{ cursor: 'pointer' }}>
               <ProposalInfo>
                 <ProposalTitle>
                   #{p.publication.card.number} · {p.publication.card.description}
@@ -124,7 +126,7 @@ export default function ProposalsPage() {
                     Ofrecidas: {p.offeredCards.map(f => `#${f.number} ${f.description}`).join(', ')}
                   </ProposalDetail>
                 )}
-                <ViewPublicationLink onClick={() => navigate(`/publications/${p.publication.id}`)}>
+                <ViewPublicationLink onClick={e => { e.stopPropagation(); navigate(`/publications/${p.publication.id}`); }}>
                   Ver publicación
                   <span className="material-symbols-outlined" style={{ fontSize: '1rem' }} aria-hidden="true">arrow_forward</span>
                 </ViewPublicationLink>
@@ -137,13 +139,13 @@ export default function ProposalsPage() {
                   <ActionButtons>
                     <AcceptButton
                       disabled={actionLoading === p.id}
-                      onClick={() => handleAccept(p)}
+                      onClick={e => { e.stopPropagation(); handleAccept(p); }}
                     >
                       Aceptar
                     </AcceptButton>
                     <RejectButton
                       disabled={actionLoading === p.id}
-                      onClick={() => handleReject(p)}
+                      onClick={e => { e.stopPropagation(); handleReject(p); }}
                     >
                       Rechazar
                     </RejectButton>
@@ -154,6 +156,8 @@ export default function ProposalsPage() {
           ))}
         </ProposalList>
       )}
+
+      {detail && <ProposalDetailModal proposal={detail} onClose={() => setDetail(null)} />}
     </PageContainer>
   );
 }

@@ -10,4 +10,5 @@ export interface Proposal {
   requestedCount: number;
   bidder: User;
   status: ProposalStatus;
+  creationDate?: string;
 }
