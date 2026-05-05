@@ -26,7 +26,7 @@ export default function CreateAuctionPage() {
   const [loadingCollection, setLoadingCollection] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
 
-  const [cardId, setCardId] = useState<number | ''>('');
+  const [cardId, setCardId] = useState<string | ''>('');
   const [duracionHoras, setDuracionHoras] = useState<number>(24);
   const [reputacionMinima, setReputacionMinima] = useState<number>(0);
   const [reputacionActiva, setReputacionActiva] = useState(false);
@@ -76,8 +76,7 @@ export default function CreateAuctionPage() {
       if (categoriaActiva)
         reglas.push({ type: 'CATEGORIA_MINIMA' as const, value: categoriaMinima });
       await createAuction({
-        cardId: cardId as number,
-        publisherId: currentUser!.id,
+        cardId: cardId as string,
         duration: duracionHoras,
         rules: reglas,
       });
@@ -117,17 +116,19 @@ export default function CreateAuctionPage() {
               />
               <CardList>
                 {collection
+                  .filter(fc => fc.quantity - fc.compromisedCount > 0)
                   .filter(fc =>
                     fc.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
                     String(fc.number).includes(searchQuery)
                   )
                   .map(fc => {
-                    const isSelected = cardId !== '' && Number(cardId) === fc.number;
+                    const isSelected = cardId === fc.cardId;
+                    const available = fc.quantity - fc.compromisedCount;
                     return (
                       <SelectableItem
                         key={fc.cardId}
                         $selected={isSelected}
-                        onClick={() => setCardId(fc.number)}
+                        onClick={() => setCardId(fc.cardId)}
                       >
                         <SelectIndicator $selected={isSelected}>
                           <span className="material-symbols-outlined" aria-hidden="true">
@@ -136,16 +137,18 @@ export default function CreateAuctionPage() {
                         </SelectIndicator>
                         <CardNum>#{fc.number}</CardNum>
                         <CardDescription>{fc.description}</CardDescription>
-                        <CardQuantityLabel>x{fc.quantity}</CardQuantityLabel>
+                        <CardQuantityLabel>{available} disp. / {fc.quantity} tot.</CardQuantityLabel>
                       </SelectableItem>
                     );
                   })
                 }
                 {collection.filter(fc =>
-                  fc.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                  String(fc.number).includes(searchQuery)
+                  fc.quantity - fc.compromisedCount > 0 && (
+                    fc.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                    String(fc.number).includes(searchQuery)
+                  )
                 ).length === 0 && (
-                  <EmptyItem>No se encontraron figuritas</EmptyItem>
+                  <EmptyItem>No tenés figuritas con disponibilidad</EmptyItem>
                 )}
               </CardList>
             </>

@@ -1,129 +1,221 @@
-import { Auction } from '../interfaces/auctions/Auction';
-import { UserBid } from '../interfaces/auctions/bid/UserBid';
-import { getMockedActiveAuctions, getMockedAuctionById, getMockedCreatedAuctionResponse, getMockedUserAuctions, getMockedUserBids } from '../../mocks/auctionsMock';
 import axios from 'axios';
 import { API_CONFIG } from '../config/apiConfig';
+import { Auction } from '../interfaces/auctions/Auction';
+import { AuctionStatus } from '../interfaces/auctions/AuctionStatus';
+import { UserBid } from '../interfaces/auctions/bid/UserBid';
 import { CreateAuctionRequest } from '../interfaces/auctions/CreateAuctionRequest';
 import { CreateAuctionResponse } from '../interfaces/auctions/CreateAuctionResponse';
 import { AuctionRule } from '../interfaces/auctions/auctionRule/AuctionRule';
+import { Card } from '../interfaces/cards/Card';
+import { User } from '../interfaces/auth/User';
+import { CardType } from '../interfaces/CardType';
 
-// Para obtener las subastas activas
+const BASE = API_CONFIG.auctions.base;
+
+interface Paginated<T> { data: T[]; currentPage: number; totalPages: number }
+
+interface AuctionDto {
+  id: string;
+  cardNumber: number;
+  cardDescription: string;
+  cardCountry: string | null;
+  cardTeam: string | null;
+  cardCategory: string;
+  closeDate: string;
+  status: string;
+  bestOffer: { username: string; cards: Array<{ id: string; number: number; description: string }> } | null;
+  publisherUserId: string | null;
+  publisherName: string | null;
+  publisherAvatarId: string | null;
+}
+
+const STATUS_BE_TO_FE: Record<string, AuctionStatus> = {
+  ACTIVE: 'ACTIVA',
+  AWARDED: 'FINALIZADA',
+  CANCELLED: 'CANCELADA',
+};
+
+const mapAuction = (dto: AuctionDto): Auction => {
+  const figurita: Card = {
+    id: '',
+    number: dto.cardNumber,
+    type: 'JUGADOR' as CardType,
+    description: dto.cardDescription,
+    country: dto.cardCountry,
+    team: dto.cardTeam,
+    category: dto.cardCategory as Card['category'],
+  };
+  const publisher: User = {
+    id: dto.publisherUserId ?? '',
+    name: dto.publisherName ?? '',
+    email: '',
+    rating: null,
+    exchangesAmount: 0,
+    avatarId: (dto.publisherAvatarId as User['avatarId']) ?? 'avatar_1',
+    creationDate: '',
+  };
+  return {
+    id: dto.id,
+    figurita,
+    publisherId: publisher,
+    status: STATUS_BE_TO_FE[dto.status] ?? 'ACTIVA',
+    creationDate: '',              // no en DTO
+    endDate: dto.closeDate,
+    rules: [],                     // no en DTO
+    bids: [],                      // no en DTO (sólo bestOffer summary)
+  };
+};
+
+const mapRuleToCondition = (r: AuctionRule) => {
+  switch (r.type) {
+    case 'REPUTACION_MINIMA':       return { filterName: 'MIN_REPUTATION',  quantity: parseInt(r.value) };
+    case 'INTERCAMBIOS_MINIMOS':    return { filterName: 'MIN_EXCHANGES',   quantity: parseInt(r.value) };
+    case 'CANTIDAD_MINIMA_FIGURITAS': return { filterName: 'MIN_CARD_COUNT', quantity: parseInt(r.value) };
+    case 'CATEGORIA_MINIMA':        return { filterName: 'MIN_CATEGORY',    value: r.value };
+    default:                         return { filterName: r.type, value: r.value };
+  }
+};
+
 export const getActiveAuctions = async (): Promise<Auction[]> => {
   try {
-    /* En backend: GET /api/auctions?status=active - Más adelante quizás un search genérico con params
-    const result = await axios.get<Auction[]>(`${API_CONFIG.auctions.base}`, { params: { status: 'active' } });
-    return result.data; */
-    return getMockedActiveAuctions();
-  } catch (error) {
-    console.error('Error al obtener subastas activas:', error);
+    const res = await axios.get<Paginated<AuctionDto>>(BASE);
+    return (res.data?.data ?? []).map(mapAuction);
+  } catch (error: any) {
+    console.error('Error al obtener subastas activas:', error?.response?.status, error?.response?.data ?? error?.message);
     return [];
   }
 };
 
-// Para crear una nueva subasta (a partir del botón)
 export const createAuction = async (data: CreateAuctionRequest): Promise<CreateAuctionResponse> => {
-  try {
-    /* En backend: — POST /api/subastas/userId={userId} y body NuevaSubastaDto
-    Hay un pequeño mismatch en el Request
-    const response = await axios.post<string>(`${API_CONFIG.auctions.base}`, data);
-    return response.data; */
-    return getMockedCreatedAuctionResponse();
-  } catch (error) {
-    console.error('Error al crear la subasta:', error);
-    throw error;
-  }
+  const body = {
+    cardId: data.cardId,
+    auctionDurationHours: data.duration,
+    conditions: data.rules.map(mapRuleToCondition),
+  };
+  const res = await axios.post<{ auctionId: string; message?: string }>(BASE, body);
+  return { success: true, message: res.data.message ?? 'OK', auctionId: res.data.auctionId };
 };
 
-// Para obtener las subastas del usuario logueado, visible en "Mis Subastas"
-export const getAuctionsByUserId = async (userId: string): Promise<Auction[]> => {
+export const getAuctionsByUserId = async (_userId: string): Promise<Auction[]> => {
   try {
-    /* En backend: GET /api/auctions/{userId}
-    const result = await axios.get<Auction[]>(`${API_CONFIG.auctions.base}/${userId}`);
-    return result.data; */
-    return getMockedUserAuctions(userId);
-  } catch (error) {
-    console.error(`Error al obtener subastas del usuario ${userId}:`, error);
+    // BE: GET /api/auctions/createdByMe — usa currentUser del JWT
+    const res = await axios.get<Paginated<AuctionDto>>(`${BASE}/createdByMe`);
+    return (res.data?.data ?? []).map(mapAuction);
+  } catch (error: any) {
+    console.error('Error al obtener subastas del usuario:', error?.response?.status, error?.response?.data ?? error?.message);
     return [];
   }
 };
 
-// Para obtener el detalle de una subasta en particular cuando se hace click sobre la misma (desde donde sea)
 export const getAuctionById = async (id: string): Promise<Auction | null> => {
   try {
-    /* GET /api/auctions/:id
-    const result = await axios.get<Auction>(`${API_CONFIG.auctions.base}/${id}`);
-    return result.data; */
-    return getMockedAuctionById(id) ?? null;
-  } catch (error) {
-    console.error(`Error al obtener la subasta ${id}:`, error);
+    const res = await axios.get<AuctionDto>(`${BASE}/${id}`);
+    return mapAuction(res.data);
+  } catch (error: any) {
+    console.error(`Error al obtener la subasta ${id}:`, error?.response?.status, error?.response?.data ?? error?.message);
     return null;
   }
 };
 
-// Para finalizar una subasta (cuando se selecciona un ganador entre los ofertantes)
-export const endAuction = async (auctionId: string, winnerBidId: string): Promise<void> => {
+export const endAuction = async (auctionId: string, winnerOfferId: string): Promise<void> => {
   try {
-    /* POST /api/auctions/:id/end  body: { winnerBidId }
-    await axios.post(`${API_CONFIG.auctions.base}/${auctionId}/end`, { winnerBidId }); */
-    return;
+    await axios.put(`${BASE}/${auctionId}/offers/${winnerOfferId}/best`);
   } catch (error) {
     console.error(`Error al finalizar la subasta ${auctionId}:`, error);
     throw error;
   }
 };
 
-// Para cancelar una subasta, sin haber elegido ganadores (el que publicó se arrepintió, básicamente)
 export const cancelAuction = async (auctionId: string): Promise<void> => {
   try {
-    /* POST /api/auctions/:id/cancel
-    await axios.post(`${API_CONFIG.auctions.base}/${auctionId}/cancel`); */
-    return;
+    await axios.delete(`${BASE}/${auctionId}`);
   } catch (error) {
     console.error(`Error al cancelar la subasta ${auctionId}:`, error);
     throw error;
   }
 };
 
-// Para poder ver las ofertas del usuario logueado en "Mis Ofertas"
-// Retorna todas las subastas asociadas a ese userId, separado del search porque devuelve los campos para ser mostrados en el perfil (otro modelo)
-export const getAuctionBidsByUserId = async (userId: string): Promise<UserBid[]> => {
+interface UserBidDtoBE {
+  auctionId: string;
+  cardNumber: number;
+  cardDescription: string;
+  cardCountry: string | null;
+  cardTeam: string | null;
+  publisherUserId: string | null;
+  publisherName: string | null;
+  auctionStatus: string;
+  closeDate: string;
+  offerId: string;
+  offeredItems: Array<{ cardId: string | null; cardNumber: number | null; cardDescription: string | null; amount: number }>;
+  offerStatus: string;
+  bidDate: string;
+}
+
+const OFFER_STATUS_BE_TO_FE: Record<string, 'ACTIVA' | 'SUPERADA' | 'GANADORA' | 'RECHAZADA'> = {
+  PENDING: 'ACTIVA',
+  ACCEPTED: 'GANADORA',
+  REJECTED: 'RECHAZADA',
+  CANCELLED: 'RECHAZADA',
+};
+
+export const getAuctionBidsByUserId = async (_userId: string): Promise<UserBid[]> => {
   try {
-    /* GET /api/auctions?postorId={userId}
-    const result = await axios.get<UserBid[]>(`${API_CONFIG.auctions.base}`, { params: { postorId: userId } });
-    return result.data; */
-    return getMockedUserBids(userId);
-  } catch (error) {
-    console.error(`Error al obtener ofertas del usuario ${userId}:`, error);
+    const res = await axios.get<UserBidDtoBE[]>(`${BASE}/myOffers`);
+    return res.data.map(b => ({
+      auctionId: b.auctionId,
+      figurita: {
+        id: '',
+        number: b.cardNumber,
+        type: 'JUGADOR' as CardType,
+        description: b.cardDescription,
+        country: b.cardCountry,
+        team: b.cardTeam,
+        category: 'COMUN' as Card['category'],
+      },
+      publisher: {
+        id: b.publisherUserId ?? '',
+        name: b.publisherName ?? '',
+        email: '', rating: null, exchangesAmount: 0,
+        avatarId: 'avatar_1' as User['avatarId'],
+        creationDate: '',
+      },
+      auctionStatus: STATUS_BE_TO_FE[b.auctionStatus] ?? 'ACTIVA',
+      closingDate: b.closeDate,
+      bidId: b.offerId,
+      offeredFiguritas: b.offeredItems.flatMap(it =>
+        Array(it.amount).fill({
+          id: it.cardId ?? '',
+          number: it.cardNumber ?? 0,
+          type: 'JUGADOR' as CardType,
+          description: it.cardDescription ?? '',
+          country: null, team: null, category: 'COMUN' as Card['category'],
+        })
+      ),
+      bidStatus: OFFER_STATUS_BE_TO_FE[b.offerStatus] ?? 'ACTIVA',
+      bidDate: b.bidDate,
+    }));
+  } catch (error: any) {
+    console.error('Error al obtener ofertas del usuario:', error?.response?.status, error?.response?.data ?? error?.message);
     return [];
   }
 };
 
-// Para editar las condiciones de participación de una subasta activa
-export const updateAuction = async (auctionId: string, _data: { rules: AuctionRule[] }): Promise<void> => {
-  try {
-    /* PATCH /api/auctions/:id
-    await axios.patch(`${API_CONFIG.auctions.base}/${auctionId}`, data); */
-    return;
-  } catch (error) {
-    console.error(`Error al actualizar la subasta ${auctionId}:`, error);
-    throw error;
-  }
+/** BE no expone update de subasta. Pendiente endpoint. */
+export const updateAuction = async (_auctionId: string, _data: { rules: AuctionRule[] }): Promise<void> => {
+  return;
 };
 
-// Para ofertar sobre una subasta (desde el detalle de la misma, con el botón "Ofertar")
-export const placeBid = async (auctionId: string, userId: string, _cardIds: string[]): Promise<void> => {
+export const placeBid = async (auctionId: string, _userId: string, cardIds: string[]): Promise<void> => {
   try {
-    /* En backend: ResponseEntity<String>
-      Pendiente: alinear rutas en backend.
-    await axios.post(
-      `${API_CONFIG.baseUrl}/api/{subastaId}/ofertas}`,
-      NuevaSubastaOfertaDto,
-      { params: { userId } }
-    ); */
-    return;
-
+    // Agrupamos por cardId para mandar { cardId, amount } en cada item.
+    const grouped = cardIds.reduce<Record<string, number>>((acc, id) => {
+      acc[id] = (acc[id] ?? 0) + 1;
+      return acc;
+    }, {});
+    const items = Object.entries(grouped).map(([cardId, amount]) => ({ cardId, amount }));
+    await axios.post(`${BASE}/${auctionId}/offers`, { auctionId, items });
   } catch (e) {
     console.error('Error al realizar la oferta:', e);
     throw e;
   }
-}
+};
