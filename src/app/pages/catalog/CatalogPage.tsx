@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { getCatalog } from '../../api/FiguritasService';
+import { getCatalog } from '../../api/CardsService';
 import { Card } from '../../interfaces/cards/Card';
 import { Category } from '../../interfaces/Categoria';
 import {
@@ -67,7 +67,7 @@ export default function CatalogPage() {
   const [activeCategory, setActiveCategory] = useState<Category | 'TODAS'>('TODAS');
 
   useEffect(() => {
-    getCatalog().then((cards) => {
+    getCatalog().then((cards: Card[]) => {
       setAllCards(cards);
       setLoading(false);
     });
