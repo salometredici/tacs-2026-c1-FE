@@ -3,25 +3,30 @@ import { useNavigate } from 'react-router-dom';
 import { CollectionCard } from '../../interfaces/cards/CollectionCard';
 import { getUserCollection } from '../../api/UsersService';
 import { createAuction } from '../../api/AuctionsService';
+import { useUserContext } from '../../context/useUserContext';
 import { theme } from '../../styles/theme';
 import { AUCTION_DURATION_MIN, AUCTION_DURATION_MAX } from '../../constants/auctions';
 import { formatDuration } from '../../utils/utils';
-import { PageContainer, Header, BackButton, Title, Card, Field, Label, Hint, Select,
-  Input, StarsRow, StarButton, StarLabel, ErrorMsg, SubmitButton } from './CreateAuctionPage.styles';
-
-// ─── Constantes ─────────────────────────────────────────────────────────────
-
-const CURRENT_USER_ID = '69e54c037de7f7e868da90f4'; // Para reemplazar por el usuario autenticado cuando esté la llamada disponible en backend
+import {
+  PageContainer, Header, BackButton, Title, Card, Field, Label, Hint, Select,
+  Input, StarsRow, StarButton, StarLabel, ErrorMsg, SubmitButton,
+  SelectableItem, SelectIndicator,
+} from './CreateAuctionPage.styles';
+import {
+  SearchInput, CardList, CardNum, CardDescription, CardQuantityLabel, EmptyItem,
+} from '../../components/proposals/MakeProposalModal.styles';
 
 // ─── Componente ─────────────────────────────────────────────────────────────
 
 export default function CreateAuctionPage() {
   const navigate = useNavigate();
+  const { currentUser } = useUserContext();
 
   const [collection, setCollection] = useState<CollectionCard[]>([]);
   const [loadingCollection, setLoadingCollection] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
 
-  const [cardId, setFiguritaId] = useState<number | ''>('');
+  const [cardId, setCardId] = useState<number | ''>('');
   const [duracionHoras, setDuracionHoras] = useState<number>(24);
   const [reputacionMinima, setReputacionMinima] = useState<number>(0);
   const [reputacionActiva, setReputacionActiva] = useState(false);
@@ -36,11 +41,15 @@ export default function CreateAuctionPage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    getUserCollection(CURRENT_USER_ID)
+    if (!currentUser) {
+      navigate('/login');
+      return;
+    }
+    getUserCollection(currentUser.id)
       .then(data => setCollection(data))
       .catch(() => setCollection([]))
       .finally(() => setLoadingCollection(false));
-  }, []);
+  }, [currentUser, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -68,7 +77,7 @@ export default function CreateAuctionPage() {
         reglas.push({ type: 'CATEGORIA_MINIMA' as const, value: categoriaMinima });
       await createAuction({
         cardId: cardId as number,
-        publisherId: CURRENT_USER_ID,
+        publisherId: currentUser!.id,
         duration: duracionHoras,
         rules: reglas,
       });
@@ -85,33 +94,61 @@ export default function CreateAuctionPage() {
   return (
     <PageContainer>
       <Header>
-        <BackButton onClick={() => navigate('/auctions')} title="Volver">←</BackButton>
+        <BackButton onClick={() => navigate('/auctions')} aria-label="Volver a subastas">
+          <span className="material-symbols-outlined" aria-hidden="true">arrow_back</span>
+        </BackButton>
         <Title>Nueva Subasta</Title>
       </Header>
 
       <Card as="form" onSubmit={handleSubmit}>
         {/* Figurita */}
         <Field>
-          <Label htmlFor="figurita-select">Figurita a subastar</Label>
+          <Label>Figurita a subastar</Label>
           {loadingCollection ? (
             <Hint>Cargando colección...</Hint>
           ) : collection.length === 0 ? (
             <Hint>No tenés figuritas en tu colección</Hint>
           ) : (
-            <Select
-              id="figurita-select"
-              value={cardId}
-              onChange={e => setFiguritaId(Number(e.target.value))}
-              required
-            >
-              <option value="">— Seleccioná una figurita —</option>
-              {collection.map(fc => (
-                <option key={fc.cardId} value={fc.cardId}>
-                  #{fc.number} · {fc.description} ({fc.country}) · {fc.category}
-                  {fc.quantity > 1 ? ` ×${fc.quantity}` : ''}
-                </option>
-              ))}
-            </Select>
+            <>
+              <SearchInput
+                placeholder="Buscar por descripción o número..."
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+              />
+              <CardList>
+                {collection
+                  .filter(fc =>
+                    fc.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                    String(fc.number).includes(searchQuery)
+                  )
+                  .map(fc => {
+                    const isSelected = cardId !== '' && Number(cardId) === fc.number;
+                    return (
+                      <SelectableItem
+                        key={fc.cardId}
+                        $selected={isSelected}
+                        onClick={() => setCardId(fc.number)}
+                      >
+                        <SelectIndicator $selected={isSelected}>
+                          <span className="material-symbols-outlined" aria-hidden="true">
+                            {isSelected ? 'radio_button_checked' : 'radio_button_unchecked'}
+                          </span>
+                        </SelectIndicator>
+                        <CardNum>#{fc.number}</CardNum>
+                        <CardDescription>{fc.description}</CardDescription>
+                        <CardQuantityLabel>x{fc.quantity}</CardQuantityLabel>
+                      </SelectableItem>
+                    );
+                  })
+                }
+                {collection.filter(fc =>
+                  fc.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                  String(fc.number).includes(searchQuery)
+                ).length === 0 && (
+                  <EmptyItem>No se encontraron figuritas</EmptyItem>
+                )}
+              </CardList>
+            </>
           )}
         </Field>
 

@@ -7,18 +7,20 @@ export const CollectionContainer = styled.div`
   gap: ${theme.spacing.md};
 `;
 
-// M3 Outlined Card
-export const FiguritaCard = styled.div`
-  background: ${theme.colors.surfaceContainerLowest};
+// M3 Elevated Card
+export const CardItem = styled.div`
+  background: ${theme.colors.surfaceContainerLow};
   border-radius: ${theme.shape.medium};
   padding: ${theme.spacing.md};
   text-align: center;
   border: 1px solid ${theme.colors.outlineVariant};
-  transition: border-color 0.2s, box-shadow 0.2s;
+  box-shadow: ${theme.elevation[1]};
+  transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
 
   &:hover {
     border-color: ${theme.colors.primary};
-    box-shadow: ${theme.elevation[1]};
+    box-shadow: ${theme.elevation[2]};
+    transform: translateY(-2px);
   }
 
   h4 {
@@ -32,6 +34,33 @@ export const FiguritaCard = styled.div`
     margin: 0.2rem 0;
     color: ${theme.colors.onSurfaceVariant};
     font-size: ${theme.typography.bodySmall.fontSize};
+  }
+`;
+
+// Banner visual al tope de la card — usa imageUrl si existe, sino icono según categoría
+export const CardImage = styled.div<{ $imageUrl?: string; $category: string }>`
+  width: 100%;
+  height: 80px;
+  border-radius: ${theme.shape.small};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: ${({ $category }) =>
+    $category === 'LEGENDARIO' ? theme.colors.tertiaryContainer :
+    $category === 'EPICO'      ? theme.colors.primaryContainer :
+                                  theme.colors.surfaceContainerHighest};
+  color: ${({ $category }) =>
+    $category === 'LEGENDARIO' ? theme.colors.onTertiaryContainer :
+    $category === 'EPICO'      ? theme.colors.onPrimaryContainer :
+                                  theme.colors.onSurfaceVariant};
+  background-image: ${({ $imageUrl }) => $imageUrl ? `url(${$imageUrl})` : 'none'};
+  background-size: cover;
+  background-position: center;
+  overflow: hidden;
+
+  & .material-symbols-outlined {
+    font-size: 40px;
+    opacity: 0.6;
   }
 `;
 

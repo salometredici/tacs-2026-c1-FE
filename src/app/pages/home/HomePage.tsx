@@ -153,8 +153,9 @@ export default function HomePage() {
       {selected && currentUser && (
         <MakeProposalModal
           userId={currentUser.id}
-          figurita={selected.card}
+          card={selected.card}
           publicationId={selected.id}
+          maxRequestable={selected.remainingCount}
           onClose={() => setSelected(null)}
           onSuccess={() => {
             setSuggestions(prev => prev.filter(s => s.id !== selected!.id));

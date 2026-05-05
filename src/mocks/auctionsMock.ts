@@ -10,8 +10,8 @@ export const mockAuctions: Auction[] = [
     figurita: mockFiguritas[0], // Messi
     publisherId: mockUsers[0],   // Pepe (69e54c037de7f7e868da90f4)
     status: 'ACTIVA',
-    creationDate: '2026-04-13T10:00:00',
-    endDate: '2026-04-28T15:30:00',
+    creationDate: '2026-04-25T10:00:00',
+    endDate: '2026-05-18T15:30:00',
     rules: [
       { type: 'REPUTACION_MINIMA', value: '4' },
       { type: 'CANTIDAD_MINIMA_FIGURITAS', value: '2' },
@@ -32,8 +32,8 @@ export const mockAuctions: Auction[] = [
     figurita: mockFiguritas[1], // Cristiano Ronaldo
     publisherId: mockUsers[1],   // Mónica (user_2)
     status: 'ACTIVA',
-    creationDate: '2026-04-12T09:00:00',
-    endDate: '2026-04-29T20:00:00',
+    creationDate: '2026-04-22T09:00:00',
+    endDate: '2026-05-05T20:00:00',
     rules: [
       { type: 'REPUTACION_MINIMA', value: '4' },
       { type: 'CATEGORIA_MINIMA', value: 'EPICO' },
@@ -61,8 +61,8 @@ export const mockAuctions: Auction[] = [
     figurita: mockFiguritas[3], // Mbappé
     publisherId: mockUsers[2],   // Homero (user_3)
     status: 'ACTIVA',
-    creationDate: '2026-04-14T12:00:00',
-    endDate: '2026-04-27T18:00:00',
+    creationDate: '2026-04-26T12:00:00',
+    endDate: '2026-05-19T18:00:00',
     rules: [],
     bids: [
       {

@@ -6,29 +6,41 @@ import { MissingCard } from '../../interfaces/cards/MissingCard';
 import { Proposal } from '../../interfaces/proposals/Proposal';
 import { Auction } from '../../interfaces/auctions/Auction';
 import { UserBid } from '../../interfaces/auctions/bid/UserBid';
-import { getUserCollection, getUserMissingCards } from '../../api/UsersService';
+import { Publication } from '../../interfaces/publications/Publication';
+import { Exchange } from '../../interfaces/exchanges/Exchange';
+import { getUserCollection, getUserMissingCards, addToUserCollection } from '../../api/UsersService';
 import { getAuctionsByUserId, getAuctionBidsByUserId } from '../../api/AuctionsService';
 import { getProposals } from '../../api/ProposalsService';
+import { getMyPublications } from '../../api/PublicationsService';
+import { getExchangesByUserId } from '../../api/ExchangesService';
+import { viewAs } from '../../utils/exchangeView';
 import { useUserContext } from '../../context/useUserContext';
 import {
   ProfileContainer, ProfileHeader, ProfileTitle, ProfileEmail,
-  TabSection, TabNav, TabButton, AddButton,
+  TabSection, TabNav, TabButton,
   SectionHeader, SectionTitle, SeeAllLink, RowList,
-  ProposalRow, ProposalText, StatusBadge, Divider,
+  StatusBadge, Divider,
   CompactAuctionCard, AuctionText, AuctionStatus,
+  PublicationStatusBadge,
 } from './ProfilePage.styles';
 import Collection from '../../components/collection/Collection';
-import AddMissingCardsModal from '../../components/figuritas/AddMissingCardsModal';
+import AddMissingCardsModal from '../../components/cards/AddMissingCardsModal';
+import PublishCardModal from '../../components/exchanges/PublishCardModal';
+import ExchangeDetailModal from '../../components/exchanges/ExchangeDetailModal';
+import { SectionActionButton } from '../../components/auctions/Auctions.styles';
 import {
   CollectionContainer,
-  FiguritaCard,
+  CardItem,
   EmptyMessage,
 } from '../../components/collection/Collection.styles';
+import { formatTimeAgo } from '../../utils/utils';
 
-const STATUS_LABEL = { PENDIENTE: 'Pendiente', ACEPTADA: 'Aceptada', RECHAZADA: 'Rechazada' } as const;
+const STATUS_LABEL = { PENDIENTE: 'Pendiente', ACEPTADA: 'Aceptada', RECHAZADA: 'Rechazada', CANCELADA: 'Cancelada' } as const;
+const PUBLICATION_STATUS_LABEL = { ACTIVA: 'Activa', FINALIZADA: 'Finalizada', CANCELADA: 'Cancelada' } as const;
+const ORIGIN_LABEL = { PROPUESTA: 'Propuesta', SUBASTA: 'Subasta' } as const;
 const PREVIEW = 3;
 
-type Tab = 'collection' | 'faltantes' | 'propuestas' | 'subastas';
+type Tab = 'collection' | 'faltantes' | 'publicaciones' | 'propuestas' | 'subastas' | 'intercambios';
 
 export default function ProfilePage() {
   const navigate = useNavigate();
@@ -46,11 +58,15 @@ export default function ProfilePage() {
   const [faltantes, setFaltantes] = useState<MissingCard[]>([]);
   const [recibidas, setRecibidas] = useState<Proposal[]>([]);
   const [enviadas, setEnviadas] = useState<Proposal[]>([]);
+  const [publicaciones, setPublicaciones] = useState<Publication[]>([]);
   const [misSubastas, setMisSubastas] = useState<Auction[]>([]);
   const [misOfertas, setMisOfertas] = useState<UserBid[]>([]);
+  const [intercambios, setIntercambios] = useState<Exchange[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [showAddMissingModal, setShowAddMissingModal] = useState(false);
+  const [showPublishModal, setShowPublishModal] = useState(false);
+  const [exchangeDetail, setExchangeDetail] = useState<Exchange | null>(null);
 
   useEffect(() => {
     setLoading(true);
@@ -60,16 +76,20 @@ export default function ProfilePage() {
       getUserMissingCards(user.id),
       getProposals(user.id), // Recibidas -> publisherId = el usuario (hizo la publicación)
       getProposals('', user.id), // Enviadas -> postorId = el usuario (hizo la propuesta)
+      getMyPublications(user.id),
       getAuctionsByUserId(user.id),
       getAuctionBidsByUserId(user.id),
+      getExchangesByUserId(user.id),
     ])
-      .then(([col, falt, rec, env, sub, bids]) => {
+      .then(([col, falt, rec, env, pubs, sub, bids, exch]) => {
         setCollection(col);
         setFaltantes(falt);
         setRecibidas(rec);
         setEnviadas(env);
+        setPublicaciones(pubs);
         setMisSubastas(sub);
         setMisOfertas(bids);
+        setIntercambios(exch);
       })
       .catch(() => setError(true))
       .finally(() => setLoading(false));
@@ -77,6 +97,21 @@ export default function ProfilePage() {
 
   const loadUserMissingCards = async () => {
     getUserMissingCards(user.id).then(missing => setFaltantes(missing));
+  };
+
+  const handleRemoveMissingCard = async (cardId: string) => {
+    // "Ya la conseguí" = agregar a colección. La entity del BE limpia missingCards
+    // automáticamente al hacer addToCollection (idempotente).
+    try {
+      await addToUserCollection(user.id, cardId);
+      await loadUserMissingCards();
+    } catch (err) {
+      console.error('Error al agregar la figurita a la colección:', err);
+    }
+  };
+
+  const loadUserPublications = async () => {
+    getMyPublications(user.id).then(setPublicaciones);
   };
 
   const isAuctionActive = (a: Auction) => new Date(a.endDate) > new Date();
@@ -103,11 +138,17 @@ export default function ProfilePage() {
           <TabButton $active={activeTab === 'faltantes'} onClick={() => setActiveTab('faltantes')}>
             Faltantes {!loading && `(${faltantes.length})`}
           </TabButton>
+          <TabButton $active={activeTab === 'publicaciones'} onClick={() => setActiveTab('publicaciones')}>
+            Publicaciones {!loading && `(${publicaciones.length})`}
+          </TabButton>
           <TabButton $active={activeTab === 'propuestas'} onClick={() => setActiveTab('propuestas')}>
             Propuestas {!loading && `(${recibidas.length + enviadas.length})`}
           </TabButton>
           <TabButton $active={activeTab === 'subastas'} onClick={() => setActiveTab('subastas')}>
             Subastas {!loading && `(${misSubastas.length + misOfertas.length})`}
+          </TabButton>
+          <TabButton $active={activeTab === 'intercambios'} onClick={() => setActiveTab('intercambios')}>
+            Intercambios {!loading && `(${intercambios.length})`}
           </TabButton>
         </TabNav>
 
@@ -125,24 +166,75 @@ export default function ProfilePage() {
             {/* Faltantes */}
             {activeTab === 'faltantes' && (
               <>
-                <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '1rem' }}>
-                  <AddButton onClick={() => setShowAddMissingModal(true)}>
-                    + Agregar Faltantes
-                  </AddButton>
-                </div>
+                <SectionHeader>
+                  <SectionTitle>Mis faltantes ({faltantes.length})</SectionTitle>
+                  <SectionActionButton onClick={() => setShowAddMissingModal(true)}>
+                    <span className="material-symbols-outlined" aria-hidden="true">add</span>
+                    Agregar Faltantes
+                  </SectionActionButton>
+                </SectionHeader>
                 {faltantes.length === 0 ? (
                   <EmptyMessage>No tienes figuritas faltantes.</EmptyMessage>
                 ) : (
                   <CollectionContainer>
-                    {faltantes.map(figurita => (
-                      <FiguritaCard key={figurita.cardId}>
-                        <h4>#{figurita.number}</h4>
-                        <p><strong>{figurita.description}</strong></p>
-                        <p>{figurita.country} - {figurita.team}</p>
-                        <p>{figurita.category}</p>
-                      </FiguritaCard>
+                    {faltantes.map(card => (
+                      <CardItem key={card.cardId}>
+                        <h4>#{card.number}</h4>
+                        <p><strong>{card.description}</strong></p>
+                        <p>{card.country} - {card.team}</p>
+                        <p>{card.category}</p>
+                        {card.addedAt && (
+                          <p><small>Buscás esta {formatTimeAgo(card.addedAt)}</small></p>
+                        )}
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveMissingCard(card.cardId)}
+                          title="Ya la conseguí"
+                          style={{
+                            marginTop: '0.5rem',
+                            padding: '0.25rem 0.5rem',
+                            background: 'transparent',
+                            border: '1px solid #ccc',
+                            borderRadius: '4px',
+                            cursor: 'pointer',
+                            fontSize: '0.85rem',
+                          }}
+                        >
+                          ✓ Ya la conseguí
+                        </button>
+                      </CardItem>
                     ))}
                   </CollectionContainer>
+                )}
+              </>
+            )}
+
+            {/* Publicaciones */}
+            {activeTab === 'publicaciones' && (
+              <>
+                <SectionHeader>
+                  <SectionTitle>Mis Publicaciones ({publicaciones.length})</SectionTitle>
+                  <SectionActionButton onClick={() => setShowPublishModal(true)}>
+                    <span className="material-symbols-outlined" aria-hidden="true">add</span>
+                    Publicar Figurita
+                  </SectionActionButton>
+                </SectionHeader>
+                {publicaciones.length === 0 ? (
+                  <EmptyMessage>No tenés publicaciones realizadas.</EmptyMessage>
+                ) : (
+                  <RowList>
+                    {publicaciones.map(pub => (
+                      <CompactAuctionCard key={pub.id} onClick={() => navigate(`/publications/${pub.id}`)}>
+                        <AuctionText>
+                          <strong>#{pub.card.number} {pub.card.description}</strong>
+                          {' — '}quedan {pub.remainingCount} de {pub.initialCount}
+                        </AuctionText>
+                        <PublicationStatusBadge $status={pub.status}>
+                          {PUBLICATION_STATUS_LABEL[pub.status]}
+                        </PublicationStatusBadge>
+                      </CompactAuctionCard>
+                    ))}
+                  </RowList>
                 )}
               </>
             )}
@@ -161,13 +253,13 @@ export default function ProfilePage() {
                 ) : (
                   <RowList>
                     {recibidas.slice(0, PREVIEW).map(p => (
-                      <ProposalRow key={p.id}>
-                        <ProposalText>
+                      <CompactAuctionCard key={p.id} onClick={() => navigate(`/publications/${p.publication.id}`)}>
+                        <AuctionText>
                           <strong>#{p.publication.card.number} {p.publication.card.description}</strong>
                           {' — '}de {p.bidder.name}
-                        </ProposalText>
+                        </AuctionText>
                         <StatusBadge $estado={p.status}>{STATUS_LABEL[p.status]}</StatusBadge>
-                      </ProposalRow>
+                      </CompactAuctionCard>
                     ))}
                     {recibidas.length > PREVIEW && (
                       <SeeAllLink onClick={() => navigate('/proposals')} style={{ alignSelf: 'center', marginTop: '0.25rem' }}>
@@ -190,13 +282,13 @@ export default function ProfilePage() {
                 ) : (
                   <RowList>
                     {enviadas.slice(0, PREVIEW).map(p => (
-                      <ProposalRow key={p.id}>
-                        <ProposalText>
+                      <CompactAuctionCard key={p.id} onClick={() => navigate(`/publications/${p.publication.id}`)}>
+                        <AuctionText>
                           <strong>#{p.publication.card.number} {p.publication.card.description}</strong>
                           {' — '}a {p.publication.publisher.name}
-                        </ProposalText>
+                        </AuctionText>
                         <StatusBadge $estado={p.status}>{STATUS_LABEL[p.status]}</StatusBadge>
-                      </ProposalRow>
+                      </CompactAuctionCard>
                     ))}
                     {enviadas.length > PREVIEW && (
                       <SeeAllLink onClick={() => navigate('/proposals')} style={{ alignSelf: 'center', marginTop: '0.25rem' }}>
@@ -273,6 +365,49 @@ export default function ProfilePage() {
                 )}
               </>
             )}
+
+            {/* Intercambios */}
+            {activeTab === 'intercambios' && (
+              <>
+                <SectionHeader>
+                  <SectionTitle>Histórico ({intercambios.length})</SectionTitle>
+                  {intercambios.length > PREVIEW && (
+                    <SeeAllLink onClick={() => navigate('/exchanges')}>Ver todos →</SeeAllLink>
+                  )}
+                </SectionHeader>
+                {intercambios.length === 0 ? (
+                  <EmptyMessage>No tenés intercambios concretados todavía.</EmptyMessage>
+                ) : (
+                  <RowList>
+                    {intercambios.slice(0, PREVIEW).map(ex => {
+                      const v = viewAs(ex, user.id);
+                      const headline = v.theirCards[0];
+                      return (
+                        <CompactAuctionCard key={ex.id} onClick={() => setExchangeDetail(ex)}>
+                          <AuctionText>
+                            {headline
+                              ? <><strong>#{headline.number} {headline.description}</strong>{v.theirCards.length > 1 && ` (+${v.theirCards.length - 1})`}</>
+                              : <strong>Intercambio</strong>
+                            }
+                            {' — con '}{v.other.name}
+                            {' — '}{new Date(ex.createdAt).toLocaleDateString('es-AR')}
+                            {' · '}{ORIGIN_LABEL[ex.origin.type]}
+                          </AuctionText>
+                          <AuctionStatus $active={!!v.myFeedback}>
+                            {v.myFeedback ? '✓ Calificado' : 'Pendiente'}
+                          </AuctionStatus>
+                        </CompactAuctionCard>
+                      );
+                    })}
+                    {intercambios.length > PREVIEW && (
+                      <SeeAllLink onClick={() => navigate('/exchanges')} style={{ alignSelf: 'center', marginTop: '0.25rem' }}>
+                        +{intercambios.length - PREVIEW} más
+                      </SeeAllLink>
+                    )}
+                  </RowList>
+                )}
+              </>
+            )}
           </>
         )}
       </TabSection>
@@ -282,6 +417,22 @@ export default function ProfilePage() {
           userId={user.id}
           onClose={() => setShowAddMissingModal(false)}
           onSuccess={loadUserMissingCards}
+        />
+      )}
+
+      {showPublishModal && (
+        <PublishCardModal
+          userId={user.id}
+          onClose={() => setShowPublishModal(false)}
+          onSuccess={loadUserPublications}
+        />
+      )}
+
+      {exchangeDetail && (
+        <ExchangeDetailModal
+          exchange={exchangeDetail}
+          currentUserId={user.id}
+          onClose={() => setExchangeDetail(null)}
         />
       )}
     </ProfileContainer>

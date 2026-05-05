@@ -1,7 +1,6 @@
 import styled from 'styled-components';
-import { ExchangeType } from '../../interfaces/exchanges/Exchange';
+import { ExchangeOriginType } from '../../interfaces/exchanges/ExchangeOrigin';
 import { theme } from '../../styles/theme';
-import { ParticipationType } from '../../interfaces/publications/publicationTypes';
 
 export const PageContainer = styled.div`
   max-width: 900px;
@@ -62,7 +61,7 @@ export const ExchangeDetail = styled.p`
 `;
 
 // M3 Assist Chip
-export const TypeBadge = styled.span<{ $type: ExchangeType }>`
+export const TypeBadge = styled.span<{ $type: ExchangeOriginType }>`
   display: inline-flex;
   align-items: center;
   padding: 2px 10px;
@@ -114,84 +113,6 @@ export const EmptyMessage = styled.p`
   color: ${theme.colors.onSurfaceVariant};
   padding: ${theme.spacing.xl};
   font-size: ${theme.typography.bodyLarge.fontSize};
-`;
-
-export const SectionHeader = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: ${theme.spacing.md};
-  gap: ${theme.spacing.md};
-`;
-
-export const SectionTitle = styled.h2`
-  color: ${theme.colors.onSurface};
-  font-size: ${theme.typography.titleMedium.fontSize};
-  font-weight: ${theme.typography.titleMedium.fontWeight};
-  margin: 0;
-`;
-
-// M3 Filled Button
-export const PublishButton = styled.button`
-  padding: 10px ${theme.spacing.lg};
-  background: ${theme.colors.primary};
-  color: ${theme.colors.onPrimary};
-  border: none;
-  border-radius: ${theme.shape.full};
-  font-size: ${theme.typography.labelLarge.fontSize};
-  font-weight: ${theme.typography.labelLarge.fontWeight};
-  letter-spacing: 0.00625em;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: box-shadow 0.2s;
-  position: relative;
-  overflow: hidden;
-
-  &::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: ${theme.colors.onPrimary};
-    opacity: 0;
-    transition: opacity 0.2s;
-    border-radius: inherit;
-  }
-
-  &:hover { box-shadow: ${theme.elevation[1]}; &::after { opacity: ${theme.state.hover}; } }
-`;
-
-export const PublicationCard = styled.div`
-  background: ${theme.colors.surfaceContainerLow};
-  border-radius: ${theme.shape.medium};
-  padding: ${theme.spacing.md} ${theme.spacing.lg};
-  box-shadow: ${theme.elevation[1]};
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: ${theme.spacing.lg};
-
-  @media (max-width: 480px) {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-`;
-
-export const PublicationTypeBadge = styled.span<{ $type: ParticipationType }>`
-  display: inline-flex;
-  align-items: center;
-  padding: 2px 10px;
-  border-radius: ${theme.shape.small};
-  font-size: ${theme.typography.labelSmall.fontSize};
-  font-weight: ${theme.typography.labelSmall.fontWeight};
-  letter-spacing: 0.04em;
-  background: ${({ $type }) => $type === 'SUBASTA' ? theme.colors.primaryContainer : theme.colors.successContainer};
-  color: ${({ $type }) => $type === 'SUBASTA' ? theme.colors.onPrimaryContainer : theme.colors.success};
-`;
-
-export const Divider = styled.hr`
-  border: none;
-  border-top: 1px solid ${theme.colors.outlineVariant};
-  margin: ${theme.spacing.xl} 0;
 `;
 
 // M3 Dialog overlay

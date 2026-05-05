@@ -17,6 +17,7 @@ export const API_CONFIG = {
     collection: (id: string) => `${API}/users/${id}/collection`,
     collectionCard: (id: string, cardId: string) => `${API}/users/${id}/collection/${cardId}`,
     missingCards: (id: string) => `${API}/users/${id}/missing-cards`,
+    missingCard: (id: string, cardId: string) => `${API}/users/${id}/missing-cards/${cardId}`,
   },
 
   cards: {
@@ -30,15 +31,22 @@ export const API_CONFIG = {
     base: `${API}/auctions`,
   },
 
+  publications: {
+    base: `${API}/publications`,
+    byId: (id: string) => `${API}/publications/${id}`,
+  },
+
   proposals: {
     base: `${API}/proposals`,
+    byId: (id: string) => `${API}/proposals/${id}`,
+    accept: (id: string) => `${API}/proposals/${id}/accept`,
+    reject: (id: string) => `${API}/proposals/${id}/reject`,
+    cancel: (id: string) => `${API}/proposals/${id}/cancel`,
   },
 
   exchanges: {
     base: `${API}/exchanges`,
-  },
-
-  publications: {
-    base: `${API}/publications`,
+    byId: (id: string) => `${API}/exchanges/${id}`,
+    feedback: (id: string) => `${API}/exchanges/${id}/feedback`,
   },
 };

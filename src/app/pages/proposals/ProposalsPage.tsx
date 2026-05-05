@@ -3,13 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import { Proposal } from '../../interfaces/proposals/Proposal';
 import { getProposals, acceptProposal, rejectProposal } from '../../api/ProposalsService';
 import { useUserContext } from '../../context/useUserContext';
-import { toastError } from '../../utils/toast';
+import { useSnackbar } from '../../context/useSnackbar';
 import {
   PageContainer, Header, BackButton, Title,
   TabNav, TabButton, ProposalList, ProposalCard,
   ProposalInfo, ProposalTitle, ProposalDetail,
   CardRight, StatusBadge, ActionButtons, AcceptButton, RejectButton,
-  EmptyMessage,
+  EmptyMessage, ViewPublicationLink,
 } from './ProposalsPage.styles';
 import { ProposalStatus } from '../../interfaces/proposals/ProposalStatus';
 
@@ -17,11 +17,13 @@ const STATUS_LABEL: Record<ProposalStatus, string> = {
   PENDIENTE: 'Pendiente',
   ACEPTADA:  'Aceptada',
   RECHAZADA: 'Rechazada',
+  CANCELADA: 'Cancelada'
 };
 
 export default function ProposalsPage() {
   const navigate = useNavigate();
   const { currentUser } = useUserContext();
+  const { showError } = useSnackbar();
 
   if (!currentUser) {
     navigate('/login');
@@ -55,7 +57,7 @@ export default function ProposalsPage() {
         prev.map(p => p.id === proposal.id ? { ...p, status: 'ACEPTADA' } : p)
       );
     } catch {
-      toastError('Error al aceptar la propuesta. Intentá de nuevo.');
+      showError('Error al aceptar la propuesta. Intentá nuevamente.');
     } finally {
       setActionLoading(null);
     }
@@ -69,7 +71,7 @@ export default function ProposalsPage() {
         prev.map(p => p.id === proposal.id ? { ...p, status: 'RECHAZADA' } : p)
       );
     } catch {
-      toastError('Error al rechazar la propuesta. Intentá de nuevo.');
+      showError('Error al rechazar la propuesta. Intentá nuevamente.');
     } finally {
       setActionLoading(null);
     }
@@ -113,8 +115,19 @@ export default function ProposalsPage() {
                     : `Publicado por ${p.publication.publisher.name}`}
                 </ProposalDetail>
                 <ProposalDetail>
-                  Ofrece: {p.offeredCards.map(f => `#${f.number} ${f.description}`).join(', ')}
+                  Ofrece <strong>{p.offeredCards.length}</strong> figurita{p.offeredCards.length !== 1 ? 's' : ''}
+                  {' a cambio de '}
+                  <strong>{p.requestedCount}</strong> de #{p.publication.card.number}
                 </ProposalDetail>
+                {p.offeredCards.length > 0 && (
+                  <ProposalDetail>
+                    Ofrecidas: {p.offeredCards.map(f => `#${f.number} ${f.description}`).join(', ')}
+                  </ProposalDetail>
+                )}
+                <ViewPublicationLink onClick={() => navigate(`/publications/${p.publication.id}`)}>
+                  Ver publicación
+                  <span className="material-symbols-outlined" style={{ fontSize: '1rem' }} aria-hidden="true">arrow_forward</span>
+                </ViewPublicationLink>
               </ProposalInfo>
 
               <CardRight>

@@ -14,15 +14,36 @@ export const Header = styled.div`
   margin-bottom: ${theme.spacing.xl};
 `;
 
+// M3 Filled Tonal Icon Button — más visible que el standard sobre fondo blanco
 export const BackButton = styled.button`
-  background: none;
+  width: 40px;
+  height: 40px;
+  background: ${theme.colors.secondaryContainer};
   border: none;
-  font-size: 1.4rem;
+  border-radius: ${theme.shape.full};
+  color: ${theme.colors.onSecondaryContainer};
   cursor: pointer;
-  color: ${theme.colors.primary};
-  padding: 0;
-  line-height: 1;
-  &:hover { opacity: 0.7; }
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  transition: box-shadow 0.15s;
+  flex-shrink: 0;
+
+  & .material-symbols-outlined { font-size: 22px; }
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: ${theme.colors.onSecondaryContainer};
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+
+  &:hover { box-shadow: ${theme.elevation[1]}; &::after { opacity: ${theme.state.hover}; } }
+  &:active::after { opacity: ${theme.state.pressed}; }
 `;
 
 export const Title = styled.h1`
@@ -69,6 +90,35 @@ export const Select = styled.select`
   &:focus {
     outline: none;
     border-color: ${theme.colors.primary};
+  }
+`;
+
+// Selectable list item (single-select figurita) — extends FiguritaItem visual with state
+export const SelectableItem = styled.div<{ $selected: boolean }>`
+  display: flex;
+  align-items: center;
+  padding: ${theme.spacing.sm} ${theme.spacing.md};
+  gap: ${theme.spacing.sm};
+  cursor: pointer;
+  transition: background 0.1s;
+  background: ${({ $selected }) => $selected ? theme.colors.secondaryContainer : 'transparent'};
+
+  &:not(:last-child) { border-bottom: 1px solid ${theme.colors.outlineVariant}; }
+  &:hover { background: ${({ $selected }) => $selected ? theme.colors.secondaryContainer : theme.colors.surfaceContainerLow}; }
+`;
+
+export const SelectIndicator = styled.span<{ $selected: boolean }>`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  color: ${({ $selected }) => $selected ? theme.colors.primary : theme.colors.outline};
+
+  & .material-symbols-outlined {
+    font-size: 22px;
+    font-variation-settings: 'FILL' ${({ $selected }) => $selected ? 1 : 0};
   }
 `;
 
