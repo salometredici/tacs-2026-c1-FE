@@ -1,14 +1,16 @@
 import React from 'react';
 import { getUserCollection } from '../../api/UsersService';
 import { CollectionCard } from '../../interfaces/cards/CollectionCard';
-import AddToCollectionModal from '../figuritas/AddToCollectionModal';
+import AddToCollectionModal from '../cards/AddToCollectionModal';
 import {
   CollectionContainer,
-  FiguritaCard,
+  CardItem,
+  CardImage,
   TabButtons,
   TabButton,
   EmptyMessage,
 } from './Collection.styles';
+import { SectionActionButton } from '../auctions/Auctions.styles';
 
 interface CollectionProps {
   userId: string;
@@ -50,39 +52,34 @@ export default function Collection({ userId: userId }: CollectionProps) {
             Repetidas ({repetidas.length})
           </TabButton>
         </TabButtons>
-        <button
-          onClick={() => setShowAddModal(true)}
-          style={{
-            padding: '0.5rem 1rem',
-            background: '#1976d2',
-            color: 'white',
-            border: 'none',
-            borderRadius: '4px',
-            cursor: 'pointer',
-            fontWeight: 600,
-            fontSize: '0.9rem',
-          }}
-        >
-          + Agregar figurita
-        </button>
+        <SectionActionButton onClick={() => setShowAddModal(true)}>
+          <span className="material-symbols-outlined" aria-hidden="true">add</span>
+          Agregar Figurita
+        </SectionActionButton>
       </div>
 
       <CollectionContainer>
         {tab === 'todas' && collection.map((fc) => (
-          <FiguritaCard key={fc.cardId}>
+          <CardItem key={fc.cardId}>
+            <CardImage $category={fc.category}>
+              <span className="material-symbols-outlined" aria-hidden="true">sports_soccer</span>
+            </CardImage>
             <h4>#{fc.number}</h4>
             <p><strong>{fc.description}</strong></p>
             <p>{fc.country} - {fc.team}</p>
             <p>{fc.category}</p>
             <p>Cantidad: {fc.quantity}</p>
-          </FiguritaCard>
+          </CardItem>
         ))}
 
         {tab === 'repetidas' && repetidas.map((fc) => (
-          <FiguritaCard key={fc.cardId}>
+          <CardItem key={fc.cardId}>
+            <CardImage $category={fc.category}>
+              <span className="material-symbols-outlined" aria-hidden="true">sports_soccer</span>
+            </CardImage>
             <h4>#{fc.number} · x{fc.quantity}</h4>
             <p><strong>{fc.description}</strong></p>
-          </FiguritaCard>
+          </CardItem>
         ))}
       </CollectionContainer>
 

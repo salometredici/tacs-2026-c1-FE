@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import { theme } from '../../styles/theme';
 import { ProposalStatus } from '../../interfaces/proposals/ProposalStatus';
+import { PublicationStatus } from '../../interfaces/publications/publicationTypes';
 
 export const ProfileContainer = styled.div`
   max-width: 1200px;
@@ -136,23 +137,6 @@ export const RowList = styled.div`
   gap: ${theme.spacing.sm};
 `;
 
-// M3 List Item style
-export const ProposalRow = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: ${theme.spacing.sm} ${theme.spacing.md};
-  background: ${theme.colors.surfaceContainerLowest};
-  border-radius: ${theme.shape.small};
-  gap: ${theme.spacing.md};
-`;
-
-export const ProposalText = styled.span`
-  font-size: ${theme.typography.bodyMedium.fontSize};
-  color: ${theme.colors.onSurface};
-  flex: 1;
-`;
-
 // M3 Assist Chip
 export const StatusBadge = styled.span<{ $estado: ProposalStatus }>`
   display: inline-flex;
@@ -216,4 +200,24 @@ export const AuctionStatus = styled.span<{ $active: boolean }>`
   font-size: ${theme.typography.labelSmall.fontSize};
   font-weight: ${theme.typography.labelSmall.fontWeight};
   color: ${({ $active }) => $active ? theme.colors.success : theme.colors.onSurfaceVariant};
+`;
+
+// M3 Assist Chip – publication status
+export const PublicationStatusBadge = styled.span<{ $status: PublicationStatus }>`
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 10px;
+  border-radius: ${theme.shape.small};
+  font-size: ${theme.typography.labelSmall.fontSize};
+  font-weight: ${theme.typography.labelSmall.fontWeight};
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  background: ${({ $status }) =>
+    $status === 'ACTIVA'      ? theme.colors.successContainer :
+    $status === 'FINALIZADA'  ? theme.colors.surfaceContainerHighest :
+                                 theme.colors.errorContainer};
+  color: ${({ $status }) =>
+    $status === 'ACTIVA'      ? theme.colors.success :
+    $status === 'FINALIZADA'  ? theme.colors.onSurfaceVariant :
+                                 theme.colors.onErrorContainer};
 `;

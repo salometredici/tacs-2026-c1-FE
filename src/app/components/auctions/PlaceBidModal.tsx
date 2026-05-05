@@ -6,15 +6,15 @@ import { placeBid } from '../../api/AuctionsService';
 import {
   Overlay, Modal, ModalHeader, ModalTitle, CloseButton,
   Footer, CancelButton, SubmitButton, ErrorMsg,
-} from '../exchanges/PublishFiguritaModal.styles';
+} from '../exchanges/PublishCardModal.styles';
 import {
   SearchInput,
   SectionLabel,
-  FiguritaList,
+  CardList,
   FiguritaItem,
-  FiguritaNum,
-  FiguritaDesc,
-  FiguritaQtyLabel,
+  CardNum,
+  CardDescription,
+  CardQuantityLabel,
   AddButton,
   RemoveButton,
   QtyRow,
@@ -121,29 +121,29 @@ export default function PlaceBidModal({ userId, figurita, auctionId, onClose, on
 
             <div>
               <SectionLabel>Disponibles</SectionLabel>
-              <FiguritaList>
+              <CardList>
                 {available.length === 0 ? (
                   <EmptyItem>No hay figuritas disponibles</EmptyItem>
                 ) : available.map(fc => (
                   <FiguritaItem key={fc.cardId}>
-                    <FiguritaNum>#{fc.number}</FiguritaNum>
-                    <FiguritaDesc>{fc.description}</FiguritaDesc>
-                    <FiguritaQtyLabel>x{fc.quantity}</FiguritaQtyLabel>
+                    <CardNum>#{fc.number}</CardNum>
+                    <CardDescription>{fc.description}</CardDescription>
+                    <CardQuantityLabel>x{fc.quantity}</CardQuantityLabel>
                     <AddButton onClick={() => toggleFigurita(fc.number)}>Agregar</AddButton>
                   </FiguritaItem>
                 ))}
-              </FiguritaList>
+              </CardList>
             </div>
 
             <div>
               <SectionLabel>Ofrecidas ({offered.length})</SectionLabel>
-              <FiguritaList>
+              <CardList>
                 {offered.length === 0 ? (
                   <EmptyItem>Ninguna seleccionada aún</EmptyItem>
                 ) : offered.map(fc => (
                   <FiguritaItem key={fc.cardId}>
-                    <FiguritaNum>#{fc.number}</FiguritaNum>
-                    <FiguritaDesc>{fc.description}</FiguritaDesc>
+                    <CardNum>#{fc.number}</CardNum>
+                    <CardDescription>{fc.description}</CardDescription>
                     <QtyRow>
                       <QtyButton onClick={() => updateQuantity(fc.number, -1)}>−</QtyButton>
                       <QtyDisplay>{selected[fc.number]}</QtyDisplay>
@@ -155,7 +155,7 @@ export default function PlaceBidModal({ userId, figurita, auctionId, onClose, on
                     <RemoveButton onClick={() => toggleFigurita(fc.number)}>Quitar</RemoveButton>
                   </FiguritaItem>
                 ))}
-              </FiguritaList>
+              </CardList>
             </div>
           </>
         )}

@@ -7,6 +7,6 @@ export interface CollectionCard {
     category: string
     quantity: number
     compromisedCount: number
-    adquisitionDate?: string
-    adquisitionOrigin?: string
+    acquisitionDate?: string
+    acquisitionOrigin?: string
 }

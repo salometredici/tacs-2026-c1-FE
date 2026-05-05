@@ -27,7 +27,7 @@ export const SectionLabel = styled.p`
   margin: 0 0 ${theme.spacing.xs} 0;
 `;
 
-export const FiguritaList = styled.div`
+export const CardList = styled.div`
   display: flex;
   flex-direction: column;
   max-height: 180px;
@@ -53,21 +53,21 @@ export const FiguritaItem = styled.div`
   &:hover { background: ${theme.colors.surfaceContainerLow}; }
 `;
 
-export const FiguritaNum = styled.span`
+export const CardNum = styled.span`
   font-size: ${theme.typography.labelLarge.fontSize};
   font-weight: 600;
   color: ${theme.colors.primary};
   min-width: 40px;
 `;
 
-export const FiguritaDesc = styled.span`
+export const CardDescription = styled.span`
   font-size: ${theme.typography.bodySmall.fontSize};
   line-height: ${theme.typography.bodySmall.lineHeight};
   color: ${theme.colors.onSurface};
   flex: 1;
 `;
 
-export const FiguritaQtyLabel = styled.span`
+export const CardQuantityLabel = styled.span`
   font-size: ${theme.typography.bodySmall.fontSize};
   color: ${theme.colors.onSurfaceVariant};
   min-width: 28px;

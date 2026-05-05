@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import styled from 'styled-components';
 import { theme } from '../../styles/theme';
-import SearchFiguritas from '../../components/search/SearchFiguritas';
+import SearchCards from '../../components/search/SearchCards';
 import SearchResults from '../../components/search/SearchResults';
-import { Card } from '../../interfaces/cards/Card';
+import { Publication } from '../../interfaces/publications/Publication';
 
 const SearchPageContainer = styled.div`
   max-width: 1400px;
@@ -12,23 +12,23 @@ const SearchPageContainer = styled.div`
 `;
 
 export default function SearchPage() {
-  const [results, setResults] = useState<Card[]>([]);
+  const [results, setResults] = useState<Publication[]>([]);
   const [searched, setSearched] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const handleSearch = (
-    figuritas: Card[],
+    publications: Publication[],
     hasSearched: boolean,
     isLoading: boolean
   ) => {
-    setResults(figuritas);
+    setResults(publications);
     setSearched(hasSearched);
     setLoading(isLoading);
   };
 
   return (
     <SearchPageContainer>
-      <SearchFiguritas onSearch={handleSearch} />
+      <SearchCards onSearch={handleSearch} />
       <SearchResults
         results={results}
         searched={searched}

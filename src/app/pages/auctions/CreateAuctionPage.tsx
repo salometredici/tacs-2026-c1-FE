@@ -13,7 +13,7 @@ import {
   SelectableItem, SelectIndicator,
 } from './CreateAuctionPage.styles';
 import {
-  SearchInput, FiguritaList, FiguritaNum, FiguritaDesc, FiguritaQtyLabel, EmptyItem,
+  SearchInput, CardList, CardNum, CardDescription, CardQuantityLabel, EmptyItem,
 } from '../../components/proposals/MakeProposalModal.styles';
 
 // ─── Componente ─────────────────────────────────────────────────────────────
@@ -26,7 +26,7 @@ export default function CreateAuctionPage() {
   const [loadingCollection, setLoadingCollection] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
 
-  const [cardId, setFiguritaId] = useState<number | ''>('');
+  const [cardId, setCardId] = useState<number | ''>('');
   const [duracionHoras, setDuracionHoras] = useState<number>(24);
   const [reputacionMinima, setReputacionMinima] = useState<number>(0);
   const [reputacionActiva, setReputacionActiva] = useState(false);
@@ -115,7 +115,7 @@ export default function CreateAuctionPage() {
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
               />
-              <FiguritaList>
+              <CardList>
                 {collection
                   .filter(fc =>
                     fc.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -127,16 +127,16 @@ export default function CreateAuctionPage() {
                       <SelectableItem
                         key={fc.cardId}
                         $selected={isSelected}
-                        onClick={() => setFiguritaId(fc.number)}
+                        onClick={() => setCardId(fc.number)}
                       >
                         <SelectIndicator $selected={isSelected}>
                           <span className="material-symbols-outlined" aria-hidden="true">
                             {isSelected ? 'radio_button_checked' : 'radio_button_unchecked'}
                           </span>
                         </SelectIndicator>
-                        <FiguritaNum>#{fc.number}</FiguritaNum>
-                        <FiguritaDesc>{fc.description}</FiguritaDesc>
-                        <FiguritaQtyLabel>x{fc.quantity}</FiguritaQtyLabel>
+                        <CardNum>#{fc.number}</CardNum>
+                        <CardDescription>{fc.description}</CardDescription>
+                        <CardQuantityLabel>x{fc.quantity}</CardQuantityLabel>
                       </SelectableItem>
                     );
                   })
@@ -147,7 +147,7 @@ export default function CreateAuctionPage() {
                 ).length === 0 && (
                   <EmptyItem>No se encontraron figuritas</EmptyItem>
                 )}
-              </FiguritaList>
+              </CardList>
             </>
           )}
         </Field>

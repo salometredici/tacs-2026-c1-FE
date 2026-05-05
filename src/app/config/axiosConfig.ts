@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-// Para adjuntar el token JWT en cada request, lo descomentamos cuando esté la imple en el backend
-/*
+//Para adjuntar el token JWT en cada request, lo descomentamos cuando esté la imple en el backend
+
 axios.interceptors.request.use(config => {
   const token = localStorage.getItem('token')
              || localStorage.getItem('adminToken');
@@ -23,6 +23,6 @@ axios.interceptors.response.use(
     return Promise.reject(error);
   }
 );
-*/
+
 
 export default axios;

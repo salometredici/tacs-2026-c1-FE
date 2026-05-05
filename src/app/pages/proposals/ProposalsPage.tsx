@@ -9,7 +9,7 @@ import {
   TabNav, TabButton, ProposalList, ProposalCard,
   ProposalInfo, ProposalTitle, ProposalDetail,
   CardRight, StatusBadge, ActionButtons, AcceptButton, RejectButton,
-  EmptyMessage,
+  EmptyMessage, ViewPublicationLink,
 } from './ProposalsPage.styles';
 import { ProposalStatus } from '../../interfaces/proposals/ProposalStatus';
 
@@ -17,6 +17,7 @@ const STATUS_LABEL: Record<ProposalStatus, string> = {
   PENDIENTE: 'Pendiente',
   ACEPTADA:  'Aceptada',
   RECHAZADA: 'Rechazada',
+  CANCELADA: 'Cancelada'
 };
 
 export default function ProposalsPage() {
@@ -114,8 +115,19 @@ export default function ProposalsPage() {
                     : `Publicado por ${p.publication.publisher.name}`}
                 </ProposalDetail>
                 <ProposalDetail>
-                  Ofrece: {p.offeredCards.map(f => `#${f.number} ${f.description}`).join(', ')}
+                  Ofrece <strong>{p.offeredCards.length}</strong> figurita{p.offeredCards.length !== 1 ? 's' : ''}
+                  {' a cambio de '}
+                  <strong>{p.requestedCount}</strong> de #{p.publication.card.number}
                 </ProposalDetail>
+                {p.offeredCards.length > 0 && (
+                  <ProposalDetail>
+                    Ofrecidas: {p.offeredCards.map(f => `#${f.number} ${f.description}`).join(', ')}
+                  </ProposalDetail>
+                )}
+                <ViewPublicationLink onClick={() => navigate(`/publications/${p.publication.id}`)}>
+                  Ver publicación
+                  <span className="material-symbols-outlined" style={{ fontSize: '1rem' }} aria-hidden="true">arrow_forward</span>
+                </ViewPublicationLink>
               </ProposalInfo>
 
               <CardRight>
