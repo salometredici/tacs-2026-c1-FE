@@ -98,9 +98,11 @@ export const StatCard = styled.div`
 `;
 
 export const StatIcon = styled.span`
-  font-size: 1.75rem;
   line-height: 1;
   margin-bottom: ${theme.spacing.xs};
+  color: ${theme.colors.primary};
+
+  & .material-symbols-outlined { font-size: 1.75rem; }
 `;
 
 export const StatValue = styled.span`

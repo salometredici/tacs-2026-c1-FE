@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
 import { defaultSearchFilters, SearchFiguritasFilters } from '../../interfaces/search/SearchFiguritasFilters';
-import { Publication } from '../../interfaces/publications/Publication';
-import { searchActivePublications } from '../../api/PublicationsService';
 import {
   SearchContainer,
   SearchTitle,
@@ -16,12 +14,13 @@ import {
 } from './Search.styles';
 
 interface SearchFiguritasProps {
-  onSearch: (results: Publication[], searched: boolean, loading: boolean) => void;
+  onSearch: (filters: SearchFiguritasFilters) => void;
+  onReset: () => void;
+  loading: boolean;
 }
 
-export default function SearchFiguritas({ onSearch }: SearchFiguritasProps) {
+export default function SearchFiguritas({ onSearch, onReset, loading }: SearchFiguritasProps) {
   const [filters, setFilters] = useState<SearchFiguritasFilters>(defaultSearchFilters);
-  const [loading, setLoading] = useState(false);
 
   const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -31,25 +30,14 @@ export default function SearchFiguritas({ onSearch }: SearchFiguritasProps) {
     }));
   };
 
-  const handleSearch = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
-    const pubs = await searchActivePublications({
-      name: filters.description,
-      country: filters.country,
-      category: filters.category,
-    });
-    // El backend de publications no filtra por número; lo aplico en cliente.
-    const filtered = filters.number != null
-      ? pubs.filter(p => p.card.number === filters.number)
-      : pubs;
-    setLoading(false);
-    onSearch(filtered, true, false);
+    onSearch(filters);
   };
 
   const handleReset = () => {
     setFilters(defaultSearchFilters);
-    onSearch([], false, false);
+    onReset();
   };
 
   return (
@@ -57,7 +45,7 @@ export default function SearchFiguritas({ onSearch }: SearchFiguritasProps) {
       <SearchTitle>Búsqueda de Figuritas</SearchTitle>
 
       <FilterSection>
-        <form onSubmit={handleSearch}>
+        <form onSubmit={handleSubmit}>
           <FiltersGrid>
             <FilterGroup>
               <Label htmlFor="number">Número de Figurita</Label>

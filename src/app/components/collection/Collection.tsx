@@ -9,6 +9,7 @@ import {
   TabButtons,
   TabButton,
   EmptyMessage,
+  CollectionHeader,
 } from './Collection.styles';
 import { SectionActionButton } from '../auctions/Auctions.styles';
 
@@ -43,7 +44,7 @@ export default function Collection({ userId: userId }: CollectionProps) {
 
   return (
     <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+      <CollectionHeader>
         <TabButtons style={{ marginBottom: 0 }}>
           <TabButton active={tab === 'todas'} onClick={() => setTab('todas')}>
             Todas ({collection.length})
@@ -56,7 +57,7 @@ export default function Collection({ userId: userId }: CollectionProps) {
           <span className="material-symbols-outlined" aria-hidden="true">add</span>
           Agregar Figurita
         </SectionActionButton>
-      </div>
+      </CollectionHeader>
 
       <CollectionContainer>
         {tab === 'todas' && collection.map((fc) => (
@@ -84,10 +85,10 @@ export default function Collection({ userId: userId }: CollectionProps) {
       </CollectionContainer>
 
       {tab === 'todas' && collection.length === 0 && (
-        <EmptyMessage>No tenés figuritas en tu colección</EmptyMessage>
+        <EmptyMessage>No tenés figuritas en tu colección.</EmptyMessage>
       )}
       {tab === 'repetidas' && repetidas.length === 0 && (
-        <EmptyMessage>No tenés figuritas repetidas</EmptyMessage>
+        <EmptyMessage>No tenés figuritas repetidas.</EmptyMessage>
       )}
 
       {showAddModal && (

@@ -22,11 +22,11 @@ interface StatItem {
 }
 
 const stats: StatItem[] = [
-  { icon: '👥', value: adminStatsMock.totalUsuarios, label: 'Usuarios registrados' },
-  { icon: '🃏', value: adminStatsMock.figuritasPublicadas, label: 'Figuritas publicadas' },
-  { icon: '📋', value: adminStatsMock.propuestasRealizadas, label: 'Propuestas realizadas' },
-  { icon: '🔨', value: adminStatsMock.subastasActivas, label: 'Subastas activas' },
-  { icon: '🤝', value: adminStatsMock.intercambiosConcretados, label: 'Intercambios concretados' },
+  { icon: 'group', value: adminStatsMock.totalUsuarios, label: 'Usuarios registrados' },
+  { icon: 'style', value: adminStatsMock.figuritasPublicadas, label: 'Figuritas publicadas' },
+  { icon: 'description', value: adminStatsMock.propuestasRealizadas, label: 'Propuestas realizadas' },
+  { icon: 'gavel', value: adminStatsMock.subastasActivas, label: 'Subastas activas' },
+  { icon: 'handshake', value: adminStatsMock.intercambiosConcretados, label: 'Intercambios concretados' },
 ];
 
 export default function AdminDashboardPage() {
@@ -52,7 +52,9 @@ export default function AdminDashboardPage() {
       <StatsGrid>
         {stats.map((stat) => (
           <StatCard key={stat.label}>
-            <StatIcon>{stat.icon}</StatIcon>
+            <StatIcon>
+              <span className="material-symbols-outlined" aria-hidden="true">{stat.icon}</span>
+            </StatIcon>
             <StatValue>{stat.value.toLocaleString('es-AR')}</StatValue>
             <StatLabel>{stat.label}</StatLabel>
           </StatCard>

@@ -14,7 +14,7 @@ const BASE = API_CONFIG.auctions.base;
 
 interface Paginated<T> { data: T[]; currentPage: number; totalPages: number }
 
-interface AuctionDto {
+export interface AuctionDto {
   id: string;
   cardNumber: number;
   cardDescription: string;
@@ -35,7 +35,7 @@ const STATUS_BE_TO_FE: Record<string, AuctionStatus> = {
   CANCELLED: 'CANCELADA',
 };
 
-const mapAuction = (dto: AuctionDto): Auction => {
+export const mapAuction = (dto: AuctionDto): Auction => {
   const figurita: Card = {
     id: '',
     number: dto.cardNumber,
@@ -131,6 +131,15 @@ export const cancelAuction = async (auctionId: string): Promise<void> => {
     await axios.delete(`${BASE}/${auctionId}`);
   } catch (error) {
     console.error(`Error al cancelar la subasta ${auctionId}:`, error);
+    throw error;
+  }
+};
+
+export const cancelOffer = async (auctionId: string, offerId: string): Promise<void> => {
+  try {
+    await axios.delete(`${BASE}/${auctionId}/offers/${offerId}`);
+  } catch (error) {
+    console.error(`Error al cancelar la oferta ${offerId}:`, error);
     throw error;
   }
 };

@@ -2,6 +2,7 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import LoginPage from '../pages/login/LoginPage'
 import AppLayout from '../components/layout/AppLayout'
 import HomePage from '../pages/home/HomePage'
+import CatalogPage from '../pages/catalog/CatalogPage'
 import SearchPage from '../pages/search/SearchPage'
 import AuctionsPage from '../pages/auctions/AuctionsPage'
 import CreateAuctionPage from '../pages/auctions/CreateAuctionPage'
@@ -24,6 +25,7 @@ export default function AppRouter() {
         <Route element={<UserRoute />}>
           <Route element={<AppLayout />}>
             <Route path="/" element={<HomePage />} />
+            <Route path="/catalog" element={<CatalogPage />} />
             <Route path="/search" element={<SearchPage />} />
             <Route path="/auctions" element={<AuctionsPage />} />
             <Route path="/auctions/create" element={<CreateAuctionPage />} />

@@ -3,12 +3,11 @@ import { Proposal } from '../../interfaces/proposals/Proposal';
 import { ProposalStatus } from '../../interfaces/proposals/ProposalStatus';
 import {
   Overlay, Modal, ModalHeader, ModalTitle, ModalSubtitle, CloseButton,
-  OriginBadge, TwoColumns, Column, ColumnLabel,
+  OriginBadge, HeaderActions, TwoColumns, Column, ColumnLabel,
   CardItem, CardMeta,
   Footer, FooterButton,
 } from '../exchanges/ExchangeDetailModal.styles';
-import styled from 'styled-components';
-import { theme } from '../../styles/theme';
+import { StatusBadge } from '../../pages/profile/ProfilePage.styles';
 
 const STATUS_LABEL: Record<ProposalStatus, string> = {
   PENDIENTE: 'Pendiente',
@@ -16,22 +15,6 @@ const STATUS_LABEL: Record<ProposalStatus, string> = {
   RECHAZADA: 'Rechazada',
   CANCELADA: 'Cancelada',
 };
-
-const StatusChip = styled.span<{ $status: ProposalStatus }>`
-  display: inline-flex;
-  padding: 4px 12px;
-  border-radius: ${theme.shape.small};
-  font-size: ${theme.typography.labelMedium.fontSize};
-  font-weight: ${theme.typography.labelMedium.fontWeight};
-  background: ${({ $status }) =>
-    $status === 'PENDIENTE' ? theme.colors.tertiaryContainer :
-    $status === 'ACEPTADA'  ? theme.colors.successContainer :
-                               theme.colors.errorContainer};
-  color: ${({ $status }) =>
-    $status === 'PENDIENTE' ? theme.colors.onTertiaryContainer :
-    $status === 'ACEPTADA'  ? theme.colors.success :
-                               theme.colors.onErrorContainer};
-`;
 
 interface Props {
   proposal: Proposal;
@@ -64,16 +47,18 @@ export default function ProposalDetailModal({ proposal, onClose }: Props) {
             <ModalTitle>Propuesta #{proposal.id.slice(-6)}</ModalTitle>
             <ModalSubtitle>{formatDateTime(proposal.creationDate)}</ModalSubtitle>
           </div>
-          <CloseButton type="button" onClick={onClose}>✕</CloseButton>
+          <CloseButton type="button" onClick={onClose} aria-label="Cerrar">
+            <span className="material-symbols-outlined" aria-hidden="true">close</span>
+          </CloseButton>
         </ModalHeader>
 
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: theme.spacing.md, flexWrap: 'wrap' }}>
+        <HeaderActions>
           <OriginBadge type="button" $type="PROPUESTA" onClick={goToPublication}>
             <span className="material-symbols-outlined" aria-hidden="true">open_in_new</span>
             Ver publicación
           </OriginBadge>
-          <StatusChip $status={proposal.status}>{STATUS_LABEL[proposal.status]}</StatusChip>
-        </div>
+          <StatusBadge $estado={proposal.status}>{STATUS_LABEL[proposal.status]}</StatusBadge>
+        </HeaderActions>
 
         <TwoColumns>
           <Column>

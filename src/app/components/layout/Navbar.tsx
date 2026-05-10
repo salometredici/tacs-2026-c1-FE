@@ -4,6 +4,7 @@ import { useUserContext } from '../../context/useUserContext';
 import {
   NavbarContainer,
   BrandSection,
+  BrandIcon,
   BrandTitle,
   ActionsSection,
   NavButton,
@@ -52,7 +53,10 @@ export default function Navbar({ onHomeClick, onProfileClick, onLogout }: Navbar
   return (
     <NavbarContainer>
       <BrandSection>
-        <BrandTitle onClick={onHomeClick} style={{ cursor: 'pointer' }}>
+        <BrandIcon onClick={onHomeClick} aria-label="Inicio">
+          <span className="material-symbols-outlined" aria-hidden="true">sports_soccer</span>
+        </BrandIcon>
+        <BrandTitle onClick={onHomeClick}>
           TACS K3061
         </BrandTitle>
       </BrandSection>

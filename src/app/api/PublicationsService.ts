@@ -19,7 +19,7 @@ const STATUS_FE_TO_BE: Record<PublicationStatus, string> = {
   CANCELADA: 'CANCELLED',
 };
 
-interface TradePublicationDto {
+export interface TradePublicationDto {
   publicationId: string;
   initialCount: number;
   remainingCount: number;
@@ -35,7 +35,7 @@ interface TradePublicationDto {
 }
 interface Paginated<T> { data: T[]; currentPage: number; totalPages: number }
 
-const mapPublication = (dto: TradePublicationDto): Publication => ({
+export const mapPublication = (dto: TradePublicationDto): Publication => ({
   id: dto.publicationId,
   card: {
     id: '',
