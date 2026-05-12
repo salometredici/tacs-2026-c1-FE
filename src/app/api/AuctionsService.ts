@@ -14,6 +14,16 @@ const BASE = API_CONFIG.auctions.base;
 
 interface Paginated<T> { data: T[]; currentPage: number; totalPages: number }
 
+interface AuctionOfferDtoBE {
+  offerId: string;
+  auctionId: string;
+  bidderUserId: string;
+  bidderUserName: string;
+  offeredItems: Array<{ cardId: string; cardNumber: number; cardDescription: string | null; amount: number }>;
+  status: string;
+  bidDate: string;
+}
+
 export interface AuctionDto {
   id: string;
   cardNumber: number;
@@ -27,12 +37,20 @@ export interface AuctionDto {
   publisherUserId: string | null;
   publisherName: string | null;
   publisherAvatarId: string | null;
+  offers: AuctionOfferDtoBE[] | null;
 }
 
 const STATUS_BE_TO_FE: Record<string, AuctionStatus> = {
   ACTIVE: 'ACTIVA',
   AWARDED: 'FINALIZADA',
   CANCELLED: 'CANCELADA',
+};
+
+const OFFER_STATUS_BE_TO_FE: Record<string, 'ACTIVA' | 'SUPERADA' | 'GANADORA' | 'RECHAZADA'> = {
+  PENDING: 'ACTIVA',
+  ACCEPTED: 'GANADORA',
+  REJECTED: 'RECHAZADA',
+  CANCELLED: 'RECHAZADA',
 };
 
 export const mapAuction = (dto: AuctionDto): Auction => {
@@ -54,6 +72,28 @@ export const mapAuction = (dto: AuctionDto): Auction => {
     avatarId: (dto.publisherAvatarId as User['avatarId']) ?? 'avatar_1',
     creationDate: '',
   };
+  const bids = (dto.offers ?? []).map(o => ({
+    bidId: o.offerId,
+    bidder: {
+      userId: o.bidderUserId,
+      name: o.bidderUserName,
+      rating: 0,                 // BE no incluye rating en AuctionOfferDto todavía
+      avatarId: 'avatar_1',      // BE no incluye avatar en AuctionOfferDto todavía
+    },
+    offeredFiguritas: o.offeredItems.flatMap(it =>
+      Array(it.amount).fill({
+        id: it.cardId,
+        number: it.cardNumber,
+        type: 'JUGADOR' as CardType,
+        description: it.cardDescription ?? '',
+        country: null,
+        team: null,
+        category: 'COMUN' as Card['category'],
+      })
+    ),
+    status: OFFER_STATUS_BE_TO_FE[o.status] ?? 'ACTIVA',
+    bidDate: o.bidDate,
+  }));
   return {
     id: dto.id,
     figurita,
@@ -62,7 +102,7 @@ export const mapAuction = (dto: AuctionDto): Auction => {
     creationDate: '',              // no en DTO
     endDate: dto.closeDate,
     rules: [],                     // no en DTO
-    bids: [],                      // no en DTO (sólo bestOffer summary)
+    bids,
   };
 };
 
@@ -96,10 +136,10 @@ export const createAuction = async (data: CreateAuctionRequest): Promise<CreateA
   return { success: true, message: res.data.message ?? 'OK', auctionId: res.data.auctionId };
 };
 
-export const getAuctionsByUserId = async (_userId: string): Promise<Auction[]> => {
+export const getAuctionsByUserId = async (userId: string): Promise<Auction[]> => {
   try {
-    // BE: GET /api/auctions/createdByMe — usa currentUser del JWT
-    const res = await axios.get<Paginated<AuctionDto>>(`${BASE}/createdByMe`);
+    // BE: GET /api/auctions?userId=X — todas las subastas del usuario (cualquier estado)
+    const res = await axios.get<Paginated<AuctionDto>>(BASE, { params: { userId } });
     return (res.data?.data ?? []).map(mapAuction);
   } catch (error: any) {
     console.error('Error al obtener subastas del usuario:', error?.response?.status, error?.response?.data ?? error?.message);
@@ -117,11 +157,20 @@ export const getAuctionById = async (id: string): Promise<Auction | null> => {
   }
 };
 
-export const endAuction = async (auctionId: string, winnerOfferId: string): Promise<void> => {
+export const acceptOffer = async (auctionId: string, winnerOfferId: string): Promise<void> => {
   try {
-    await axios.put(`${BASE}/${auctionId}/offers/${winnerOfferId}/best`);
+    await axios.put(`${BASE}/${auctionId}/offers/${winnerOfferId}/accept`);
   } catch (error) {
-    console.error(`Error al finalizar la subasta ${auctionId}:`, error);
+    console.error(`Error al aceptar la oferta ${winnerOfferId} en la subasta ${auctionId}:`, error);
+    throw error;
+  }
+};
+
+export const rejectOffer = async (auctionId: string, offerId: string): Promise<void> => {
+  try {
+    await axios.put(`${BASE}/${auctionId}/offers/${offerId}/reject`);
+  } catch (error) {
+    console.error(`Error al rechazar la oferta ${offerId} en la subasta ${auctionId}:`, error);
     throw error;
   }
 };
@@ -160,16 +209,9 @@ interface UserBidDtoBE {
   bidDate: string;
 }
 
-const OFFER_STATUS_BE_TO_FE: Record<string, 'ACTIVA' | 'SUPERADA' | 'GANADORA' | 'RECHAZADA'> = {
-  PENDING: 'ACTIVA',
-  ACCEPTED: 'GANADORA',
-  REJECTED: 'RECHAZADA',
-  CANCELLED: 'RECHAZADA',
-};
-
-export const getAuctionBidsByUserId = async (_userId: string): Promise<UserBid[]> => {
+export const getAuctionBidsByUserId = async (userId: string): Promise<UserBid[]> => {
   try {
-    const res = await axios.get<UserBidDtoBE[]>(`${BASE}/myOffers`);
+    const res = await axios.get<UserBidDtoBE[]>(`${BASE}/offers`, { params: { userId } });
     return res.data.map(b => ({
       auctionId: b.auctionId,
       figurita: {

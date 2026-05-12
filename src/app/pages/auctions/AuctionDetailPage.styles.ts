@@ -244,6 +244,22 @@ export const ChooseWinnerButton = styled.button`
   &:disabled { opacity: ${theme.state.disabled}; cursor: not-allowed; box-shadow: none; }
 `;
 
+export const RejectOfferButton = styled.button`
+  align-self: flex-start;
+  padding: 6px ${theme.spacing.md};
+  background: transparent;
+  color: ${theme.colors.error};
+  border: 1px solid ${theme.colors.error};
+  border-radius: ${theme.shape.full};
+  font-size: ${theme.typography.labelMedium.fontSize};
+  font-weight: ${theme.typography.labelMedium.fontWeight};
+  cursor: pointer;
+  transition: background 0.15s;
+
+  &:hover { background: ${theme.colors.error}; color: ${theme.colors.onError ?? '#fff'}; }
+  &:disabled { opacity: ${theme.state.disabled}; cursor: not-allowed; }
+`;
+
 
 export const OfertaEstadoBadge = styled.span<{ $estado: string }>`
   padding: 2px 10px;

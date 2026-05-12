@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Auction } from '../../interfaces/auctions/Auction';
 import { Bid } from '../../interfaces/auctions/bid/Bid';
-import { getAuctionById, endAuction, cancelAuction } from '../../api/AuctionsService';
+import { getAuctionById, acceptOffer, rejectOffer, cancelAuction } from '../../api/AuctionsService';
 import PlaceBidModal from '../../components/auctions/PlaceBidModal';
 import { useUserContext } from '../../context/useUserContext';
 import { theme } from '../../styles/theme';
@@ -30,6 +30,7 @@ import {
   OfertaFiguritas,
   OfertaDate,
   ChooseWinnerButton,
+  RejectOfferButton,
   OfertaEstadoBadge,
   ConfirmOverlay,
   ConfirmModal,
@@ -56,6 +57,7 @@ export default function AuctionDetailPage() {
   const [pendingBid, setPendingBid] = useState<Bid | null>(null);
   const [confirmCancel, setConfirmCancel] = useState(false);
   const [cancelling, setCancelling] = useState(false);
+  const [rejectingBidId, setRejectingBidId] = useState<string | null>(null);
 
   const isOwner = auction !== null && currentUser?.id === auction.publisherId.id;
 
@@ -86,7 +88,7 @@ export default function AuctionDetailPage() {
     setFinalizing(true);
     setFinalizeError(null);
     try {
-      await endAuction(auction.id, pendingBid.bidId);
+      await acceptOffer(auction.id, pendingBid.bidId);
       setPendingBid(null);
       const updated = await getAuctionById(auction.id);
       setAuction(updated);
@@ -95,6 +97,21 @@ export default function AuctionDetailPage() {
       setPendingBid(null);
     } finally {
       setFinalizing(false);
+    }
+  };
+
+  const handleRejectOffer = async (bidId: string) => {
+    if (!auction) return;
+    setRejectingBidId(bidId);
+    setFinalizeError(null);
+    try {
+      await rejectOffer(auction.id, bidId);
+      const updated = await getAuctionById(auction.id);
+      setAuction(updated);
+    } catch {
+      setFinalizeError('Error al rechazar la oferta. Intentá de nuevo.');
+    } finally {
+      setRejectingBidId(null);
     }
   };
 
@@ -216,12 +233,20 @@ export default function AuctionDetailPage() {
                     </OfertaFiguritas>
                     <OfertaDate>{new Date(o.bidDate).toLocaleString('es-AR')}</OfertaDate>
                     {isOwner && isActive && o.status === 'ACTIVA' && (
-                      <ChooseWinnerButton
-                        onClick={() => setPendingBid(o)}
-                        disabled={finalizing}
-                      >
-                        Elegir ganadora
-                      </ChooseWinnerButton>
+                      <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                        <ChooseWinnerButton
+                          onClick={() => setPendingBid(o)}
+                          disabled={finalizing || rejectingBidId !== null}
+                        >
+                          Elegir ganadora
+                        </ChooseWinnerButton>
+                        <RejectOfferButton
+                          onClick={() => handleRejectOffer(o.bidId)}
+                          disabled={finalizing || rejectingBidId !== null}
+                        >
+                          {rejectingBidId === o.bidId ? 'Rechazando...' : 'Rechazar'}
+                        </RejectOfferButton>
+                      </div>
                     )}
                   </OfertaCard>
                 ))}
