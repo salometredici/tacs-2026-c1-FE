@@ -41,6 +41,16 @@ export const ProfileEmail = styled.p`
   font-size: ${theme.typography.bodyMedium.fontSize};
 `;
 
+export const ProfileMeta = styled.p`
+  color: ${theme.colors.onSurfaceVariant};
+  margin: ${theme.spacing.xs} 0 0 0;
+  font-size: ${theme.typography.bodySmall.fontSize};
+`;
+
+export const ProfileMetaStar = styled.span`
+  color: ${theme.colors.tertiary};
+`;
+
 // M3 Elevated Card – tab section
 export const TabSection = styled.div`
   background: ${theme.colors.surfaceContainerLow};
@@ -137,7 +147,7 @@ export const RowList = styled.div`
   gap: ${theme.spacing.sm};
 `;
 
-// M3 Assist Chip
+// M3 Badge – proposal status indicator (más compacto que un Assist Chip)
 export const StatusBadge = styled.span<{ $estado: ProposalStatus }>`
   display: inline-flex;
   align-items: center;
@@ -163,7 +173,8 @@ export const Divider = styled.hr`
   margin: ${theme.spacing.lg} 0;
 `;
 
-export const CompactAuctionCard = styled.div`
+// M3 List Item – fila clickable de una sola línea (genérica)
+export const ListItemCard = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -190,19 +201,116 @@ export const CompactAuctionCard = styled.div`
   &:hover::after { opacity: ${theme.state.hover}; }
 `;
 
-export const AuctionText = styled.span`
-  font-size: ${theme.typography.bodyMedium.fontSize};
-  color: ${theme.colors.onSurface};
-  flex: 1;
+// M3 List Item (Outlined) – fila clickable con headline + supporting text. Genérico, reusable entre tabs.
+export const OutlinedListItem = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: ${theme.spacing.md};
+  background: ${theme.colors.surface};
+  border: 1px solid ${theme.colors.outlineVariant};
+  border-radius: ${theme.shape.medium};
+  cursor: pointer;
+  gap: ${theme.spacing.md};
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.15s;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: ${theme.colors.onSurface};
+    opacity: 0;
+    transition: opacity 0.15s;
+    border-radius: inherit;
+    pointer-events: none;
+  }
+
+  &:hover {
+    border-color: ${theme.colors.outline};
+    &::after { opacity: ${theme.state.hover}; }
+  }
+
+  & > div {
+    display: flex;
+    flex-direction: column;
+    gap: ${theme.spacing.xs};
+    flex: 1;
+    min-width: 0;
+  }
+
+  & > div > strong {
+    font-size: ${theme.typography.bodyLarge.fontSize};
+    font-weight: 500;
+    color: ${theme.colors.onSurface};
+  }
+
+  & > div > span {
+    font-size: ${theme.typography.bodyMedium.fontSize};
+    color: ${theme.colors.onSurfaceVariant};
+  }
 `;
 
-export const AuctionStatus = styled.span<{ $active: boolean }>`
+// M3 Badge – status indicator genérico (estado de subasta, feedback de intercambio, etc.)
+export const StatusIndicator = styled.span<{ $active: boolean }>`
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 10px;
+  border-radius: ${theme.shape.small};
   font-size: ${theme.typography.labelSmall.fontSize};
   font-weight: ${theme.typography.labelSmall.fontWeight};
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  background: ${({ $active }) => $active ? theme.colors.successContainer : theme.colors.surfaceContainerHighest};
   color: ${({ $active }) => $active ? theme.colors.success : theme.colors.onSurfaceVariant};
+
+  & .material-symbols-outlined {
+    font-size: 14px;
+  }
 `;
 
-// M3 Assist Chip – publication status
+// M3 Outlined Button (compact) – marca una figurita faltante como conseguida
+export const MarkAsAcquiredButton = styled.button`
+  display: inline-flex;
+  align-items: center;
+  gap: ${theme.spacing.xs};
+  margin-top: ${theme.spacing.sm};
+  padding: ${theme.spacing.xs} ${theme.spacing.md};
+  background: transparent;
+  border: 1px solid ${theme.colors.outline};
+  border-radius: ${theme.shape.full};
+  color: ${theme.colors.primary};
+  font-size: ${theme.typography.labelLarge.fontSize};
+  font-weight: ${theme.typography.labelLarge.fontWeight};
+  letter-spacing: 0.00625em;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.15s;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: ${theme.colors.primary};
+    opacity: 0;
+    transition: opacity 0.15s;
+    border-radius: inherit;
+  }
+
+  &:hover {
+    border-color: ${theme.colors.primary};
+    &::after { opacity: ${theme.state.hover}; }
+  }
+
+  & .material-symbols-outlined {
+    font-size: 18px;
+  }
+`;
+
+// M3 Badge – publication status indicator (más compacto que un Assist Chip)
 export const PublicationStatusBadge = styled.span<{ $status: PublicationStatus }>`
   display: inline-flex;
   align-items: center;

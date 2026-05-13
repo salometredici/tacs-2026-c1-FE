@@ -5,7 +5,7 @@ import { Feedback } from '../../interfaces/exchanges/Feedback';
 import { viewAs } from '../../utils/exchangeView';
 import {
   Overlay, Modal, ModalHeader, ModalTitle, ModalSubtitle, CloseButton,
-  OriginBadge, TwoColumns, Column, ColumnLabel,
+  OriginBadge, HeaderActions, TwoColumns, Column, ColumnLabel,
   PartyRow, PartyAvatar,
   CardItem, CardMeta,
   FeedbackBlock, FeedbackHeader, FeedbackStars, FeedbackComment, FeedbackPending,
@@ -41,12 +41,22 @@ const renderCards = (cards: CardSnapshot[]) => (
       ))
 );
 
+const renderStars = (score: number) => (
+  <FeedbackStars aria-label={`${score} de 5 estrellas`}>
+    {Array.from({ length: 5 }, (_, i) => (
+      <span key={i} className="material-symbols-outlined" aria-hidden="true">
+        {i < score ? 'star' : 'star_border'}
+      </span>
+    ))}
+  </FeedbackStars>
+);
+
 const renderFeedback = (fb: Feedback | null, label: string) => (
   fb
     ? <FeedbackBlock>
         <FeedbackHeader>
           <span>{label}</span>
-          <FeedbackStars>{'★'.repeat(fb.score)}{'☆'.repeat(5 - fb.score)}</FeedbackStars>
+          {renderStars(fb.score)}
         </FeedbackHeader>
         {fb.comment && <FeedbackComment>"{fb.comment}"</FeedbackComment>}
       </FeedbackBlock>
@@ -79,13 +89,17 @@ export default function ExchangeDetailModal({ exchange, currentUserId, onClose }
             <ModalTitle>Intercambio con {v.other.name}</ModalTitle>
             <ModalSubtitle>{formatDateTime(exchange.createdAt)}</ModalSubtitle>
           </div>
-          <CloseButton type="button" onClick={onClose}>✕</CloseButton>
+          <CloseButton type="button" onClick={onClose} aria-label="Cerrar">
+            <span className="material-symbols-outlined" aria-hidden="true">close</span>
+          </CloseButton>
         </ModalHeader>
 
-        <OriginBadge type="button" $type={exchange.origin.type} onClick={goToOrigin}>
-          <span className="material-symbols-outlined" aria-hidden="true">open_in_new</span>
-          Origen: {ORIGIN_LABEL[exchange.origin.type]}
-        </OriginBadge>
+        <HeaderActions>
+          <OriginBadge type="button" $type={exchange.origin.type} onClick={goToOrigin}>
+            <span className="material-symbols-outlined" aria-hidden="true">open_in_new</span>
+            Origen: {ORIGIN_LABEL[exchange.origin.type]}
+          </OriginBadge>
+        </HeaderActions>
 
         <TwoColumns>
           <Column>

@@ -4,15 +4,13 @@ import { Publication } from '../../interfaces/publications/Publication';
 import { getUserSuggestions } from '../../api/UsersService';
 import { useUserContext } from '../../context/useUserContext';
 import MakeProposalModal from '../../components/proposals/MakeProposalModal';
-import CatalogPage from '../catalog/CatalogPage';
 import {
   HomeContainer,
   Title,
   Subtitle,
-  CatalogSection,
-  CatalogSectionTitle,
   CardsGrid,
   Card,
+  CardIcon,
   CardTitle,
   CardDescription,
   SuggestionsSection,
@@ -91,7 +89,7 @@ export default function HomePage() {
 
   return (
     <HomeContainer>
-      <Title>Bienvenido!</Title>
+      <Title>¡Bienvenido{currentUser?.name ? `, ${currentUser.name}` : ''}!</Title>
       <Subtitle>Intercambia figuritas con otros coleccionistas</Subtitle>
 
       {currentUser && (
@@ -104,7 +102,9 @@ export default function HomePage() {
             <EmptyMessage>No hay sugerencias disponibles por ahora.</EmptyMessage>
           ) : (
             <CarouselWrapper>
-              <CarouselArrow $side="left" onClick={() => scrollCarousel('left')}>‹</CarouselArrow>
+              <CarouselArrow $side="left" onClick={() => scrollCarousel('left')} aria-label="Anterior">
+                <span className="material-symbols-outlined" aria-hidden="true">chevron_left</span>
+              </CarouselArrow>
               <SuggestionsCarousel
                 ref={carouselRef}
                 onMouseDown={handleMouseDown}
@@ -124,28 +124,40 @@ export default function HomePage() {
                   </SuggestionCard>
                 ))}
               </SuggestionsCarousel>
-              <CarouselArrow $side="right" onClick={() => scrollCarousel('right')}>›</CarouselArrow>
+              <CarouselArrow $side="right" onClick={() => scrollCarousel('right')} aria-label="Siguiente">
+                <span className="material-symbols-outlined" aria-hidden="true">chevron_right</span>
+              </CarouselArrow>
             </CarouselWrapper>
           )}
         </SuggestionsSection>
       )}
 
-      <CatalogSection>
-        <CatalogSectionTitle>Catálogo de Figuritas</CatalogSectionTitle>
-        <CatalogPage />
-      </CatalogSection>
-
       <CardsGrid>
+        <Card onClick={() => navigate('/catalog')}>
+          <CardIcon>
+            <span className="material-symbols-outlined" aria-hidden="true">view_list</span>
+          </CardIcon>
+          <CardTitle>Catálogo de Figuritas</CardTitle>
+          <CardDescription>
+            Explorá las 500 figuritas del Mundial y filtrá por categoría
+          </CardDescription>
+        </Card>
         <Card onClick={() => navigate('/search')}>
+          <CardIcon>
+            <span className="material-symbols-outlined" aria-hidden="true">search</span>
+          </CardIcon>
           <CardTitle>Búsqueda de Figuritas</CardTitle>
           <CardDescription>
-            Busca figuritas por número, jugador, selección o equipo
+            Buscá la figurita que te interese en publicaciones y subastas activas
           </CardDescription>
         </Card>
         <Card onClick={() => navigate('/auctions')}>
+          <CardIcon>
+            <span className="material-symbols-outlined" aria-hidden="true">gavel</span>
+          </CardIcon>
           <CardTitle>Subastas Activas</CardTitle>
           <CardDescription>
-            Buscá subastas activas o inicia las tuyas
+            Buscá subastas activas o iniciá las tuyas
           </CardDescription>
         </Card>
       </CardsGrid>

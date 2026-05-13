@@ -9,18 +9,28 @@ export const CollectionContainer = styled.div`
 
 // M3 Elevated Card
 export const CardItem = styled.div`
+  position: relative;
   background: ${theme.colors.surfaceContainerLow};
   border-radius: ${theme.shape.medium};
   padding: ${theme.spacing.md};
   text-align: center;
-  border: 1px solid ${theme.colors.outlineVariant};
   box-shadow: ${theme.elevation[1]};
-  transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+  transition: box-shadow 0.2s;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: ${theme.colors.onSurface};
+    opacity: 0;
+    transition: opacity 0.2s;
+    border-radius: inherit;
+    pointer-events: none;
+  }
 
   &:hover {
-    border-color: ${theme.colors.primary};
     box-shadow: ${theme.elevation[2]};
-    transform: translateY(-2px);
+    &::after { opacity: ${theme.state.hover}; }
   }
 
   h4 {
@@ -31,7 +41,7 @@ export const CardItem = styled.div`
   }
 
   p {
-    margin: 0.2rem 0;
+    margin: ${theme.spacing.xs} 0;
     color: ${theme.colors.onSurfaceVariant};
     font-size: ${theme.typography.bodySmall.fontSize};
   }
@@ -60,8 +70,14 @@ export const CardImage = styled.div<{ $imageUrl?: string; $category: string }>`
 
   & .material-symbols-outlined {
     font-size: 40px;
-    opacity: 0.6;
   }
+`;
+
+export const CollectionHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: ${theme.spacing.md};
 `;
 
 export const TabButtons = styled.div`

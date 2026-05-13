@@ -47,7 +47,6 @@ export const CloseButton = styled.button`
   border-radius: ${theme.shape.full};
   border: none;
   background: none;
-  font-size: 1.2rem;
   cursor: pointer;
   color: ${theme.colors.onSurfaceVariant};
   display: flex;
@@ -67,6 +66,8 @@ export const CloseButton = styled.button`
   }
 
   &:hover { color: ${theme.colors.onSurface}; &::after { opacity: ${theme.state.hover}; } }
+
+  & .material-symbols-outlined { font-size: 20px; }
 `;
 
 export const Field = styled.div`
@@ -100,6 +101,34 @@ export const Input = styled.input`
   &:hover { border-color: ${theme.colors.onSurface}; }
   &:focus { border: 2px solid ${theme.colors.primary}; }
   &::placeholder { color: ${theme.colors.onSurfaceVariant}; }
+`;
+
+// Variante compacta del Input para campos numéricos chicos (cantidad, etc.)
+export const QuantityInput = styled(Input)`
+  width: 120px;
+`;
+
+// M3 Outlined Select – mismo patrón visual que el Input
+export const Select = styled.select`
+  padding: ${theme.spacing.md};
+  border: 1px solid ${theme.colors.outline};
+  border-radius: ${theme.shape.extraSmall};
+  font-size: ${theme.typography.bodyLarge.fontSize};
+  background: ${theme.colors.surface};
+  color: ${theme.colors.onSurface};
+  outline: none;
+  cursor: pointer;
+  transition: border 0.2s;
+
+  &:hover { border-color: ${theme.colors.onSurface}; }
+  &:focus { border: 2px solid ${theme.colors.primary}; }
+`;
+
+// Layout de 2 columnas para filtros (search + select de categoría)
+export const Row = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: ${theme.spacing.md};
 `;
 
 // M3 List Item — selectable (mismo patrón que CreateAuctionPage)

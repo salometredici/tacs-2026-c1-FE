@@ -77,6 +77,41 @@ export const LoginInput = styled.input`
   &::placeholder { color: ${theme.colors.onSurfaceVariant}; }
 `;
 
+export const ErrorText = styled.p`
+  margin: 0;
+  color: ${theme.colors.error};
+  font-size: ${theme.typography.bodySmall.fontSize};
+`;
+
+// M3 Text Button — toggle entre Login y Register
+export const ToggleAuthMode = styled.button`
+  margin-top: ${theme.spacing.xs};
+  padding: ${theme.spacing.sm} ${theme.spacing.md};
+  background: none;
+  border: none;
+  border-radius: ${theme.shape.full};
+  color: ${theme.colors.primary};
+  font-size: ${theme.typography.labelLarge.fontSize};
+  font-weight: ${theme.typography.labelLarge.fontWeight};
+  letter-spacing: 0.00625em;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  align-self: center;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: ${theme.colors.primary};
+    opacity: 0;
+    transition: opacity 0.2s;
+    border-radius: inherit;
+  }
+
+  &:hover::after { opacity: ${theme.state.hover}; }
+`;
+
 // M3 Filled Button
 export const LoginButton = styled.button`
   margin-top: ${theme.spacing.sm};

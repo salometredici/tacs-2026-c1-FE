@@ -5,8 +5,12 @@ import { getCatalog } from '../../api/CardsService';
 import { addToUserCollection } from '../../api/UsersService';
 import {
   Overlay, Modal, ModalHeader, ModalTitle, CloseButton,
-  Input, Select, Row, Footer, CancelButton, ConfirmButton, ErrorMsg,
-} from './AddMissingCardsModal.styles';
+  Field, Hint, Input, Select, Row, SelectableItem, SelectIndicator,
+  Footer, CancelButton, SubmitButton, ErrorMsg,
+} from '../exchanges/PublishCardModal.styles';
+import {
+  CardList, CardNum, CardDescription, CardQuantityLabel, EmptyItem,
+} from '../proposals/MakeProposalModal.styles';
 
 const CATEGORIES: Category[] = ['COMUN', 'EPICO', 'LEGENDARIO'];
 
@@ -57,76 +61,66 @@ export default function AddToCollectionModal({ userId, onClose, onSuccess }: Pro
       <Modal>
         <ModalHeader>
           <ModalTitle>Agregar figurita a mi colección</ModalTitle>
-          <CloseButton onClick={onClose} title="Cerrar">✕</CloseButton>
+          <CloseButton type="button" onClick={onClose} aria-label="Cerrar">
+            <span className="material-symbols-outlined" aria-hidden="true">close</span>
+          </CloseButton>
         </ModalHeader>
 
-        <Row>
-          <Input
-            type="text"
-            placeholder="Buscar por nombre o número..."
-            value={query}
-            onChange={e => { setQuery(e.target.value); setSelected(null); }}
-            autoFocus
-          />
-          <Select
-            value={category}
-            onChange={e => { setCategory(e.target.value as Category | ''); setSelected(null); }}
-          >
-            <option value="">Todas las categorías</option>
-            {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
-          </Select>
-        </Row>
+        <Field>
+          <Row>
+            <Input
+              type="text"
+              placeholder="Buscar por nombre o número..."
+              value={query}
+              onChange={e => { setQuery(e.target.value); setSelected(null); }}
+              autoFocus
+            />
+            <Select
+              value={category}
+              onChange={e => { setCategory(e.target.value as Category | ''); setSelected(null); }}
+            >
+              <option value="">Todas las categorías</option>
+              {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
+            </Select>
+          </Row>
 
-        <div style={{ maxHeight: '300px', overflowY: 'auto', border: '1px solid #e0e0e0', borderRadius: '4px' }}>
           {catalog.length === 0 ? (
-            <p style={{ padding: '1rem', color: '#888', margin: 0 }}>Cargando catálogo...</p>
-          ) : filtered.length === 0 ? (
-            <p style={{ padding: '1rem', color: '#888', margin: 0 }}>Sin resultados.</p>
+            <Hint>Cargando catálogo...</Hint>
           ) : (
-            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-              <thead>
-                <tr style={{ borderBottom: '2px solid #ccc', textAlign: 'left', background: '#f5f5f5', position: 'sticky', top: 0 }}>
-                  <th style={{ padding: '0.5rem' }}>#</th>
-                  <th style={{ padding: '0.5rem' }}>Nombre</th>
-                  <th style={{ padding: '0.5rem' }}>País</th>
-                  <th style={{ padding: '0.5rem' }}>Cat.</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filtered.map(f => (
-                  <tr
+            <CardList>
+              {filtered.map(f => {
+                const isSelected = selected?.id === f.id;
+                return (
+                  <SelectableItem
                     key={f.id}
+                    $selected={isSelected}
                     onClick={() => setSelected(f)}
-                    style={{
-                      borderBottom: '1px solid #eee',
-                      background: selected?.id === f.id ? '#e3f2fd' : 'transparent',
-                      cursor: 'pointer',
-                    }}
                   >
-                    <td style={{ padding: '0.5rem' }}>#{f.number}</td>
-                    <td style={{ padding: '0.5rem' }}>{f.description}</td>
-                    <td style={{ padding: '0.5rem' }}>{f.country}</td>
-                    <td style={{ padding: '0.5rem' }}>{f.category}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                    <SelectIndicator $selected={isSelected}>
+                      <span className="material-symbols-outlined" aria-hidden="true">
+                        {isSelected ? 'radio_button_checked' : 'radio_button_unchecked'}
+                      </span>
+                    </SelectIndicator>
+                    <CardNum>#{f.number}</CardNum>
+                    <CardDescription>{f.description}</CardDescription>
+                    <CardQuantityLabel>{f.country} · {f.category}</CardQuantityLabel>
+                  </SelectableItem>
+                );
+              })}
+              {filtered.length === 0 && (
+                <EmptyItem>Sin resultados</EmptyItem>
+              )}
+            </CardList>
           )}
-        </div>
-
-        {selected && (
-          <p style={{ margin: 0, fontSize: '0.9rem', color: '#555' }}>
-            Seleccionada: <strong>#{selected.number} {selected.description}</strong>
-          </p>
-        )}
+        </Field>
 
         {error && <ErrorMsg>{error}</ErrorMsg>}
 
         <Footer>
-          <CancelButton onClick={onClose}>Cancelar</CancelButton>
-          <ConfirmButton onClick={handleConfirm} disabled={!selected || submitting}>
+          <CancelButton type="button" onClick={onClose}>Cancelar</CancelButton>
+          <SubmitButton type="button" onClick={handleConfirm} disabled={!selected || submitting}>
             {submitting ? 'Agregando...' : 'Confirmar'}
-          </ConfirmButton>
+          </SubmitButton>
         </Footer>
       </Modal>
     </Overlay>

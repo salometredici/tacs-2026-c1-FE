@@ -14,15 +14,20 @@ import {
   LoginLabel,
   LoginInput,
   LoginButton,
+  ToggleAuthMode,
+  ErrorText,
 } from './LoginPage.styles';
 
 const LogoTACS = () => (
   <img src="/assets/football-svgrepo-com.svg" alt="Logo TACS" width={80} height={80} />
 );
 
+type Mode = 'login' | 'register';
+
 export default function LoginPage() {
   const navigate = useNavigate();
   const { login } = useUserContext();
+  const [mode, setMode] = useState<Mode>('login');
   const [form, setForm] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -32,44 +37,52 @@ export default function LoginPage() {
     setError('');
   };
 
+  const toggleMode = () => {
+    setMode(prev => (prev === 'login' ? 'register' : 'login'));
+    setError('');
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setLoading(true);
     try {
-      const response = await axios.post(API_CONFIG.auth.login, {
-        email: form.email,
-        password: form.password,
-      });
-      const { token, user } = response.data;
-      login(user, token);
+      if (mode === 'register') {
+        const derivedName = form.email.split('@')[0] || form.email;
+        const { token, user } = await register({
+          name: derivedName,
+          email: form.email,
+          password: form.password,
+          avatarId: 'avatar_1',
+        });
+        login(user, token);
+      } else {
+        const response = await axios.post(API_CONFIG.auth.login, {
+          email: form.email,
+          password: form.password,
+        });
+        const { token, user } = response.data;
+        login(user, token);
+      }
       navigate('/');
     } catch {
-      setError('Email o contraseña incorrectos');
+      setError(
+        mode === 'register'
+          ? 'No se pudo crear la cuenta. Probá con otro email.'
+          : 'Email o contraseña incorrectos'
+      );
     } finally {
       setLoading(false);
     }
   };
 
-  // Para agregar el botón de Registrar con su form!
-  // const handleRegister = async () => {
-  //   setError('');
-  //   setLoading(true);
-  //   try {
-  //     const { token, user } = await register({
-  //       name: 'salo',
-  //       email: 'salo@mail.com',
-  //       password: '1234',
-  //       avatarId: 'avatar_1',
-  //     });
-  //     login(user, token);
-  //     navigate('/');
-  //   } catch {
-  //     setError('No se pudo registrar el usuario.');
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
+  const isRegister = mode === 'register';
+  const submitLabel = isRegister
+    ? (loading ? 'Creando...' : 'Crear cuenta')
+    : (loading ? 'Ingresando...' : 'Ingresar');
+  const toggleLabel = isRegister
+    ? '¿Ya tenés cuenta? Ingresá'
+    : '¿No tenés cuenta? Registrate';
 
   return (
     <LoginContainer>
@@ -78,7 +91,9 @@ export default function LoginPage() {
           <LogoTACS />
         </LoginLogo>
         <LoginTitle>TACS K3061</LoginTitle>
-        <LoginSubtitle>Intercambio de Figuritas Mundial 2026</LoginSubtitle>
+        <LoginSubtitle>
+          {isRegister ? 'Creá tu cuenta para empezar' : 'Intercambio de Figuritas Mundial 2026'}
+        </LoginSubtitle>
         <LoginForm onSubmit={handleSubmit}>
           <LoginLabel>Email</LoginLabel>
           <LoginInput
@@ -88,6 +103,7 @@ export default function LoginPage() {
             onChange={handleChange}
             placeholder="Ingresá tu email"
             autoComplete="email"
+            required
           />
           <LoginLabel>Contraseña</LoginLabel>
           <LoginInput
@@ -96,12 +112,16 @@ export default function LoginPage() {
             value={form.password}
             onChange={handleChange}
             placeholder="Ingresá tu contraseña"
-            autoComplete="current-password"
+            autoComplete={isRegister ? 'new-password' : 'current-password'}
+            required
           />
-          {error && <p style={{ color: '#d32f2f', fontSize: '0.9rem', margin: 0 }}>{error}</p>}
+          {error && <ErrorText>{error}</ErrorText>}
           <LoginButton type="submit" disabled={loading}>
-            {loading ? 'Ingresando...' : 'Ingresar'}
+            {submitLabel}
           </LoginButton>
+          <ToggleAuthMode type="button" onClick={toggleMode} disabled={loading}>
+            {toggleLabel}
+          </ToggleAuthMode>
         </LoginForm>
       </LoginCard>
     </LoginContainer>

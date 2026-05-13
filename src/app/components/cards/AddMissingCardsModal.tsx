@@ -5,10 +5,13 @@ import { getCatalog } from '../../api/CardsService';
 import { addMissingCard } from '../../api/UsersService';
 import {
   Overlay, Modal, ModalHeader, ModalTitle, CloseButton,
-  Input, Select, Row,
-  PendingList, PendingListTitle, PendingItem, PendingItemInfo, RemoveButton,
-  Footer, CancelButton, ConfirmButton, ErrorMsg,
-} from './AddMissingCardsModal.styles';
+  Field, Hint, Input, Select, Row,
+  Footer, CancelButton, SubmitButton, ErrorMsg,
+} from '../exchanges/PublishCardModal.styles';
+import {
+  CardList, FiguritaItem, CardNum, CardDescription, CardQuantityLabel,
+  AddButton, RemoveButton, EmptyItem, SectionLabel,
+} from '../proposals/MakeProposalModal.styles';
 
 const CATEGORIES: Category[] = ['COMUN', 'EPICO', 'LEGENDARIO'];
 
@@ -66,82 +69,72 @@ export default function AddMissingCardsModal({ userId, onClose, onSuccess }: Pro
     <Overlay onClick={e => { if (e.target === e.currentTarget) onClose(); }}>
       <Modal>
         <ModalHeader>
-          <ModalTitle>Agregar Figuritas Faltantes</ModalTitle>
-          <CloseButton onClick={onClose} title="Cerrar">✕</CloseButton>
+          <ModalTitle>Agregar figuritas faltantes</ModalTitle>
+          <CloseButton type="button" onClick={onClose} aria-label="Cerrar">
+            <span className="material-symbols-outlined" aria-hidden="true">close</span>
+          </CloseButton>
         </ModalHeader>
 
-        <Row>
-          <Input
-            type="text"
-            placeholder="Buscar por nombre o número..."
-            value={query}
-            onChange={e => setQuery(e.target.value)}
-            autoFocus
-          />
-          <Select
-            value={category}
-            onChange={e => setCategory(e.target.value as Category | '')}
-          >
-            <option value="">Todas las categorías</option>
-            {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
-          </Select>
-        </Row>
+        <Field>
+          <Row>
+            <Input
+              type="text"
+              placeholder="Buscar por nombre o número..."
+              value={query}
+              onChange={e => setQuery(e.target.value)}
+              autoFocus
+            />
+            <Select
+              value={category}
+              onChange={e => setCategory(e.target.value as Category | '')}
+            >
+              <option value="">Todas las categorías</option>
+              {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
+            </Select>
+          </Row>
 
-        <div style={{ maxHeight: '260px', overflowY: 'auto', border: '1px solid #e0e0e0', borderRadius: '4px' }}>
           {catalog.length === 0 ? (
-            <p style={{ padding: '1rem', color: '#888', margin: 0 }}>Cargando catálogo...</p>
-          ) : filtered.length === 0 ? (
-            <p style={{ padding: '1rem', color: '#888', margin: 0 }}>Sin resultados.</p>
+            <Hint>Cargando catálogo...</Hint>
           ) : (
-            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-              <thead>
-                <tr style={{ borderBottom: '2px solid #ccc', textAlign: 'left', background: '#f5f5f5', position: 'sticky', top: 0 }}>
-                  <th style={{ padding: '0.5rem' }}>#</th>
-                  <th style={{ padding: '0.5rem' }}>Nombre</th>
-                  <th style={{ padding: '0.5rem' }}>País</th>
-                  <th style={{ padding: '0.5rem' }}>Cat.</th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody>
-                {filtered.map(f => (
-                  <tr key={f.id} style={{ borderBottom: '1px solid #eee' }}>
-                    <td style={{ padding: '0.5rem' }}>#{f.number}</td>
-                    <td style={{ padding: '0.5rem' }}>{f.description}</td>
-                    <td style={{ padding: '0.5rem' }}>{f.country}</td>
-                    <td style={{ padding: '0.5rem' }}>{f.category}</td>
-                    <td style={{ padding: '0.5rem' }}>
-                      <button onClick={() => handleAdd(f)} style={{ cursor: 'pointer' }}>+</button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            <CardList>
+              {filtered.map(f => (
+                <FiguritaItem key={f.id}>
+                  <CardNum>#{f.number}</CardNum>
+                  <CardDescription>{f.description}</CardDescription>
+                  <CardQuantityLabel>{f.category}</CardQuantityLabel>
+                  <AddButton type="button" onClick={() => handleAdd(f)}>Agregar</AddButton>
+                </FiguritaItem>
+              ))}
+              {filtered.length === 0 && (
+                <EmptyItem>Sin resultados</EmptyItem>
+              )}
+            </CardList>
           )}
-        </div>
+        </Field>
 
         {pending.length > 0 && (
-          <PendingList>
-            <PendingListTitle>Para registrar ({pending.length}):</PendingListTitle>
-            {pending.map(f => (
-              <PendingItem key={f.id}>
-                <PendingItemInfo>
-                  <strong>#{f.number}</strong> · {f.description}
-                  <span> · {f.category}</span>
-                </PendingItemInfo>
-                <RemoveButton onClick={() => handleRemove(f.id)} title="Quitar">✕</RemoveButton>
-              </PendingItem>
-            ))}
-          </PendingList>
+          <Field>
+            <SectionLabel>Para registrar ({pending.length})</SectionLabel>
+            <CardList>
+              {pending.map(f => (
+                <FiguritaItem key={f.id}>
+                  <CardNum>#{f.number}</CardNum>
+                  <CardDescription>{f.description}</CardDescription>
+                  <CardQuantityLabel>{f.category}</CardQuantityLabel>
+                  <RemoveButton type="button" onClick={() => handleRemove(f.id)}>Quitar</RemoveButton>
+                </FiguritaItem>
+              ))}
+            </CardList>
+          </Field>
         )}
 
         {error && <ErrorMsg>{error}</ErrorMsg>}
 
         <Footer>
-          <CancelButton onClick={onClose}>Cancelar</CancelButton>
-          <ConfirmButton onClick={handleConfirm} disabled={pending.length === 0 || submitting}>
+          <CancelButton type="button" onClick={onClose}>Cancelar</CancelButton>
+          <SubmitButton type="button" onClick={handleConfirm} disabled={pending.length === 0 || submitting}>
             {submitting ? 'Registrando...' : `Confirmar (${pending.length})`}
-          </ConfirmButton>
+          </SubmitButton>
         </Footer>
       </Modal>
     </Overlay>

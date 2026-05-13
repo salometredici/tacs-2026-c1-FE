@@ -27,6 +27,24 @@ export const PageSubtitle = styled.p`
   margin: 0;
 `;
 
+// M3 Outlined Text Field — local search input
+export const SearchInput = styled.input`
+  width: 100%;
+  padding: ${theme.spacing.md};
+  border: 1px solid ${theme.colors.outline};
+  border-radius: ${theme.shape.extraSmall};
+  font-size: ${theme.typography.bodyLarge.fontSize};
+  background: ${theme.colors.surface};
+  color: ${theme.colors.onSurface};
+  outline: none;
+  box-sizing: border-box;
+  transition: border 0.2s;
+
+  &:hover { border-color: ${theme.colors.onSurface}; }
+  &:focus { border: 2px solid ${theme.colors.primary}; }
+  &::placeholder { color: ${theme.colors.onSurfaceVariant}; }
+`;
+
 // M3 Filled Tonal Button — filter chips
 export const FilterBar = styled.div`
   display: flex;
@@ -100,6 +118,29 @@ export const CardItem = styled.div`
   &:hover {
     box-shadow: ${theme.elevation[2]};
   }
+`;
+
+// Banner visual al tope de la card — color de fondo según categoría + ícono de figurita
+export const CardThumbnail = styled.div<{ $category: string }>`
+  width: 100%;
+  height: 96px;
+  border-radius: ${theme.shape.small};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: ${theme.spacing.sm};
+  background: ${({ $category }) => {
+    if ($category === 'LEGENDARIO') return theme.colors.tertiaryContainer;
+    if ($category === 'EPICO') return theme.colors.primaryContainer;
+    return theme.colors.surfaceContainerHighest;
+  }};
+  color: ${({ $category }) => {
+    if ($category === 'LEGENDARIO') return theme.colors.onTertiaryContainer;
+    if ($category === 'EPICO') return theme.colors.onPrimaryContainer;
+    return theme.colors.onSurfaceVariant;
+  }};
+
+  & .material-symbols-outlined { font-size: 48px; }
 `;
 
 export const CardNumber = styled.span`

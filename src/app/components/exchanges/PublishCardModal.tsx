@@ -4,7 +4,7 @@ import { getUserCollection } from '../../api/UsersService';
 import { publishFigurita } from '../../api/PublicationsService';
 import {
   Overlay, Modal, ModalHeader, ModalTitle, CloseButton,
-  Field, Hint, Input, SelectableItem, SelectIndicator,
+  Field, Hint, QuantityInput, SelectableItem, SelectIndicator,
   Footer, CancelButton, SubmitButton, ErrorMsg,
 } from './PublishCardModal.styles';
 import {
@@ -78,7 +78,9 @@ export default function PublishFiguritaModal({ userId, onClose, onSuccess }: Pro
       <Modal as="form" onSubmit={handleSubmit}>
         <ModalHeader>
           <ModalTitle>Publicar Figurita</ModalTitle>
-          <CloseButton type="button" onClick={onClose}>✕</CloseButton>
+          <CloseButton type="button" onClick={onClose} aria-label="Cerrar">
+            <span className="material-symbols-outlined" aria-hidden="true">close</span>
+          </CloseButton>
         </ModalHeader>
 
         <Field>
@@ -132,7 +134,7 @@ export default function PublishFiguritaModal({ userId, onClose, onSuccess }: Pro
           <Field>
             <label htmlFor="pf-cantidad">Cantidad a publicar</label>
             <Hint>Disponibles: {maxQuantity} de {selectedCard.quantity} totales</Hint>
-            <Input
+            <QuantityInput
               id="pf-cantidad"
               type="number"
               min={1}
@@ -142,7 +144,6 @@ export default function PublishFiguritaModal({ userId, onClose, onSuccess }: Pro
                 const n = parseInt(e.target.value) || 1;
                 setQuantity(Math.min(Math.max(n, 1), maxQuantity));
               }}
-              style={{ width: '120px' }}
             />
           </Field>
         )}

@@ -3,7 +3,8 @@ import styled from 'styled-components';
 import { theme } from '../../styles/theme';
 import SearchCards from '../../components/search/SearchCards';
 import SearchResults from '../../components/search/SearchResults';
-import { Publication } from '../../interfaces/publications/Publication';
+import { searchAvailable, SearchAvailableResponse } from '../../api/CardsService';
+import { SearchFiguritasFilters } from '../../interfaces/search/SearchFiguritasFilters';
 
 const SearchPageContainer = styled.div`
   max-width: 1400px;
@@ -11,28 +12,69 @@ const SearchPageContainer = styled.div`
   padding: ${theme.spacing.xl};
 `;
 
+const PAGE_SIZE = 10;
+const EMPTY_RESULTS: SearchAvailableResponse = {
+  publications: { data: [], currentPage: 1, totalPages: 0 },
+  auctions: { data: [], currentPage: 1, totalPages: 0 },
+};
+
 export default function SearchPage() {
-  const [results, setResults] = useState<Publication[]>([]);
+  const [results, setResults] = useState<SearchAvailableResponse>(EMPTY_RESULTS);
+  const [activeFilters, setActiveFilters] = useState<SearchFiguritasFilters | null>(null);
   const [searched, setSearched] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const handleSearch = (
-    publications: Publication[],
-    hasSearched: boolean,
-    isLoading: boolean
+  const runSearch = async (
+    filters: SearchFiguritasFilters,
+    pubPage: number,
+    aucPage: number,
   ) => {
-    setResults(publications);
-    setSearched(hasSearched);
-    setLoading(isLoading);
+    setLoading(true);
+    const data = await searchAvailable({
+      number: filters.number,
+      description: filters.description,
+      country: filters.country,
+      category: filters.category,
+      pubPage,
+      pubPerPage: PAGE_SIZE,
+      aucPage,
+      aucPerPage: PAGE_SIZE,
+    });
+    setResults(data);
+    setLoading(false);
+  };
+
+  const handleSearch = async (filters: SearchFiguritasFilters) => {
+    setActiveFilters(filters);
+    setSearched(true);
+    await runSearch(filters, 1, 1);
+  };
+
+  const handleReset = () => {
+    setActiveFilters(null);
+    setResults(EMPTY_RESULTS);
+    setSearched(false);
+  };
+
+  const handlePubPageChange = (page: number) => {
+    if (!activeFilters) return;
+    runSearch(activeFilters, page, results.auctions.currentPage);
+  };
+
+  const handleAucPageChange = (page: number) => {
+    if (!activeFilters) return;
+    runSearch(activeFilters, results.publications.currentPage, page);
   };
 
   return (
     <SearchPageContainer>
-      <SearchCards onSearch={handleSearch} />
+      <SearchCards onSearch={handleSearch} onReset={handleReset} loading={loading} />
       <SearchResults
         results={results}
         searched={searched}
         loading={loading}
+        onPubPageChange={handlePubPageChange}
+        onAucPageChange={handleAucPageChange}
       />
     </SearchPageContainer>
   );

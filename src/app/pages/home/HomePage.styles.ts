@@ -65,19 +65,23 @@ export const Card = styled.button`
 export const CardIcon = styled.div`
   width: 56px;
   height: 56px;
-  background: ${theme.colors.primaryContainer};
+  background: ${theme.colors.primary};
+  color: ${theme.colors.onPrimary};
   border-radius: ${theme.shape.medium};
   margin-bottom: ${theme.spacing.lg};
   display: flex;
   align-items: center;
   justify-content: center;
+
+  & .material-symbols-outlined { font-size: 28px; }
 `;
 
 export const CardTitle = styled.h2`
   margin: 0 0 ${theme.spacing.sm} 0;
-  color: ${theme.colors.onSurface};
-  font-size: ${theme.typography.titleMedium.fontSize};
-  font-weight: ${theme.typography.titleMedium.fontWeight};
+  color: ${theme.colors.primary};
+  font-size: ${theme.typography.titleLarge.fontSize};
+  line-height: ${theme.typography.titleLarge.lineHeight};
+  font-weight: 500;
 `;
 
 export const CardDescription = styled.p`
@@ -85,17 +89,6 @@ export const CardDescription = styled.p`
   color: ${theme.colors.onSurfaceVariant};
   font-size: ${theme.typography.bodyMedium.fontSize};
   line-height: 1.5;
-`;
-
-export const CatalogSection = styled.div`
-  margin-bottom: ${theme.spacing.xl};
-`;
-
-export const CatalogSectionTitle = styled.h2`
-  margin: 0 0 ${theme.spacing.md} 0;
-  font-size: ${theme.typography.titleMedium.fontSize};
-  font-weight: ${theme.typography.titleMedium.fontWeight};
-  color: ${theme.colors.onBackground};
 `;
 
 // M3 Filled Card (sugerencias)
@@ -111,7 +104,7 @@ export const SuggestionsTitle = styled.h2`
   margin: 0 0 ${theme.spacing.md} 0;
   font-size: ${theme.typography.titleMedium.fontSize};
   font-weight: ${theme.typography.titleMedium.fontWeight};
-  color: ${theme.colors.tertiary};
+  color: ${theme.colors.onBackground};
 `;
 
 export const CarouselWrapper = styled.div`
@@ -133,11 +126,12 @@ export const CarouselArrow = styled.button<{ $side: 'left' | 'right' }>`
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1rem;
   transition: box-shadow 0.15s, background 0.15s;
   z-index: 1;
 
   &:hover { background: ${theme.colors.surfaceContainerHighest}; box-shadow: ${theme.elevation[1]}; }
+
+  & .material-symbols-outlined { font-size: 20px; }
 `;
 
 export const SuggestionsCarousel = styled.div`
@@ -181,6 +175,7 @@ export const SuggestionCard = styled.button`
     background: ${theme.colors.primary};
     opacity: 0;
     transition: opacity 0.2s;
+    border-radius: inherit;
   }
 
   &:hover {

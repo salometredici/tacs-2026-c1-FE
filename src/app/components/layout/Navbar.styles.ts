@@ -40,6 +40,18 @@ export const BrandTitle = styled.h1`
   }
 `;
 
+// Logo/marca a la izquierda del título
+export const BrandIcon = styled.span`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: ${theme.colors.onPrimary};
+  cursor: pointer;
+  user-select: none;
+
+  & .material-symbols-outlined { font-size: 28px; }
+`;
+
 // Center nav links section
 export const NavLinksSection = styled.div`
   display: flex;

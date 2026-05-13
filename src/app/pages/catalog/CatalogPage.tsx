@@ -4,12 +4,14 @@ import { Card } from '../../interfaces/cards/Card';
 import { Category } from '../../interfaces/Categoria';
 import {
   PageWrapper,
+  SearchInput,
   FilterBar,
   FilterChip,
   ResultMeta,
   ResultCount,
   CardsGrid,
   CardItem,
+  CardThumbnail,
   CardNumber,
   CardDescription,
   CardMeta,
@@ -22,7 +24,7 @@ import {
   EmptyState,
 } from './CatalogPage.styles';
 
-const PAGE_SIZE = 8;
+const PAGE_SIZE = 10;
 const CATEGORIES: Array<Category | 'TODAS'> = ['TODAS', 'COMUN', 'EPICO', 'LEGENDARIO'];
 
 const CATEGORY_LABELS: Record<Category | 'TODAS', string> = {
@@ -65,6 +67,7 @@ export default function CatalogPage() {
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(0);
   const [activeCategory, setActiveCategory] = useState<Category | 'TODAS'>('TODAS');
+  const [query, setQuery] = useState('');
 
   useEffect(() => {
     getCatalog().then((cards: Card[]) => {
@@ -74,11 +77,19 @@ export default function CatalogPage() {
   }, []);
 
   const filtered = useMemo(
-    () =>
-      activeCategory === 'TODAS'
-        ? allCards
-        : allCards.filter((c) => c.category === activeCategory),
-    [allCards, activeCategory],
+    () => {
+      const q = query.trim().toLowerCase();
+      return allCards.filter((c) => {
+        const matchesCategory = activeCategory === 'TODAS' || c.category === activeCategory;
+        const matchesQuery = !q ||
+          c.description.toLowerCase().includes(q) ||
+          String(c.number).includes(q) ||
+          (c.country && c.country.toLowerCase().includes(q)) ||
+          (c.team && c.team.toLowerCase().includes(q));
+        return matchesCategory && matchesQuery;
+      });
+    },
+    [allCards, activeCategory, query],
   );
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
@@ -90,10 +101,22 @@ export default function CatalogPage() {
     setCurrentPage(0);
   };
 
+  const handleQueryChange = (q: string) => {
+    setQuery(q);
+    setCurrentPage(0);
+  };
+
   const pageRange = buildPageRange(safePage, totalPages);
 
   return (
     <PageWrapper>
+      <SearchInput
+        type="text"
+        placeholder="Filtrar por nombre, número, país o equipo..."
+        value={query}
+        onChange={(e) => handleQueryChange(e.target.value)}
+      />
+
       <FilterBar>
         {CATEGORIES.map((cat) => (
           <FilterChip
@@ -122,6 +145,9 @@ export default function CatalogPage() {
           <CardsGrid>
             {pageCards.map((card) => (
               <CardItem key={card.id}>
+                <CardThumbnail $category={card.category}>
+                  <span className="material-symbols-outlined" aria-hidden="true">sports_soccer</span>
+                </CardThumbnail>
                 <CardNumber>#{card.number}</CardNumber>
                 <CardDescription>{card.description}</CardDescription>
                 {(card.country || card.team) && (

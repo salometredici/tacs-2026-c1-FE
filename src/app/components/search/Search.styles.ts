@@ -188,3 +188,39 @@ export const ProposeButton = styled.button`
 
   &:hover { box-shadow: ${theme.elevation[1]}; &::after { opacity: ${theme.state.hover}; } }
 `;
+
+// ─── Paginación (debajo de cada lista de resultados) ─────────────────────────
+export const Pagination = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: ${theme.spacing.lg};
+  margin: ${theme.spacing.lg} 0 ${theme.spacing.xl};
+`;
+
+export const PageButton = styled.button`
+  padding: 6px 14px;
+  background: transparent;
+  color: ${theme.colors.primary};
+  border: 1px solid ${theme.colors.outlineVariant};
+  border-radius: ${theme.shape.full};
+  font-size: ${theme.typography.labelLarge.fontSize};
+  font-weight: ${theme.typography.labelLarge.fontWeight};
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+
+  &:hover:not(:disabled) {
+    border-color: ${theme.colors.primary};
+    background: ${theme.colors.surfaceContainerHigh};
+  }
+  &:disabled {
+    color: ${theme.colors.onSurfaceVariant};
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+`;
+
+export const PageInfo = styled.span`
+  color: ${theme.colors.onSurfaceVariant};
+  font-size: ${theme.typography.bodyMedium.fontSize};
+`;

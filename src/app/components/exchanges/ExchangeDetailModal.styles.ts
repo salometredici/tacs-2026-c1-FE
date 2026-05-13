@@ -47,13 +47,13 @@ export const ModalSubtitle = styled.p`
   font-size: ${theme.typography.bodyMedium.fontSize};
 `;
 
+// M3 Icon Button (standard)
 export const CloseButton = styled.button`
   width: 40px;
   height: 40px;
   border-radius: ${theme.shape.full};
   border: none;
   background: none;
-  font-size: 1.2rem;
   cursor: pointer;
   color: ${theme.colors.onSurfaceVariant};
   display: flex;
@@ -61,13 +61,25 @@ export const CloseButton = styled.button`
   justify-content: center;
   flex-shrink: 0;
   &:hover { background: ${theme.colors.surfaceContainerHighest}; }
+
+  & .material-symbols-outlined { font-size: 20px; }
 `;
 
+// Layout horizontal para header secundario (action chip + status badge)
+export const HeaderActions = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: ${theme.spacing.md};
+  flex-wrap: wrap;
+`;
+
+// M3 Suggestion Chip (clickable) – linkea al origen del intercambio
 export const OriginBadge = styled.button<{ $type: ExchangeOriginType }>`
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  padding: 4px 12px;
+  gap: ${theme.spacing.xs};
+  padding: ${theme.spacing.xs} ${theme.spacing.md};
   border-radius: ${theme.shape.small};
   font-size: ${theme.typography.labelMedium.fontSize};
   font-weight: ${theme.typography.labelMedium.fontWeight};
@@ -76,7 +88,20 @@ export const OriginBadge = styled.button<{ $type: ExchangeOriginType }>`
   cursor: pointer;
   background: ${({ $type }) => $type === 'SUBASTA' ? theme.colors.primaryContainer : theme.colors.secondaryContainer};
   color: ${({ $type }) => $type === 'SUBASTA' ? theme.colors.onPrimaryContainer : theme.colors.onSecondaryContainer};
-  &:hover { text-decoration: underline; }
+  position: relative;
+  overflow: hidden;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: ${({ $type }) => $type === 'SUBASTA' ? theme.colors.onPrimaryContainer : theme.colors.onSecondaryContainer};
+    opacity: 0;
+    transition: opacity 0.15s;
+    border-radius: inherit;
+  }
+  &:hover::after { opacity: ${theme.state.hover}; }
+
   & .material-symbols-outlined { font-size: 16px; }
 `;
 
@@ -143,7 +168,7 @@ export const FeedbackBlock = styled.div`
   padding: ${theme.spacing.sm} ${theme.spacing.md};
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: ${theme.spacing.xs};
 `;
 
 export const FeedbackHeader = styled.div`
@@ -155,8 +180,11 @@ export const FeedbackHeader = styled.div`
 `;
 
 export const FeedbackStars = styled.span`
+  display: inline-flex;
+  gap: 2px;
   color: ${theme.colors.tertiary};
-  font-size: ${theme.typography.bodyMedium.fontSize};
+
+  & .material-symbols-outlined { font-size: 18px; }
 `;
 
 export const FeedbackComment = styled.p`

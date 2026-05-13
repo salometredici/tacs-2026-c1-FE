@@ -1,14 +1,13 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { User } from '../../interfaces/auth/User';
-import { CollectionCard } from '../../interfaces/cards/CollectionCard';
 import { MissingCard } from '../../interfaces/cards/MissingCard';
 import { Proposal } from '../../interfaces/proposals/Proposal';
 import { Auction } from '../../interfaces/auctions/Auction';
 import { UserBid } from '../../interfaces/auctions/bid/UserBid';
 import { Publication } from '../../interfaces/publications/Publication';
 import { Exchange } from '../../interfaces/exchanges/Exchange';
-import { getUserCollection, getUserMissingCards, addToUserCollection } from '../../api/UsersService';
+import { getUserMissingCards, addToUserCollection } from '../../api/UsersService';
 import { getAuctionsByUserId, getAuctionBidsByUserId } from '../../api/AuctionsService';
 import { getProposals } from '../../api/ProposalsService';
 import { getMyPublications } from '../../api/PublicationsService';
@@ -16,12 +15,13 @@ import { getExchangesByUserId } from '../../api/ExchangesService';
 import { viewAs } from '../../utils/exchangeView';
 import { useUserContext } from '../../context/useUserContext';
 import {
-  ProfileContainer, ProfileHeader, ProfileTitle, ProfileEmail,
+  ProfileContainer, ProfileHeader, ProfileTitle, ProfileEmail, ProfileMeta, ProfileMetaStar,
   TabSection, TabNav, TabButton,
   SectionHeader, SectionTitle, SeeAllLink, RowList,
   StatusBadge, Divider,
-  CompactAuctionCard, AuctionText, AuctionStatus,
-  PublicationStatusBadge,
+  ListItemCard, StatusIndicator,
+  OutlinedListItem, PublicationStatusBadge,
+  MarkAsAcquiredButton,
 } from './ProfilePage.styles';
 import Collection from '../../components/collection/Collection';
 import AddMissingCardsModal from '../../components/cards/AddMissingCardsModal';
@@ -32,6 +32,7 @@ import { SectionActionButton } from '../../components/auctions/Auctions.styles';
 import {
   CollectionContainer,
   CardItem,
+  CardImage,
   EmptyMessage,
 } from '../../components/collection/Collection.styles';
 import { formatTimeAgo } from '../../utils/utils';
@@ -55,7 +56,6 @@ export default function ProfilePage() {
   const user: User = currentUser;
 
   const [activeTab, setActiveTab] = useState<Tab>('collection');
-  const [collection, setCollection] = useState<CollectionCard[]>([]);
   const [faltantes, setFaltantes] = useState<MissingCard[]>([]);
   const [recibidas, setRecibidas] = useState<Proposal[]>([]);
   const [enviadas, setEnviadas] = useState<Proposal[]>([]);
@@ -74,7 +74,6 @@ export default function ProfilePage() {
     setLoading(true);
     setError(false);
     Promise.all([
-      getUserCollection(user.id),
       getUserMissingCards(user.id),
       getProposals(user.id), // Recibidas -> publisherId = el usuario (hizo la publicación)
       getProposals('', user.id), // Enviadas -> postorId = el usuario (hizo la propuesta)
@@ -83,8 +82,7 @@ export default function ProfilePage() {
       getAuctionBidsByUserId(user.id),
       getExchangesByUserId(user.id),
     ])
-      .then(([col, falt, rec, env, pubs, sub, bids, exch]) => {
-        setCollection(col);
+      .then(([falt, rec, env, pubs, sub, bids, exch]) => {
         setFaltantes(falt);
         setRecibidas(rec);
         setEnviadas(env);
@@ -129,6 +127,17 @@ export default function ProfilePage() {
         <div>
           <ProfileTitle>{user.name}</ProfileTitle>
           <ProfileEmail>{user.email}</ProfileEmail>
+          <ProfileMeta>
+            {user.rating != null
+              ? <><ProfileMetaStar>★</ProfileMetaStar> {user.rating.toFixed(1)}</>
+              : 'Sin calificaciones aún'}
+            {' · '}
+            {user.exchangesAmount === 0
+              ? 'Sin intercambios todavía'
+              : user.exchangesAmount === 1
+                ? '1 intercambio'
+                : `${user.exchangesAmount} intercambios`}
+          </ProfileMeta>
         </div>
       </ProfileHeader>
 
@@ -176,34 +185,29 @@ export default function ProfilePage() {
                   </SectionActionButton>
                 </SectionHeader>
                 {faltantes.length === 0 ? (
-                  <EmptyMessage>No tienes figuritas faltantes.</EmptyMessage>
+                  <EmptyMessage>No tenés figuritas faltantes.</EmptyMessage>
                 ) : (
                   <CollectionContainer>
                     {faltantes.map(card => (
                       <CardItem key={card.cardId}>
+                        <CardImage $category={card.category}>
+                          <span className="material-symbols-outlined" aria-hidden="true">sports_soccer</span>
+                        </CardImage>
                         <h4>#{card.number}</h4>
                         <p><strong>{card.description}</strong></p>
                         <p>{card.country} - {card.team}</p>
                         <p>{card.category}</p>
                         {card.addedAt && (
-                          <p><small>Buscás esta {formatTimeAgo(card.addedAt)}</small></p>
+                          <p>Buscás esta {formatTimeAgo(card.addedAt)}</p>
                         )}
-                        <button
+                        <MarkAsAcquiredButton
                           type="button"
                           onClick={() => handleRemoveMissingCard(card.cardId)}
                           title="Ya la conseguí"
-                          style={{
-                            marginTop: '0.5rem',
-                            padding: '0.25rem 0.5rem',
-                            background: 'transparent',
-                            border: '1px solid #ccc',
-                            borderRadius: '4px',
-                            cursor: 'pointer',
-                            fontSize: '0.85rem',
-                          }}
                         >
-                          ✓ Ya la conseguí
-                        </button>
+                          <span className="material-symbols-outlined" aria-hidden="true">check</span>
+                          Ya la conseguí
+                        </MarkAsAcquiredButton>
                       </CardItem>
                     ))}
                   </CollectionContainer>
@@ -226,15 +230,15 @@ export default function ProfilePage() {
                 ) : (
                   <RowList>
                     {publicaciones.map(pub => (
-                      <CompactAuctionCard key={pub.id} onClick={() => navigate(`/publications/${pub.id}`)}>
-                        <AuctionText>
+                      <OutlinedListItem key={pub.id} onClick={() => navigate(`/publications/${pub.id}`)}>
+                        <div>
                           <strong>#{pub.card.number} {pub.card.description}</strong>
-                          {' — '}quedan {pub.remainingCount} de {pub.initialCount}
-                        </AuctionText>
+                          <span>Quedan {pub.remainingCount} de {pub.initialCount}</span>
+                        </div>
                         <PublicationStatusBadge $status={pub.status}>
                           {PUBLICATION_STATUS_LABEL[pub.status]}
                         </PublicationStatusBadge>
-                      </CompactAuctionCard>
+                      </OutlinedListItem>
                     ))}
                   </RowList>
                 )}
@@ -251,23 +255,18 @@ export default function ProfilePage() {
                   )}
                 </SectionHeader>
                 {recibidas.length === 0 ? (
-                  <EmptyMessage>No hay propuestas recibidas.</EmptyMessage>
+                  <EmptyMessage>No tenés propuestas recibidas.</EmptyMessage>
                 ) : (
                   <RowList>
                     {recibidas.slice(0, PREVIEW).map(p => (
-                      <CompactAuctionCard key={p.id} onClick={() => setProposalDetail(p)}>
-                        <AuctionText>
-                          <strong>#{p.publication.card.number} {p.publication.card.description}</strong>
-                          {' — '}de {p.bidder.name}
-                        </AuctionText>
+                      <OutlinedListItem key={p.id} onClick={() => setProposalDetail(p)}>
+                        <div>
+                          <strong>Por {p.requestedCount}× #{p.publication.card.number} {p.publication.card.description}</strong>
+                          <span>De {p.bidder.name} · Te ofrece {p.offeredCards.length} figurita{p.offeredCards.length === 1 ? '' : 's'}</span>
+                        </div>
                         <StatusBadge $estado={p.status}>{STATUS_LABEL[p.status]}</StatusBadge>
-                      </CompactAuctionCard>
+                      </OutlinedListItem>
                     ))}
-                    {recibidas.length > PREVIEW && (
-                      <SeeAllLink onClick={() => navigate('/proposals')} style={{ alignSelf: 'center', marginTop: '0.25rem' }}>
-                        +{recibidas.length - PREVIEW} más
-                      </SeeAllLink>
-                    )}
                   </RowList>
                 )}
 
@@ -280,23 +279,18 @@ export default function ProfilePage() {
                   )}
                 </SectionHeader>
                 {enviadas.length === 0 ? (
-                  <EmptyMessage>No hay propuestas enviadas.</EmptyMessage>
+                  <EmptyMessage>No tenés propuestas enviadas.</EmptyMessage>
                 ) : (
                   <RowList>
                     {enviadas.slice(0, PREVIEW).map(p => (
-                      <CompactAuctionCard key={p.id} onClick={() => setProposalDetail(p)}>
-                        <AuctionText>
-                          <strong>#{p.publication.card.number} {p.publication.card.description}</strong>
-                          {' — '}a {p.publication.publisher.name}
-                        </AuctionText>
+                      <OutlinedListItem key={p.id} onClick={() => setProposalDetail(p)}>
+                        <div>
+                          <strong>Por {p.requestedCount}× #{p.publication.card.number} {p.publication.card.description}</strong>
+                          <span>A {p.publication.publisher.name} · Ofrecés {p.offeredCards.length} figurita{p.offeredCards.length === 1 ? '' : 's'}</span>
+                        </div>
                         <StatusBadge $estado={p.status}>{STATUS_LABEL[p.status]}</StatusBadge>
-                      </CompactAuctionCard>
+                      </OutlinedListItem>
                     ))}
-                    {enviadas.length > PREVIEW && (
-                      <SeeAllLink onClick={() => navigate('/proposals')} style={{ alignSelf: 'center', marginTop: '0.25rem' }}>
-                        +{enviadas.length - PREVIEW} más
-                      </SeeAllLink>
-                    )}
                   </RowList>
                 )}
               </>
@@ -312,25 +306,20 @@ export default function ProfilePage() {
                   )}
                 </SectionHeader>
                 {misSubastas.length === 0 ? (
-                  <EmptyMessage>No tenés subastas publicadas</EmptyMessage>
+                  <EmptyMessage>No tenés subastas publicadas.</EmptyMessage>
                 ) : (
                   <RowList>
                     {misSubastas.slice(0, PREVIEW).map(a => (
-                      <CompactAuctionCard key={a.id} onClick={() => navigate(`/auctions/${a.id}`)}>
-                        <AuctionText>
+                      <OutlinedListItem key={a.id} onClick={() => navigate(`/auctions/${a.id}`)}>
+                        <div>
                           <strong>#{a.figurita.number} {a.figurita.description}</strong>
-                          {' — '}cierra {new Date(a.endDate).toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}
-                        </AuctionText>
-                        <AuctionStatus $active={isAuctionActive(a)}>
+                          <span>Cierra {new Date(a.endDate).toLocaleString('es-AR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}</span>
+                        </div>
+                        <StatusIndicator $active={isAuctionActive(a)}>
                           {isAuctionActive(a) ? 'Activa' : 'Cerrada'}
-                        </AuctionStatus>
-                      </CompactAuctionCard>
+                        </StatusIndicator>
+                      </OutlinedListItem>
                     ))}
-                    {misSubastas.length > PREVIEW && (
-                      <SeeAllLink onClick={() => navigate('/auctions')} style={{ alignSelf: 'center', marginTop: '0.25rem' }}>
-                        +{misSubastas.length - PREVIEW} más
-                      </SeeAllLink>
-                    )}
                   </RowList>
                 )}
 
@@ -343,26 +332,20 @@ export default function ProfilePage() {
                   )}
                 </SectionHeader>
                 {misOfertas.length === 0 ? (
-                  <EmptyMessage>No realizaste ofertas en subastas</EmptyMessage>
+                  <EmptyMessage>No tenés ofertas en subastas.</EmptyMessage>
                 ) : (
                   <RowList>
                     {misOfertas.slice(0, PREVIEW).map(o => (
-                      <CompactAuctionCard key={o.bidId} onClick={() => navigate(`/auctions/${o.auctionId}`)}>
-                        <AuctionText>
+                      <OutlinedListItem key={o.bidId} onClick={() => navigate(`/auctions/${o.auctionId}`)}>
+                        <div>
                           <strong>#{o.figurita.number} {o.figurita.description}</strong>
-                          {' — de '}{o.publisher.name}
-                          {' — '}cierra {new Date(o.closingDate).toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}
-                        </AuctionText>
-                        <AuctionStatus $active={o.auctionStatus === 'ACTIVA'}>
+                          <span>De {o.publisher.name} · Cierra {new Date(o.closingDate).toLocaleString('es-AR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}</span>
+                        </div>
+                        <StatusIndicator $active={o.auctionStatus === 'ACTIVA'}>
                           {o.auctionStatus === 'ACTIVA' ? 'Activa' : 'Cerrada'}
-                        </AuctionStatus>
-                      </CompactAuctionCard>
+                        </StatusIndicator>
+                      </OutlinedListItem>
                     ))}
-                    {misOfertas.length > PREVIEW && (
-                      <SeeAllLink onClick={() => navigate('/auctions')} style={{ alignSelf: 'center', marginTop: '0.25rem' }}>
-                        +{misOfertas.length - PREVIEW} más →
-                      </SeeAllLink>
-                    )}
                   </RowList>
                 )}
               </>
@@ -383,29 +366,29 @@ export default function ProfilePage() {
                   <RowList>
                     {intercambios.slice(0, PREVIEW).map(ex => {
                       const v = viewAs(ex, user.id);
-                      const headline = v.theirCards[0];
+                      const headlineCard = v.theirCards[0];
+                      const extras = v.theirCards.length - 1;
+                      const extraText = extras === 0 ? '' : extras === 1 ? ' y otra figurita' : ` y otras ${extras} figuritas`;
                       return (
-                        <CompactAuctionCard key={ex.id} onClick={() => setExchangeDetail(ex)}>
-                          <AuctionText>
-                            {headline
-                              ? <><strong>#{headline.number} {headline.description}</strong>{v.theirCards.length > 1 && ` (+${v.theirCards.length - 1})`}</>
+                        <OutlinedListItem key={ex.id} onClick={() => setExchangeDetail(ex)}>
+                          <div>
+                            {headlineCard
+                              ? <strong>#{headlineCard.number} {headlineCard.description}{extraText}</strong>
                               : <strong>Intercambio</strong>
                             }
-                            {' — con '}{v.other.name}
-                            {' — '}{new Date(ex.createdAt).toLocaleDateString('es-AR')}
-                            {' · '}{ORIGIN_LABEL[ex.origin.type]}
-                          </AuctionText>
-                          <AuctionStatus $active={!!v.myFeedback}>
-                            {v.myFeedback ? '✓ Calificado' : 'Pendiente'}
-                          </AuctionStatus>
-                        </CompactAuctionCard>
+                            <span>
+                              Recibidas de {v.other.name} · {new Date(ex.createdAt).toLocaleDateString('es-AR')} · {ORIGIN_LABEL[ex.origin.type]}
+                            </span>
+                          </div>
+                          <StatusIndicator $active={!!v.myFeedback}>
+                            {v.myFeedback
+                              ? <><span className="material-symbols-outlined" aria-hidden="true">check</span> Calificado</>
+                              : 'Sin calificar'
+                            }
+                          </StatusIndicator>
+                        </OutlinedListItem>
                       );
                     })}
-                    {intercambios.length > PREVIEW && (
-                      <SeeAllLink onClick={() => navigate('/exchanges')} style={{ alignSelf: 'center', marginTop: '0.25rem' }}>
-                        +{intercambios.length - PREVIEW} más
-                      </SeeAllLink>
-                    )}
                   </RowList>
                 )}
               </>

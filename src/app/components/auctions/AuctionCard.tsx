@@ -58,7 +58,7 @@ export default function AuctionCardComponent({ auction, onBid, hideBidButton = f
           <p>
             <strong>{auction.figurita.description}</strong>
           </p>
-          <p>{auction.figurita.country} - {auction.figurita.team}</p>
+          <p>{[auction.figurita.country, auction.figurita.team].filter(Boolean).join(' - ')}</p>
           <CategoryChip $category={auction.figurita.category}>
             {auction.figurita.category}
           </CategoryChip>
@@ -79,11 +79,19 @@ export default function AuctionCardComponent({ auction, onBid, hideBidButton = f
         <span>Publicante:</span>
         <span className="seller-name">{auction.publisherId.name}</span>
         <span className="reputation">
-          {'★'.repeat(Math.round(auction.publisherId.rating || 4))}
-          {' '}
-          <span style={{ color: theme.colors.onSurfaceVariant }}>
-            ({(auction.publisherId.rating || 0).toFixed(1)})
-          </span>
+          {auction.publisherId.rating ? (
+            <>
+              {'★'.repeat(Math.round(auction.publisherId.rating))}
+              {' '}
+              <span style={{ color: theme.colors.onSurfaceVariant }}>
+                ({auction.publisherId.rating.toFixed(1)})
+              </span>
+            </>
+          ) : (
+            <span style={{ color: theme.colors.onSurfaceVariant, fontStyle: 'italic' }}>
+              Sin calificaciones aún
+            </span>
+          )}
         </span>
       </SellerInfo>
 
