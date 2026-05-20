@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Auction } from '../../interfaces/auctions/Auction';
+import { calcularTiempoRestante } from '../../utils/auctionUtils';
 import { theme } from '../../styles/theme';
 import {
   AuctionCard,
@@ -27,27 +28,7 @@ interface AuctionCardProps {
 export default function AuctionCardComponent({ auction, onBid, hideBidButton = false }: AuctionCardProps) {
   const navigate = useNavigate();
 
-  const calcularTiempoRestante = () => {
-    const ahora = new Date();
-    const diferencia = new Date(auction.endDate).getTime() - ahora.getTime();
-
-    if (diferencia <= 0) {
-      return { texto: 'Finalizada', color: theme.colors.error };
-    }
-
-    const dias = Math.floor(diferencia / (1000 * 60 * 60 * 24));
-    const horas = Math.floor((diferencia % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-
-    if (dias > 0) {
-      return { texto: `${dias}d ${horas}h`, color: theme.colors.success };
-    } else if (horas > 1) {
-      return { texto: `${horas}h`, color: theme.colors.success };
-    } else {
-      return { texto: 'Termina pronto', color: theme.colors.warning };
-    }
-  };
-
-  const tiempoRestante = calcularTiempoRestante();
+  const tiempoRestante = calcularTiempoRestante(auction.endDate);
   const reputacionMinima = auction.rules.find(c => c.type === 'REPUTACION_MINIMA')?.value;
 
   return (
