@@ -4,11 +4,10 @@ import Footer from './Footer';
 import SnackbarHost from '../feedback/SnackbarHost';
 import { LayoutContainer, MainContent } from './AppLayout.styles';
 import { useUserContext } from '../../context/useUserContext';
-import { mockUser } from '../../../mocks/usersMock';
 
 export default function AppLayout() {
   const navigate = useNavigate();
-  const { currentUser, login, logout } = useUserContext();
+  const { currentUser, logout } = useUserContext();
 
   const handleProfileClick = () => {
     navigate(`/profile/${currentUser?.id}`);
@@ -22,7 +21,6 @@ export default function AppLayout() {
   return (
     <LayoutContainer>
       <Navbar
-        onHomeClick={() => {navigate('/');}}
         onProfileClick={handleProfileClick}
         onLogout={handleLogout}
       />

@@ -73,26 +73,25 @@ export default function ProfilePage() {
   useEffect(() => {
     setLoading(true);
     setError(false);
-    Promise.all([
+    Promise.allSettled([
       getUserMissingCards(user.id),
-      getProposals(user.id), // Recibidas -> publisherId = el usuario (hizo la publicación)
-      getProposals('', user.id), // Enviadas -> postorId = el usuario (hizo la propuesta)
+      getProposals(user.id),
+      getProposals('', user.id),
       getMyPublications(user.id),
       getAuctionsByUserId(user.id),
       getAuctionBidsByUserId(user.id),
       getExchangesByUserId(user.id),
-    ])
-      .then(([falt, rec, env, pubs, sub, bids, exch]) => {
-        setFaltantes(falt);
-        setRecibidas(rec);
-        setEnviadas(env);
-        setPublicaciones(pubs);
-        setMisSubastas(sub);
-        setMisOfertas(bids);
-        setIntercambios(exch);
-      })
-      .catch(() => setError(true))
-      .finally(() => setLoading(false));
+    ]).then(([falt, rec, env, pubs, sub, bids, exch]) => {
+      if (falt.status === 'fulfilled') setFaltantes(falt.value);
+      if (rec.status === 'fulfilled') setRecibidas(rec.value);
+      if (env.status === 'fulfilled') setEnviadas(env.value);
+      if (pubs.status === 'fulfilled') setPublicaciones(pubs.value);
+      if (sub.status === 'fulfilled') setMisSubastas(sub.value);
+      if (bids.status === 'fulfilled') setMisOfertas(bids.value);
+      if (exch.status === 'fulfilled') setIntercambios(exch.value);
+      const allFailed = [falt, rec, env, pubs, sub, bids, exch].every(r => r.status === 'rejected');
+      if (allFailed) setError(true);
+    }).finally(() => setLoading(false));
   }, [user.id]);
 
   const loadUserMissingCards = async () => {

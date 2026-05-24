@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CollectionCard } from '../../interfaces/cards/CollectionCard';
 import { getUserCollection } from '../../api/UsersService';
@@ -27,15 +27,15 @@ export default function CreateAuctionPage() {
   const [searchQuery, setSearchQuery] = useState('');
 
   const [cardId, setCardId] = useState<string | ''>('');
-  const [duracionHoras, setDuracionHoras] = useState<number>(24);
-  const [reputacionMinima, setReputacionMinima] = useState<number>(0);
-  const [reputacionActiva, setReputacionActiva] = useState(false);
-  const [intercambiosMinimos, setIntercambiosMinimos] = useState<number>(1);
-  const [intercambiosActivo, setIntercambiosActivo] = useState(false);
-  const [cantMinFiguritas, setCantMinFiguritas] = useState<number>(1);
-  const [cantMinActivo, setCantMinActivo] = useState(false);
-  const [categoriaMinima, setCategoriaMinima] = useState<'COMUN' | 'EPICO' | 'LEGENDARIO'>('EPICO');
-  const [categoriaActiva, setCategoriaActiva] = useState(false);
+  const [durationHours, setDurationHours] = useState<number>(24);
+  const [minReputation, setMinReputation] = useState<number>(0);
+  const [reputationEnabled, setReputationEnabled] = useState(false);
+  const [minExchanges, setMinExchanges] = useState<number>(1);
+  const [exchangesEnabled, setExchangesEnabled] = useState(false);
+  const [minCardCount, setMinCardCount] = useState<number>(1);
+  const [cardCountEnabled, setCardCountEnabled] = useState(false);
+  const [minCategory, setMinCategory] = useState<'COMUN' | 'EPICO' | 'LEGENDARIO'>('EPICO');
+  const [categoryEnabled, setCategoryEnabled] = useState(false);
 
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -51,7 +51,7 @@ export default function CreateAuctionPage() {
       .finally(() => setLoadingCollection(false));
   }, [currentUser, navigate]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: { preventDefault(): void }) => {
     e.preventDefault();
     setError(null);
 
@@ -59,26 +59,26 @@ export default function CreateAuctionPage() {
       setError('Seleccioná una figurita.');
       return;
     }
-    if (duracionHoras < AUCTION_DURATION_MIN || duracionHoras > AUCTION_DURATION_MAX) {
+    if (durationHours < AUCTION_DURATION_MIN || durationHours > AUCTION_DURATION_MAX) {
       setError(`La duración debe estar entre ${AUCTION_DURATION_MIN} y ${AUCTION_DURATION_MAX} horas.`);
       return;
     }
 
     setSubmitting(true);
     try {
-      const reglas = [];
-      if (reputacionActiva && reputacionMinima > 0)
-        reglas.push({ type: 'REPUTACION_MINIMA' as const, value: String(reputacionMinima) });
-      if (intercambiosActivo)
-        reglas.push({ type: 'INTERCAMBIOS_MINIMOS' as const, value: String(intercambiosMinimos) });
-      if (cantMinActivo)
-        reglas.push({ type: 'CANTIDAD_MINIMA_FIGURITAS' as const, value: String(cantMinFiguritas) });
-      if (categoriaActiva)
-        reglas.push({ type: 'CATEGORIA_MINIMA' as const, value: categoriaMinima });
+      const rules = [];
+      if (reputationEnabled && minReputation > 0)
+        rules.push({ type: 'REPUTACION_MINIMA' as const, value: String(minReputation) });
+      if (exchangesEnabled)
+        rules.push({ type: 'INTERCAMBIOS_MINIMOS' as const, value: String(minExchanges) });
+      if (cardCountEnabled)
+        rules.push({ type: 'CANTIDAD_MINIMA_FIGURITAS' as const, value: String(minCardCount) });
+      if (categoryEnabled)
+        rules.push({ type: 'CATEGORIA_MINIMA' as const, value: minCategory });
       await createAuction({
         cardId: cardId as string,
-        duration: duracionHoras,
-        rules: reglas,
+        duration: durationHours,
+        rules,
       });
       navigate('/auctions');
     } catch (err: any) {
@@ -167,13 +167,13 @@ export default function CreateAuctionPage() {
               type="number"
               min={AUCTION_DURATION_MIN}
               max={AUCTION_DURATION_MAX}
-              value={duracionHoras}
-              onChange={e => setDuracionHoras(Number(e.target.value))}
+              value={durationHours}
+              onChange={e => setDurationHours(Number(e.target.value))}
               style={{ width: '100px' }}
               required
             />
             <span style={{ color: theme.colors.textSecondary, fontSize: '0.9rem' }}>
-              horas&nbsp;({formatDuration(duracionHoras)})
+              horas&nbsp;({formatDuration(durationHours)})
             </span>
           </StarsRow>
         </Field>
@@ -183,13 +183,13 @@ export default function CreateAuctionPage() {
           <Label>
             <input
               type="checkbox"
-              checked={reputacionActiva}
-              onChange={e => setReputacionActiva(e.target.checked)}
+              checked={reputationEnabled}
+              onChange={e => setReputationEnabled(e.target.checked)}
               style={{ marginRight: '0.5rem' }}
             />
             Reputación mínima
           </Label>
-          {reputacionActiva && (
+          {reputationEnabled && (
             <>
               <Hint>Solo podrán ofertar usuarios con este rating o superior</Hint>
               <StarsRow>
@@ -197,15 +197,15 @@ export default function CreateAuctionPage() {
                   <StarButton
                     key={star}
                     type="button"
-                    $active={star <= reputacionMinima}
-                    onClick={() => setReputacionMinima(star === reputacionMinima ? star - 1 : star)}
+                    $active={star <= minReputation}
+                    onClick={() => setMinReputation(star === minReputation ? star - 1 : star)}
                     title={`${star} estrella${star !== 1 ? 's' : ''}`}
                   >
                     ★
                   </StarButton>
                 ))}
                 <StarLabel>
-                  {reputacionMinima === 0 ? 'Sin restricción' : `${reputacionMinima} / 5`}
+                  {minReputation === 0 ? 'Sin restricción' : `${minReputation} / 5`}
                 </StarLabel>
               </StarsRow>
             </>
@@ -217,20 +217,20 @@ export default function CreateAuctionPage() {
           <Label>
             <input
               type="checkbox"
-              checked={intercambiosActivo}
-              onChange={e => setIntercambiosActivo(e.target.checked)}
+              checked={exchangesEnabled}
+              onChange={e => setExchangesEnabled(e.target.checked)}
               style={{ marginRight: '0.5rem' }}
             />
             Intercambios mínimos
           </Label>
-          {intercambiosActivo && (
+          {exchangesEnabled && (
             <>
               <Hint>El postor debe tener al menos N intercambios concretados</Hint>
               <Input
                 type="number"
                 min={1}
-                value={intercambiosMinimos}
-                onChange={e => setIntercambiosMinimos(Math.max(1, Number(e.target.value)))}
+                value={minExchanges}
+                onChange={e => setMinExchanges(Math.max(1, Number(e.target.value)))}
                 style={{ width: '100px' }}
               />
             </>
@@ -242,20 +242,20 @@ export default function CreateAuctionPage() {
           <Label>
             <input
               type="checkbox"
-              checked={cantMinActivo}
-              onChange={e => setCantMinActivo(e.target.checked)}
+              checked={cardCountEnabled}
+              onChange={e => setCardCountEnabled(e.target.checked)}
               style={{ marginRight: '0.5rem' }}
             />
             Cantidad mínima de figuritas en oferta
           </Label>
-          {cantMinActivo && (
+          {cardCountEnabled && (
             <>
               <Hint>La oferta debe incluir al menos N figuritas</Hint>
               <Input
                 type="number"
                 min={1}
-                value={cantMinFiguritas}
-                onChange={e => setCantMinFiguritas(Math.max(1, Number(e.target.value)))}
+                value={minCardCount}
+                onChange={e => setMinCardCount(Math.max(1, Number(e.target.value)))}
                 style={{ width: '100px' }}
               />
             </>
@@ -267,18 +267,18 @@ export default function CreateAuctionPage() {
           <Label>
             <input
               type="checkbox"
-              checked={categoriaActiva}
-              onChange={e => setCategoriaActiva(e.target.checked)}
+              checked={categoryEnabled}
+              onChange={e => setCategoryEnabled(e.target.checked)}
               style={{ marginRight: '0.5rem' }}
             />
             Categoría mínima de figuritas ofrecidas
           </Label>
-          {categoriaActiva && (
+          {categoryEnabled && (
             <>
               <Hint>Las figuritas ofrecidas deben ser de esta categoría o superior</Hint>
               <Select
-                value={categoriaMinima}
-                onChange={e => setCategoriaMinima(e.target.value as 'COMUN' | 'EPICO' | 'LEGENDARIO')}
+                value={minCategory}
+                onChange={e => setMinCategory(e.target.value as 'COMUN' | 'EPICO' | 'LEGENDARIO')}
               >
                 <option value="COMUN">COMÚN</option>
                 <option value="EPICO">ÉPICO</option>

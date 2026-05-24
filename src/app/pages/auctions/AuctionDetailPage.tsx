@@ -126,7 +126,7 @@ export default function AuctionDetailPage() {
     </Page>
   );
 
-  const { texto: countdown, urgente } = formatCountdown(auction.endDate);
+  const { text: countdown, urgent } = formatCountdown(auction.endDate);
   const isActive = auction.status === 'ACTIVA';
   return (
     <Page>
@@ -167,7 +167,7 @@ export default function AuctionDetailPage() {
               <div style={{ fontSize: '0.85rem', color: theme.colors.textSecondary }}>
                 {new Date(auction.endDate).toLocaleString('es-AR')}
               </div>
-              <Countdown $urgente={urgente}>{countdown}</Countdown>
+              <Countdown $urgente={urgent}>{countdown}</Countdown>
             </div>
           </InfoRow>
           <InfoRow>
@@ -328,7 +328,7 @@ export default function AuctionDetailPage() {
       {showBidModal && currentUser && (
         <PlaceBidModal
           userId={currentUser.id}
-          figurita={auction.figurita}
+          card={auction.figurita}
           auctionId={auction.id}
           onClose={() => setShowBidModal(false)}
           onSuccess={() => setShowBidModal(false)}

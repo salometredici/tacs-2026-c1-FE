@@ -1,7 +1,6 @@
-import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Auction } from '../../interfaces/auctions/Auction';
-import { calcularTiempoRestante } from '../../utils/auctionUtils';
+import { getRemainingTime } from '../../utils/auctionUtils';
 import { theme } from '../../styles/theme';
 import {
   AuctionCard,
@@ -28,8 +27,8 @@ interface AuctionCardProps {
 export default function AuctionCardComponent({ auction, onBid, hideBidButton = false }: AuctionCardProps) {
   const navigate = useNavigate();
 
-  const tiempoRestante = calcularTiempoRestante(auction.endDate);
-  const reputacionMinima = auction.rules.find(c => c.type === 'REPUTACION_MINIMA')?.value;
+  const remaining = getRemainingTime(auction.endDate);
+  const minReputation = auction.rules.find(c => c.type === 'REPUTACION_MINIMA')?.value;
 
   return (
     <AuctionCard onClick={() => navigate(`/auctions/${auction.id}`)} style={{ cursor: 'pointer' }}>
@@ -78,31 +77,31 @@ export default function AuctionCardComponent({ auction, onBid, hideBidButton = f
 
       <AuctionStatus>
         <span>Tiempo restante:</span>
-        <TimeRemaining color={tiempoRestante.color}>
-          {tiempoRestante.texto}
+        <TimeRemaining color={remaining.color}>
+          {remaining.text}
         </TimeRemaining>
       </AuctionStatus>
 
       {auction.lastBidId && (() => {
-        const mejor = auction.bids.find(o => o.bidId === auction.lastBidId);
-        return mejor ? (
+        const lastBid = auction.bids.find(o => o.bidId === auction.lastBidId);
+        return lastBid ? (
           <BestBidInfo>
             <div className="bid-label">Última oferta:</div>
             <div className="bid-details">
-              {mejor.offeredFiguritas.length} figurita(s) ofrecidas
+              {lastBid.offeredFiguritas.length} figurita(s) ofrecidas
             </div>
             <div style={{ fontSize: theme.typography.bodySmall.fontSize, color: theme.colors.onSurfaceVariant, marginTop: '0.25rem' }}>
-              Por {mejor.bidder.name}
+              Por {lastBid.bidder.name}
             </div>
           </BestBidInfo>
         ) : null;
       })()}
 
       <RequirmentsInfo>
-        {reputacionMinima && (
+        {minReputation && (
           <div className="requirement">
             <span className="label">Reputación mínima:</span>
-            <span className="value">{reputacionMinima} ⭐</span>
+            <span className="value">{minReputation} ⭐</span>
           </div>
         )}
         {auction.rules.find(r => r.type === 'INTERCAMBIOS_MINIMOS') && (

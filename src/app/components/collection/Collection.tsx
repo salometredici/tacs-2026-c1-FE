@@ -1,4 +1,4 @@
-import React from 'react';
+import { useState, useEffect } from 'react';
 import { getUserCollection } from '../../api/UsersService';
 import { CollectionCard } from '../../interfaces/cards/CollectionCard';
 import AddToCollectionModal from '../cards/AddToCollectionModal';
@@ -18,12 +18,12 @@ interface CollectionProps {
 }
 
 export default function Collection({ userId: userId }: CollectionProps) {
-  const [tab, setTab] = React.useState<'todas' | 'repetidas'>('todas');
-  const [collection, setCollection] = React.useState<CollectionCard[]>([]);
-  const [loading, setLoading] = React.useState(true);
-  const [showAddModal, setShowAddModal] = React.useState(false);
+  const [tab, setTab] = useState<'todas' | 'repetidas'>('todas');
+  const [collection, setCollection] = useState<CollectionCard[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [showAddModal, setShowAddModal] = useState(false);
 
-  React.useEffect(() => {
+  useEffect(() => {
     loadCollection();
   }, [userId]);
 

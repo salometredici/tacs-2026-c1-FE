@@ -37,14 +37,14 @@ export default function EditAuctionModal({ auction, onClose, onSuccess }: Props)
   const cantRule = findRule('CANTIDAD_MINIMA_FIGURITAS');
   const catRule = findRule('CATEGORIA_MINIMA');
 
-  const [reputacionActiva, setReputacionActiva] = useState(!!repRule);
-  const [reputacionMinima, setReputacionMinima] = useState(repRule ? Number(repRule.value) : 0);
-  const [intercambiosActivo, setIntercambiosActivo] = useState(!!intRule);
-  const [intercambiosMinimos, setIntercambiosMinimos] = useState(intRule ? Number(intRule.value) : 1);
-  const [cantMinActivo, setCantMinActivo] = useState(!!cantRule);
-  const [cantMinFiguritas, setCantMinFiguritas] = useState(cantRule ? Number(cantRule.value) : 1);
-  const [categoriaActiva, setCategoriaActiva] = useState(!!catRule);
-  const [categoriaMinima, setCategoriaMinima] = useState<'COMUN' | 'EPICO' | 'LEGENDARIO'>(
+  const [reputationEnabled, setReputationEnabled] = useState(!!repRule);
+  const [minReputation, setMinReputation] = useState(repRule ? Number(repRule.value) : 0);
+  const [exchangesEnabled, setExchangesEnabled] = useState(!!intRule);
+  const [minExchanges, setMinExchanges] = useState(intRule ? Number(intRule.value) : 1);
+  const [cardCountEnabled, setCardCountEnabled] = useState(!!cantRule);
+  const [minCardCount, setMinCardCount] = useState(cantRule ? Number(cantRule.value) : 1);
+  const [categoryEnabled, setCategoryEnabled] = useState(!!catRule);
+  const [minCategory, setMinCategory] = useState<'COMUN' | 'EPICO' | 'LEGENDARIO'>(
     catRule ? (catRule.value as 'COMUN' | 'EPICO' | 'LEGENDARIO') : 'EPICO'
   );
 
@@ -56,14 +56,14 @@ export default function EditAuctionModal({ auction, onClose, onSuccess }: Props)
     setError(null);
     try {
       const rules: AuctionRule[] = [];
-      if (reputacionActiva && reputacionMinima > 0)
-        rules.push({ type: 'REPUTACION_MINIMA', value: String(reputacionMinima) });
-      if (intercambiosActivo)
-        rules.push({ type: 'INTERCAMBIOS_MINIMOS', value: String(intercambiosMinimos) });
-      if (cantMinActivo)
-        rules.push({ type: 'CANTIDAD_MINIMA_FIGURITAS', value: String(cantMinFiguritas) });
-      if (categoriaActiva)
-        rules.push({ type: 'CATEGORIA_MINIMA', value: categoriaMinima });
+      if (reputationEnabled && minReputation > 0)
+        rules.push({ type: 'REPUTACION_MINIMA', value: String(minReputation) });
+      if (exchangesEnabled)
+        rules.push({ type: 'INTERCAMBIOS_MINIMOS', value: String(minExchanges) });
+      if (cardCountEnabled)
+        rules.push({ type: 'CANTIDAD_MINIMA_FIGURITAS', value: String(minCardCount) });
+      if (categoryEnabled)
+        rules.push({ type: 'CATEGORIA_MINIMA', value: minCategory });
 
       await updateAuction(auction.id, { rules });
       onSuccess({ ...auction, rules });
@@ -81,22 +81,22 @@ export default function EditAuctionModal({ auction, onClose, onSuccess }: Props)
 
         <Field>
           <Label>
-            <input type="checkbox" checked={reputacionActiva}
-              onChange={e => setReputacionActiva(e.target.checked)}
+            <input type="checkbox" checked={reputationEnabled}
+              onChange={e => setReputationEnabled(e.target.checked)}
               style={{ marginRight: '0.5rem' }} />
             Reputación mínima
           </Label>
-          {reputacionActiva && (
+          {reputationEnabled && (
             <>
               <Hint>Solo pueden ofertar usuarios con este rating o superior</Hint>
               <StarsRow>
                 {[1, 2, 3, 4, 5].map(star => (
-                  <StarButton key={star} type="button" $active={star <= reputacionMinima}
-                    onClick={() => setReputacionMinima(star === reputacionMinima ? star - 1 : star)}>
+                  <StarButton key={star} type="button" $active={star <= minReputation}
+                    onClick={() => setMinReputation(star === minReputation ? star - 1 : star)}>
                     ★
                   </StarButton>
                 ))}
-                <StarLabel>{reputacionMinima === 0 ? 'Sin restricción' : `${reputacionMinima} / 5`}</StarLabel>
+                <StarLabel>{minReputation === 0 ? 'Sin restricción' : `${minReputation} / 5`}</StarLabel>
               </StarsRow>
             </>
           )}
@@ -104,16 +104,16 @@ export default function EditAuctionModal({ auction, onClose, onSuccess }: Props)
 
         <Field>
           <Label>
-            <input type="checkbox" checked={intercambiosActivo}
-              onChange={e => setIntercambiosActivo(e.target.checked)}
+            <input type="checkbox" checked={exchangesEnabled}
+              onChange={e => setExchangesEnabled(e.target.checked)}
               style={{ marginRight: '0.5rem' }} />
             Intercambios mínimos
           </Label>
-          {intercambiosActivo && (
+          {exchangesEnabled && (
             <>
               <Hint>El postor debe tener al menos N intercambios concretados</Hint>
-              <Input type="number" min={1} value={intercambiosMinimos}
-                onChange={e => setIntercambiosMinimos(Math.max(1, Number(e.target.value)))}
+              <Input type="number" min={1} value={minExchanges}
+                onChange={e => setMinExchanges(Math.max(1, Number(e.target.value)))}
                 style={{ width: '100px' }} />
             </>
           )}
@@ -121,16 +121,16 @@ export default function EditAuctionModal({ auction, onClose, onSuccess }: Props)
 
         <Field>
           <Label>
-            <input type="checkbox" checked={cantMinActivo}
-              onChange={e => setCantMinActivo(e.target.checked)}
+            <input type="checkbox" checked={cardCountEnabled}
+              onChange={e => setCardCountEnabled(e.target.checked)}
               style={{ marginRight: '0.5rem' }} />
             Cantidad mínima de figuritas en oferta
           </Label>
-          {cantMinActivo && (
+          {cardCountEnabled && (
             <>
               <Hint>La oferta debe incluir al menos N figuritas</Hint>
-              <Input type="number" min={1} value={cantMinFiguritas}
-                onChange={e => setCantMinFiguritas(Math.max(1, Number(e.target.value)))}
+              <Input type="number" min={1} value={minCardCount}
+                onChange={e => setMinCardCount(Math.max(1, Number(e.target.value)))}
                 style={{ width: '100px' }} />
             </>
           )}
@@ -138,16 +138,16 @@ export default function EditAuctionModal({ auction, onClose, onSuccess }: Props)
 
         <Field>
           <Label>
-            <input type="checkbox" checked={categoriaActiva}
-              onChange={e => setCategoriaActiva(e.target.checked)}
+            <input type="checkbox" checked={categoryEnabled}
+              onChange={e => setCategoryEnabled(e.target.checked)}
               style={{ marginRight: '0.5rem' }} />
             Categoría mínima de figuritas ofrecidas
           </Label>
-          {categoriaActiva && (
+          {categoryEnabled && (
             <>
               <Hint>Las figuritas ofrecidas deben ser de esta categoría o superior</Hint>
-              <Select value={categoriaMinima}
-                onChange={e => setCategoriaMinima(e.target.value as 'COMUN' | 'EPICO' | 'LEGENDARIO')}>
+              <Select value={minCategory}
+                onChange={e => setMinCategory(e.target.value as 'COMUN' | 'EPICO' | 'LEGENDARIO')}>
                 <option value="COMUN">COMÚN</option>
                 <option value="EPICO">ÉPICO</option>
                 <option value="LEGENDARIO">LEGENDARIO</option>

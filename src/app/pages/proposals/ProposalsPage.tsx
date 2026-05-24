@@ -26,27 +26,28 @@ export default function ProposalsPage() {
   const { currentUser } = useUserContext();
   const { showError } = useSnackbar();
 
-  if (!currentUser) {
-    navigate('/login');
-    return null;
-  }
-
   const [tab, setTab] = useState<'received' | 'sent'>('received');
   const [received, setReceived] = useState<Proposal[]>([]);
   const [sent, setSent] = useState<Proposal[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [detail, setDetail] = useState<Proposal | null>(null);
 
   useEffect(() => {
     const load = async () => {
-      const [rec, env] = await Promise.all([
-        getProposals(currentUser.id),
-        getProposals('', currentUser.id),
-      ]);
-      setReceived(rec);
-      setSent(env);
-      setLoading(false);
+      try {
+        const [rec, env] = await Promise.all([
+          getProposals(currentUser.id),
+          getProposals('', currentUser.id),
+        ]);
+        setReceived(rec);
+        setSent(env);
+      } catch {
+        setLoadError(true);
+      } finally {
+        setLoading(false);
+      }
     };
     load();
   }, [currentUser.id]);
@@ -79,6 +80,8 @@ export default function ProposalsPage() {
     }
   };
 
+  if (!currentUser) return null;
+
   const list = tab === 'received' ? received : sent;
 
   return (
@@ -101,6 +104,8 @@ export default function ProposalsPage() {
 
       {loading ? (
         <EmptyMessage>Cargando propuestas...</EmptyMessage>
+      ) : loadError ? (
+        <EmptyMessage>Ocurrió un error al cargar las propuestas. Intentá de nuevo más tarde.</EmptyMessage>
       ) : list.length === 0 ? (
         <EmptyMessage>No hay propuestas {tab === 'received' ? 'recibidas' : 'enviadas'}.</EmptyMessage>
       ) : (
