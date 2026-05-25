@@ -1,23 +1,28 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Publication } from '../../interfaces/publications/Publication';
+import { Card as CatalogCard } from '../../interfaces/cards/Card';
 import { getUserSuggestions } from '../../api/UsersService';
+import { getCatalog } from '../../api/CardsService';
 import { useUserContext } from '../../context/useUserContext';
 import MakeProposalModal from '../../components/proposals/MakeProposalModal';
-import CatalogPage from '../catalog/CatalogPage';
 import {
   HomeContainer,
   Title,
   Subtitle,
   CatalogSection,
-  CatalogSectionTitle,
+  SectionHeader,
+  SectionIcon,
+  SectionTitle,
+  CatalogSectionSubtitle,
+  CatalogPreviewThumbnail,
+  CatalogViewAllLink,
   CardsGrid,
   Card,
   CardIcon,
   CardTitle,
   CardDescription,
   SuggestionsSection,
-  SuggestionsTitle,
   CarouselWrapper,
   CarouselArrow,
   SuggestionsCarousel,
@@ -37,8 +42,10 @@ export default function HomePage() {
   const [suggestions, setSuggestions] = useState<Publication[]>([]);
   const [loading, setLoading] = useState(false);
   const [selected, setSelected] = useState<Publication | null>(null);
+  const [catalogPreview, setCatalogPreview] = useState<CatalogCard[]>([]);
 
   const carouselRef = useRef<HTMLDivElement>(null);
+  const catalogCarouselRef = useRef<HTMLDivElement>(null);
   const isDragging = useRef(false);
   const dragStartX = useRef(0);
   const dragScrollLeft = useRef(0);
@@ -50,6 +57,10 @@ export default function HomePage() {
       .then(data => setSuggestions(data))
       .finally(() => setLoading(false));
   }, [currentUser]);
+
+  useEffect(() => {
+    getCatalog().then(cards => setCatalogPreview(cards.slice(0, 12)));
+  }, []);
 
   useEffect(() => {
     if (suggestions.length === 0) return;
@@ -90,6 +101,10 @@ export default function HomePage() {
     carouselRef.current?.scrollBy({ left: dir === 'right' ? 200 : -200, behavior: 'smooth' });
   };
 
+  const scrollCatalogCarousel = (dir: 'left' | 'right') => {
+    catalogCarouselRef.current?.scrollBy({ left: dir === 'right' ? 200 : -200, behavior: 'smooth' });
+  };
+
   return (
     <HomeContainer>
       <Title>¡Bienvenido{currentUser?.name ? `, ${currentUser.name}` : ''}!</Title>
@@ -97,7 +112,12 @@ export default function HomePage() {
 
       {currentUser && (
         <SuggestionsSection>
-          <SuggestionsTitle>Sugerencias para vos</SuggestionsTitle>
+          <SectionHeader>
+            <SectionIcon>
+              <span className="material-symbols-outlined" aria-hidden="true">recommend</span>
+            </SectionIcon>
+            <SectionTitle>Sugerencias para vos</SectionTitle>
+          </SectionHeader>
 
           {loading ? (
             <EmptyMessage>Cargando sugerencias...</EmptyMessage>
@@ -136,20 +156,41 @@ export default function HomePage() {
       )}
 
       <CatalogSection>
-        <CatalogSectionTitle>Catálogo de Figuritas</CatalogSectionTitle>
-        <CatalogPage />
+        <SectionHeader>
+          <SectionIcon>
+            <span className="material-symbols-outlined" aria-hidden="true">view_list</span>
+          </SectionIcon>
+          <SectionTitle>Catálogo de Figuritas</SectionTitle>
+        </SectionHeader>
+        <CatalogSectionSubtitle>
+          Explorá las 500 figuritas del Mundial y filtrá por categoría
+        </CatalogSectionSubtitle>
+        <CarouselWrapper>
+          <CarouselArrow $side="left" onClick={() => scrollCatalogCarousel('left')} aria-label="Anterior">
+            <span className="material-symbols-outlined" aria-hidden="true">chevron_left</span>
+          </CarouselArrow>
+          <SuggestionsCarousel ref={catalogCarouselRef}>
+            {catalogPreview.map(card => (
+              <SuggestionCard key={card.id} onClick={() => navigate('/catalog')}>
+                <CatalogPreviewThumbnail $category={card.category}>
+                  <span className="material-symbols-outlined" aria-hidden="true">sports_soccer</span>
+                </CatalogPreviewThumbnail>
+                <CardNumber>#{card.number}</CardNumber>
+                <CardPlayer>{card.description}</CardPlayer>
+              </SuggestionCard>
+            ))}
+          </SuggestionsCarousel>
+          <CarouselArrow $side="right" onClick={() => scrollCatalogCarousel('right')} aria-label="Siguiente">
+            <span className="material-symbols-outlined" aria-hidden="true">chevron_right</span>
+          </CarouselArrow>
+        </CarouselWrapper>
+        <CatalogViewAllLink onClick={() => navigate('/catalog')}>
+          Ver todo el catálogo
+          <span className="material-symbols-outlined" aria-hidden="true">arrow_forward</span>
+        </CatalogViewAllLink>
       </CatalogSection>
 
       <CardsGrid>
-        <Card onClick={() => navigate('/catalog')}>
-          <CardIcon>
-            <span className="material-symbols-outlined" aria-hidden="true">view_list</span>
-          </CardIcon>
-          <CardTitle>Catálogo de Figuritas</CardTitle>
-          <CardDescription>
-            Explorá las 500 figuritas del Mundial y filtrá por categoría
-          </CardDescription>
-        </Card>
         <Card onClick={() => navigate('/search')}>
           <CardIcon>
             <span className="material-symbols-outlined" aria-hidden="true">search</span>

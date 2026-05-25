@@ -4,6 +4,9 @@ import { Card } from '../../interfaces/cards/Card';
 import { Category } from '../../interfaces/Categoria';
 import {
   PageWrapper,
+  PageHeader,
+  PageTitle,
+  PageSubtitle,
   SearchInput,
   FilterBar,
   FilterChip,
@@ -102,6 +105,13 @@ export default function CatalogPage() {
 
   return (
     <PageWrapper>
+      <PageHeader>
+        <PageTitle>Catálogo de Figuritas</PageTitle>
+        <PageSubtitle>
+          Explorá las 500 figuritas del Mundial y filtrá por categoría
+        </PageSubtitle>
+      </PageHeader>
+
       <SearchInput
         type="text"
         placeholder="Filtrar por nombre, número, país o equipo..."

@@ -14,8 +14,7 @@ export const PageHeader = styled.div`
 `;
 
 export const PageTitle = styled.h1`
-  font-size: ${theme.typography.headlineMedium.fontSize};
-  line-height: ${theme.typography.headlineMedium.lineHeight};
+  font-size: ${theme.typography.headlineSmall.fontSize};
   font-weight: 400;
   color: ${theme.colors.onBackground};
   margin: 0;
@@ -100,8 +99,17 @@ export const ResultCount = styled.p`
 
 export const CardsGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 240px));
   gap: ${theme.spacing.lg};
+  justify-content: center;
+
+  @media (max-width: 900px) {
+    grid-template-columns: repeat(2, minmax(0, 240px));
+  }
+
+  @media (max-width: 480px) {
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+  }
 `;
 
 // M3 Elevated Card
