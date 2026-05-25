@@ -5,6 +5,11 @@ export const PageWrapper = styled.div`
   display: flex;
   flex-direction: column;
   gap: ${theme.spacing.xl};
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: ${theme.spacing.xl};
+
+  @media (max-width: 600px) { padding: ${theme.spacing.md}; }
 `;
 
 export const PageHeader = styled.div`
@@ -180,7 +185,7 @@ export const CategoryBadge = styled.span<{ $category: string }>`
   font-weight: ${theme.typography.labelMedium.fontWeight};
   letter-spacing: 0.04em;
   align-self: flex-start;
-  margin-top: ${theme.spacing.xs};
+  margin-top: auto;
 
   background: ${({ $category }) => {
     if ($category === 'LEGENDARIO') return theme.colors.tertiaryContainer;
