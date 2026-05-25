@@ -24,7 +24,7 @@ import {
   EmptyState,
 } from './CatalogPage.styles';
 
-const PAGE_SIZE = 10;
+const PAGE_SIZE = 8;
 const CATEGORIES: Array<Category | 'TODAS'> = ['TODAS', 'COMUN', 'EPICO', 'LEGENDARIO'];
 
 const CATEGORY_LABELS: Record<Category | 'TODAS', string> = {
@@ -77,19 +77,11 @@ export default function CatalogPage() {
   }, []);
 
   const filtered = useMemo(
-    () => {
-      const q = query.trim().toLowerCase();
-      return allCards.filter((c) => {
-        const matchesCategory = activeCategory === 'TODAS' || c.category === activeCategory;
-        const matchesQuery = !q ||
-          c.description.toLowerCase().includes(q) ||
-          String(c.number).includes(q) ||
-          (c.country && c.country.toLowerCase().includes(q)) ||
-          (c.team && c.team.toLowerCase().includes(q));
-        return matchesCategory && matchesQuery;
-      });
-    },
-    [allCards, activeCategory, query],
+    () =>
+      activeCategory === 'TODAS'
+        ? allCards
+        : allCards.filter((c) => c.category === activeCategory),
+    [allCards, activeCategory],
   );
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
