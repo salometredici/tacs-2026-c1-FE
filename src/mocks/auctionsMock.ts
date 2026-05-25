@@ -1,6 +1,5 @@
 import { Auction } from '../app/interfaces/auctions/Auction';
 import { UserBid } from '../app/interfaces/auctions/bid/UserBid';
-import { CreateAuctionResponse } from '../app/interfaces/auctions/CreateAuctionResponse';
 import { mockFiguritas } from './figuritasMock';
 import { mockUsers } from './usersMock';
 
@@ -80,12 +79,6 @@ export const mockAuctions: Auction[] = [
 export const getMockedActiveAuctions = (): Auction[] => {
   return mockAuctions.filter(s => s.status === 'ACTIVA');
 };
-
-export const getMockedCreatedAuctionResponse = (): CreateAuctionResponse => ({
-  success: true,
-  message: 'Subasta creada exitosamente',
-  auctionId: '321',
-});
 
 export const getMockedAuctionById = (id: string): Auction | undefined => {
   return mockAuctions.find(a => a.id === id);

@@ -4,13 +4,14 @@ import { CollectionCard } from '../../interfaces/cards/CollectionCard';
 import { getUserCollection } from '../../api/UsersService';
 import { createAuction } from '../../api/AuctionsService';
 import { AuthedOutletContext } from '../../components/layout/UserRoute';
-import { theme } from '../../styles/theme';
+import { useSnackbar } from '../../context/useSnackbar';
 import { AUCTION_DURATION_MIN, AUCTION_DURATION_MAX } from '../../constants/auctions';
 import { formatDuration } from '../../utils/utils';
 import {
   PageContainer, Header, BackButton, Title, Card, Field, Label, Hint, Select,
-  Input, StarsRow, StarButton, StarLabel, ErrorMsg, SubmitButton,
+  StarsRow, StarButton, StarLabel, ErrorMsg, SubmitButton,
   SelectableItem, SelectIndicator,
+  NumericInputSmall, InputSuffix,
 } from './CreateAuctionPage.styles';
 import {
   SearchInput, CardList, CardNum, CardDescription, CardQuantityLabel, EmptyItem,
@@ -21,6 +22,7 @@ import {
 export default function CreateAuctionPage() {
   const navigate = useNavigate();
   const { currentUser } = useOutletContext<AuthedOutletContext>();
+  const { showSuccess } = useSnackbar();
 
   const [collection, setCollection] = useState<CollectionCard[]>([]);
   const [loadingCollection, setLoadingCollection] = useState(true);
@@ -71,12 +73,13 @@ export default function CreateAuctionPage() {
         rules.push({ type: 'CANTIDAD_MINIMA_FIGURITAS' as const, value: String(minCardCount) });
       if (categoryEnabled)
         rules.push({ type: 'CATEGORIA_MINIMA' as const, value: minCategory });
-      await createAuction({
+      const auction = await createAuction({
         cardId: cardId as string,
         duration: durationHours,
         rules,
       });
-      navigate('/auctions');
+      showSuccess(`Subasta creada para la figurita #${auction.figurita.number}: ${auction.figurita.description}`);
+      navigate(`/auctions/${auction.id}`);
     } catch (err: any) {
       const msg = err?.response?.data?.message ?? err?.message ?? 'Error al crear la subasta.';
       setError(msg);
@@ -158,19 +161,18 @@ export default function CreateAuctionPage() {
             <Hint>({AUCTION_DURATION_MIN}h mínimo — 5 días máximo)</Hint>
           </Label>
           <StarsRow>
-            <Input
+            <NumericInputSmall
               id="duracion-input"
               type="number"
               min={AUCTION_DURATION_MIN}
               max={AUCTION_DURATION_MAX}
               value={durationHours}
               onChange={e => setDurationHours(Number(e.target.value))}
-              style={{ width: '100px' }}
               required
             />
-            <span style={{ color: theme.colors.textSecondary, fontSize: '0.9rem' }}>
+            <InputSuffix>
               horas&nbsp;({formatDuration(durationHours)})
-            </span>
+            </InputSuffix>
           </StarsRow>
         </Field>
 
@@ -181,7 +183,6 @@ export default function CreateAuctionPage() {
               type="checkbox"
               checked={reputationEnabled}
               onChange={e => setReputationEnabled(e.target.checked)}
-              style={{ marginRight: '0.5rem' }}
             />
             Reputación mínima
           </Label>
@@ -215,19 +216,17 @@ export default function CreateAuctionPage() {
               type="checkbox"
               checked={exchangesEnabled}
               onChange={e => setExchangesEnabled(e.target.checked)}
-              style={{ marginRight: '0.5rem' }}
             />
             Intercambios mínimos
           </Label>
           {exchangesEnabled && (
             <>
               <Hint>El postor debe tener al menos N intercambios concretados</Hint>
-              <Input
+              <NumericInputSmall
                 type="number"
                 min={1}
                 value={minExchanges}
                 onChange={e => setMinExchanges(Math.max(1, Number(e.target.value)))}
-                style={{ width: '100px' }}
               />
             </>
           )}
@@ -240,19 +239,17 @@ export default function CreateAuctionPage() {
               type="checkbox"
               checked={cardCountEnabled}
               onChange={e => setCardCountEnabled(e.target.checked)}
-              style={{ marginRight: '0.5rem' }}
             />
             Cantidad mínima de figuritas en oferta
           </Label>
           {cardCountEnabled && (
             <>
               <Hint>La oferta debe incluir al menos N figuritas</Hint>
-              <Input
+              <NumericInputSmall
                 type="number"
                 min={1}
                 value={minCardCount}
                 onChange={e => setMinCardCount(Math.max(1, Number(e.target.value)))}
-                style={{ width: '100px' }}
               />
             </>
           )}
@@ -265,7 +262,6 @@ export default function CreateAuctionPage() {
               type="checkbox"
               checked={categoryEnabled}
               onChange={e => setCategoryEnabled(e.target.checked)}
-              style={{ marginRight: '0.5rem' }}
             />
             Categoría mínima de figuritas ofrecidas
           </Label>

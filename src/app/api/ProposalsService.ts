@@ -6,6 +6,7 @@ import { Publication } from '../interfaces/publications/Publication';
 import { Card } from '../interfaces/cards/Card';
 import { User } from '../interfaces/auth/User';
 import { CardType } from '../interfaces/CardType';
+import { CreatedResponse } from '../interfaces/common/CreatedResponse';
 import { getPublicationById } from './PublicationsService';
 
 const BASE = API_CONFIG.proposals.base;
@@ -87,8 +88,9 @@ export const makeProposal = async (
   _userId: string,
   cardIds: string[],
   requestedCount: number,
-): Promise<void> => {
-  await axios.post(BASE, { publicationId, cardIds, requestedCount });
+): Promise<Proposal> => {
+  const res = await axios.post<CreatedResponse<TradeProposalDto>>(BASE, { publicationId, cardIds, requestedCount });
+  return mapProposalDto(res.data.data, null);
 };
 
 export const acceptProposal = async (proposalId: string, _userId: string): Promise<void> => {

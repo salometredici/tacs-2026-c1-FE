@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react';
 import { Card } from '../../interfaces/cards/Card';
 import { Category } from '../../interfaces/Categoria';
 import { getCatalog } from '../../api/CardsService';
-import { addMissingCard } from '../../api/UsersService';
+import { addMissingCard, getUserCollection, getUserMissingCards } from '../../api/UsersService';
+import { useSnackbar } from '../../context/useSnackbar';
 import {
   Overlay, Modal, ModalHeader, ModalTitle, CloseButton,
   Field, Hint, Input, Select, Row,
@@ -22,7 +23,9 @@ interface Props {
 }
 
 export default function AddMissingCardsModal({ userId, onClose, onSuccess }: Props) {
+  const { showSuccess } = useSnackbar();
   const [catalog, setCatalog] = useState<Card[]>([]);
+  const [excludedIds, setExcludedIds] = useState<Set<string>>(new Set());
   const [query, setQuery] = useState('');
   const [category, setCategory] = useState<Category | ''>('');
   const [pending, setPending] = useState<Card[]>([]);
@@ -30,13 +33,24 @@ export default function AddMissingCardsModal({ userId, onClose, onSuccess }: Pro
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    getCatalog().then(setCatalog);
-  }, []);
+    // Excluir del listado las cartas que el user ya tiene en colección y las que ya marcó como faltantes — evita el 409 del BE y elimina ruido de UI
+    Promise.allSettled([
+      getCatalog(),
+      getUserCollection(userId),
+      getUserMissingCards(userId),
+    ]).then(([cat, col, miss]) => {
+      if (cat.status === 'fulfilled') setCatalog(cat.value);
+      const ids = new Set<string>();
+      if (col.status === 'fulfilled') col.value.forEach(c => ids.add(c.cardId));
+      if (miss.status === 'fulfilled') miss.value.forEach(m => ids.add(m.cardId));
+      setExcludedIds(ids);
+    });
+  }, [userId]);
 
   const pendingIds = new Set(pending.map(f => f.id));
 
   const filtered = catalog.filter(f => {
-    if (pendingIds.has(f.id)) return false;
+    if (pendingIds.has(f.id) || excludedIds.has(f.id)) return false;
     const matchesQuery =
       !query ||
       f.description.toLowerCase().includes(query.toLowerCase()) ||
@@ -56,6 +70,7 @@ export default function AddMissingCardsModal({ userId, onClose, onSuccess }: Pro
       for (const f of pending) {
         await addMissingCard(userId, f.id);
       }
+      showSuccess(`${pending.length} figurita${pending.length === 1 ? '' : 's'} agregada${pending.length === 1 ? '' : 's'} a faltantes`);
       onSuccess();
       onClose();
     } catch {

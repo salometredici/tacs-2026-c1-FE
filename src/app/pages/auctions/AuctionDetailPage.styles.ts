@@ -376,3 +376,97 @@ export const Countdown = styled.div<{ $urgente: boolean }>`
   font-weight: 700;
   color: ${({ $urgente }) => ($urgente ? theme.colors.danger : theme.colors.success)};
 `;
+
+// Row de chips/badges debajo del título de la figurita
+export const BadgeRow = styled.div`
+  margin-top: 0.5rem;
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+`;
+
+// Texto secundario inline al lado de un valor (ej. "★★★★ (4.5)")
+export const RatingDecimal = styled.span`
+  color: ${theme.colors.textSecondary};
+  font-weight: 400;
+`;
+
+// Container alineado a la derecha (usado en el InfoRow del cierre)
+export const InfoRowRight = styled.div`
+  text-align: right;
+`;
+
+// Caption pequeño (fecha, fontSize 0.85rem)
+export const InfoCaption = styled.div`
+  font-size: 0.85rem;
+  color: ${theme.colors.textSecondary};
+`;
+
+// Hint pequeño para "sin restricciones"
+export const HintText = styled.p`
+  color: ${theme.colors.textSecondary};
+  font-size: 0.9rem;
+`;
+
+// Para "no hay ofertas todavía"
+export const EmptyBidsText = styled.p`
+  color: ${theme.colors.onSurfaceVariant};
+  font-size: ${theme.typography.bodyMedium.fontSize};
+`;
+
+// Variante destructiva del BidButton — para "Cancelar subasta"
+export const DangerBidButton = styled.button`
+  background: ${theme.colors.danger};
+  color: white;
+  border: none;
+  padding: ${theme.spacing.sm} ${theme.spacing.lg};
+  border-radius: ${theme.shape.full};
+  cursor: pointer;
+  font-weight: 500;
+  margin-top: ${theme.spacing.md};
+
+  &:hover { opacity: 0.9; }
+`;
+
+// Row de botones de acción en una oferta
+export const OfferActions = styled.div`
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+`;
+
+// Mensaje de error de finalización
+export const FinalizeErrorText = styled.p`
+  color: ${theme.colors.error};
+  font-size: ${theme.typography.bodyMedium.fontSize};
+  margin-top: ${theme.spacing.sm};
+`;
+
+// Variante de ConfirmModal para edición (más ancha + scroll vertical)
+export const EditModalCard = styled.div`
+  background: ${theme.colors.surface};
+  border-radius: ${theme.borderRadius.md};
+  padding: ${theme.spacing.xl};
+  max-width: 520px;
+  max-height: 90vh;
+  overflow-y: auto;
+  width: 90%;
+  box-shadow: ${theme.shadows.lg};
+  display: flex;
+  flex-direction: column;
+  gap: ${theme.spacing.md};
+`;
+
+// Variante "primary" de ConfirmBtn (el default es danger). Usado en confirm de edit.
+export const PrimaryConfirmBtn = styled.button`
+  padding: ${theme.spacing.sm} ${theme.spacing.lg};
+  background: ${theme.colors.primary};
+  color: white;
+  border: none;
+  border-radius: ${theme.borderRadius.sm};
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  &:hover { opacity: 0.9; }
+  &:disabled { opacity: 0.6; cursor: not-allowed; }
+`;

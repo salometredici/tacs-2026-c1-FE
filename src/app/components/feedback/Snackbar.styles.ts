@@ -1,27 +1,11 @@
-import styled, { keyframes, css } from 'styled-components';
+import styled from 'styled-components';
 import { theme } from '../../styles/theme';
 import { SnackbarSeverity } from '../../context/SnackbarContextType';
 
-const slideIn = keyframes`
-  from { transform: translateY(100%); opacity: 0; }
-  to   { transform: translateY(0);    opacity: 1; }
-`;
-
-const slideOut = keyframes`
-  from { transform: translateY(0);    opacity: 1; }
-  to   { transform: translateY(100%); opacity: 0; }
-`;
-
-// M3 Snackbar
+// M3 Snackbar — sonner se encarga de posicionar y animar (vía Toaster). Acá solo el look interno
 export const SnackbarContainer = styled.div<{ $closing: boolean }>`
-  position: fixed;
-  bottom: 24px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 1500;
-
+  width: 100%;
   min-height: 48px;
-  max-width: min(600px, calc(100vw - 32px));
   padding: 14px 16px;
 
   display: flex;
@@ -35,16 +19,6 @@ export const SnackbarContainer = styled.div<{ $closing: boolean }>`
 
   font-size: ${theme.typography.bodyMedium.fontSize};
   line-height: ${theme.typography.bodyMedium.lineHeight};
-
-  animation: ${({ $closing }) =>
-    $closing
-      ? css`${slideOut} 150ms ease-in forwards`
-      : css`${slideIn} 200ms ease-out forwards`};
-
-  @media (min-width: 600px) {
-    left: 24px;
-    transform: none;
-  }
 `;
 
 const severityColors: Record<SnackbarSeverity, string> = {

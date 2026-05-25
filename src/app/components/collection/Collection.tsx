@@ -45,7 +45,7 @@ export default function Collection({ userId: userId }: CollectionProps) {
   return (
     <div>
       <CollectionHeader>
-        <TabButtons style={{ marginBottom: 0 }}>
+        <TabButtons>
           <TabButton active={tab === 'todas'} onClick={() => setTab('todas')}>
             Todas ({collection.length})
           </TabButton>

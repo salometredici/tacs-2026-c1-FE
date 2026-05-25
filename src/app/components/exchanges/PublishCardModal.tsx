@@ -1,7 +1,8 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import { FormEvent, useEffect, useMemo, useState } from 'react';
 import { CollectionCard } from '../../interfaces/cards/CollectionCard';
 import { getUserCollection } from '../../api/UsersService';
 import { publishFigurita } from '../../api/PublicationsService';
+import { useSnackbar } from '../../context/useSnackbar';
 import {
   Overlay, Modal, ModalHeader, ModalTitle, CloseButton,
   Field, Hint, QuantityInput, SelectableItem, SelectIndicator,
@@ -20,6 +21,7 @@ interface Props {
 const availableOf = (c: CollectionCard) => c.quantity - c.compromisedCount;
 
 export default function PublishFiguritaModal({ userId, onClose, onSuccess }: Props) {
+  const { showSuccess } = useSnackbar();
   const [collection, setCollection] = useState<CollectionCard[]>([]);
   const [loadingCollection, setLoadingCollection] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -53,7 +55,7 @@ export default function PublishFiguritaModal({ userId, onClose, onSuccess }: Pro
     setError(null);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!selectedCard) { setError('Seleccioná una figurita.'); return; }
     if (quantity < 1 || quantity > maxQuantity) {
@@ -63,7 +65,8 @@ export default function PublishFiguritaModal({ userId, onClose, onSuccess }: Pro
     setError(null);
     setSubmitting(true);
     try {
-      await publishFigurita(userId, { cardId: selectedCard.cardId, quantity });
+      const pub = await publishFigurita(userId, { cardId: selectedCard.cardId, quantity });
+      showSuccess(`Publicación creada — Figurita #${pub.card.number}: ${pub.card.description}`);
       onSuccess();
       onClose();
     } catch {

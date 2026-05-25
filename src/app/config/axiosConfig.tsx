@@ -2,10 +2,9 @@ import axios, { AxiosError } from 'axios';
 import { toast } from 'sonner';
 import Snackbar from '../components/feedback/Snackbar';
 
-// Bearer token en cada request (token de user o de admin)
+// Bearer token en cada request. Hay un solo token (user o admin); el role va en el claim del JWT
 axios.interceptors.request.use(config => {
-  const token = localStorage.getItem('token')
-             || localStorage.getItem('adminToken');
+  const token = localStorage.getItem('token');
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
@@ -32,7 +31,6 @@ axios.interceptors.response.use(
     if (status === 401) {
       localStorage.removeItem('token');
       localStorage.removeItem('currentUser');
-      localStorage.removeItem('adminToken');
       window.location.href = '/login';
       return Promise.reject(error);
     }

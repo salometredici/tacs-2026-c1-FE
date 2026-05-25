@@ -72,11 +72,35 @@ export const Label = styled.label`
   font-weight: 600;
   font-size: 0.95rem;
   color: ${theme.colors.text};
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 `;
 
 export const Hint = styled.span`
   font-size: 0.8rem;
   color: ${theme.colors.textSecondary};
+`;
+
+// Input numérico chico (duración, mínimos, etc.) — width fijo de 100px
+export const NumericInputSmall = styled.input`
+  width: 100px;
+  padding: ${theme.spacing.sm} ${theme.spacing.md};
+  border: 1px solid ${theme.colors.border};
+  border-radius: ${theme.borderRadius.sm};
+  font-size: 1rem;
+  background: ${theme.colors.surface};
+  color: ${theme.colors.text};
+  &:focus {
+    outline: none;
+    border-color: ${theme.colors.primary};
+  }
+`;
+
+// Texto pequeño junto a un input (ej. "horas (1 día)")
+export const InputSuffix = styled.span`
+  color: ${theme.colors.textSecondary};
+  font-size: 0.9rem;
 `;
 
 export const Select = styled.select`

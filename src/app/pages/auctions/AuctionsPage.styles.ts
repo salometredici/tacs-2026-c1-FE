@@ -40,6 +40,50 @@ export const MyBidCard = styled.div`
   }
 `;
 
+// Row "header" de una bid card: título + status badge
+export const MyBidHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+`;
+
+export const MyBidTitle = styled.strong`
+  font-size: 1.1rem;
+`;
+
+export const MyBidMeta = styled.div`
+  font-size: 0.85rem;
+  color: ${theme.colors.textSecondary};
+
+  & + & { margin-top: 0; }
+`;
+
+export const MyBidSubMeta = styled.div`
+  font-size: 0.85rem;
+  color: ${theme.colors.textSecondary};
+  margin-top: 0.25rem;
+`;
+
+export const StrongInline = styled.strong`
+  color: ${theme.colors.text};
+`;
+
+// M3 Outlined Button con color de error — usado para "Cancelar oferta"
+export const CancelBidButton = styled.button`
+  align-self: flex-start;
+  margin-top: 0.25rem;
+  padding: 0.35rem 0.85rem;
+  background: transparent;
+  border: 1px solid ${theme.colors.outlineVariant};
+  border-radius: ${theme.shape.full};
+  color: ${theme.colors.error};
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+
+  &:disabled { cursor: wait; }
+`;
+
 export const StatusBadge = styled.span<{ $status: string }>`
   display: inline-block;
   padding: 2px 10px;

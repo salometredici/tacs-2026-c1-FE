@@ -3,10 +3,11 @@ import { Card } from '../../interfaces/cards/Card';
 import { CollectionCard } from '../../interfaces/cards/CollectionCard';
 import { getUserCollection } from '../../api/UsersService';
 import { makeProposal } from '../../api/ProposalsService';
+import { useSnackbar } from '../../context/useSnackbar';
 import {
   Overlay, Modal, ModalHeader, ModalTitle, CloseButton,
   Footer, CancelButton, SubmitButton, ErrorMsg,
-  Field, Hint, Input,
+  Field, Hint,
 } from '../exchanges/PublishCardModal.styles';
 import {
   SearchInput,
@@ -22,6 +23,8 @@ import {
   QtyButton,
   QtyDisplay,
   EmptyItem,
+  InfoText,
+  NumericInput,
 } from './MakeProposalModal.styles';
 
 interface Props {
@@ -37,6 +40,7 @@ const clamp = (n: number, min: number, max: number) => Math.min(Math.max(n, min)
 const availableOf = (c: CollectionCard) => c.quantity - c.compromisedCount;
 
 export default function MakeProposalModal({ userId, card, publicationId, maxRequestable, onClose, onSuccess }: Props) {
+  const { showSuccess } = useSnackbar();
   const [collection, setCollection] = useState<CollectionCard[]>([]);
   const [selected, setSelected] = useState<Record<string, number>>({});
   const [requestedCount, setRequestedCount] = useState(1);
@@ -98,6 +102,7 @@ export default function MakeProposalModal({ userId, card, publicationId, maxRequ
         ([id, qty]) => Array(qty).fill(id)
       );
       await makeProposal(publicationId, userId, cardIds, requestedCount);
+      showSuccess(`Propuesta enviada por la figurita #${card.number}`);
       onSuccess();
       onClose();
     } catch (err: any) {
@@ -116,15 +121,15 @@ export default function MakeProposalModal({ userId, card, publicationId, maxRequ
           <CloseButton type="button" onClick={onClose}>✕</CloseButton>
         </ModalHeader>
 
-        <p style={{ margin: 0 }}>
+        <InfoText>
           Querés: <strong>#{card.number} {card.description}</strong>
           {card.country && ` (${card.country})`}
-        </p>
+        </InfoText>
 
         <Field>
           <label htmlFor="mp-requested">¿Cuántas pedís?</label>
           <Hint>Disponibles en la publicación: {maxRequestable}</Hint>
-          <Input
+          <NumericInput
             id="mp-requested"
             type="number"
             min={1}
@@ -134,14 +139,13 @@ export default function MakeProposalModal({ userId, card, publicationId, maxRequ
               const n = parseInt(e.target.value) || 1;
               setRequestedCount(clamp(n, 1, maxRequestable));
             }}
-            style={{ width: '120px' }}
           />
         </Field>
 
         {loading ? (
-          <p style={{ margin: 0 }}>Cargando tu colección...</p>
+          <InfoText>Cargando tu colección...</InfoText>
         ) : collection.length === 0 ? (
-          <p style={{ margin: 0 }}>No tenés figuritas para ofrecer.</p>
+          <InfoText>No tenés figuritas para ofrecer.</InfoText>
         ) : (
           <>
             <SearchInput

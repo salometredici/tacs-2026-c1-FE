@@ -2,11 +2,15 @@ import { useNavigate } from 'react-router-dom';
 import { useAdminContext } from '../../context/useAdminContext';
 import { adminStatsMock } from '../../../mocks/adminStatsMock';
 import {
-  DashboardContainer,
-  DashboardHeader,
+  DashboardOuter,
+  DashboardHeaderBar,
+  HeaderBrand,
+  HeaderIcon,
   DashboardTitle,
-  DashboardSubtitle,
   LogoutButton,
+  DashboardContent,
+  DashboardSubtitle,
+  WipNotice,
   SectionTitle,
   StatsGrid,
   StatCard,
@@ -35,31 +39,45 @@ export default function AdminDashboardPage() {
 
   const handleLogout = () => {
     adminLogout();
-    navigate('/admin/login');
+    navigate('/login');
   };
 
   return (
-    <DashboardContainer>
-      <DashboardHeader>
-        <div>
-          <DashboardTitle>Panel de Administrador</DashboardTitle>
-          <DashboardSubtitle>TACS K3061 — Intercambio de Figuritas Mundial 2026</DashboardSubtitle>
-        </div>
-        <LogoutButton onClick={handleLogout}>Cerrar sesión</LogoutButton>
-      </DashboardHeader>
+    <DashboardOuter>
+      <DashboardHeaderBar>
+        <HeaderBrand>
+          <HeaderIcon>
+            <span className="material-symbols-outlined" aria-hidden="true">shield_person</span>
+          </HeaderIcon>
+          <DashboardTitle>Panel de Administrador — TACS K3061</DashboardTitle>
+        </HeaderBrand>
+        <LogoutButton onClick={handleLogout}>
+          <span className="material-symbols-outlined" aria-hidden="true">logout</span>
+          Cerrar sesión
+        </LogoutButton>
+      </DashboardHeaderBar>
 
-      <SectionTitle>Estadísticas generales</SectionTitle>
-      <StatsGrid>
-        {stats.map((stat) => (
-          <StatCard key={stat.label}>
-            <StatIcon>
-              <span className="material-symbols-outlined" aria-hidden="true">{stat.icon}</span>
-            </StatIcon>
-            <StatValue>{stat.value.toLocaleString('es-AR')}</StatValue>
-            <StatLabel>{stat.label}</StatLabel>
-          </StatCard>
-        ))}
-      </StatsGrid>
-    </DashboardContainer>
+      <DashboardContent>
+        <DashboardSubtitle>Intercambio de Figuritas Mundial 2026</DashboardSubtitle>
+
+        <WipNotice>
+          <span className="material-symbols-outlined" aria-hidden="true">construction</span>
+          Datos mostrados a partir de mocks — integración con el backend pendiente (WIP)
+        </WipNotice>
+
+        <SectionTitle>Estadísticas generales</SectionTitle>
+        <StatsGrid>
+          {stats.map((stat) => (
+            <StatCard key={stat.label}>
+              <StatIcon>
+                <span className="material-symbols-outlined" aria-hidden="true">{stat.icon}</span>
+              </StatIcon>
+              <StatValue>{stat.value.toLocaleString('es-AR')}</StatValue>
+              <StatLabel>{stat.label}</StatLabel>
+            </StatCard>
+          ))}
+        </StatsGrid>
+      </DashboardContent>
+    </DashboardOuter>
   );
 }

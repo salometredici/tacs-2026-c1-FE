@@ -19,6 +19,26 @@ export const SearchInput = styled.input`
   &::placeholder { color: ${theme.colors.onSurfaceVariant}; }
 `;
 
+export const InfoText = styled.p`
+  margin: 0;
+  color: ${theme.colors.onSurface};
+`;
+
+export const NumericInput = styled.input`
+  width: 120px;
+  padding: ${theme.spacing.md};
+  border: 1px solid ${theme.colors.outline};
+  border-radius: ${theme.shape.extraSmall};
+  font-size: ${theme.typography.bodyLarge.fontSize};
+  background: ${theme.colors.surface};
+  color: ${theme.colors.onSurface};
+  outline: none;
+  transition: border 0.2s;
+
+  &:hover { border-color: ${theme.colors.onSurface}; }
+  &:focus { border: 2px solid ${theme.colors.primary}; }
+`;
+
 export const SectionLabel = styled.p`
   font-size: ${theme.typography.labelLarge.fontSize};
   font-weight: ${theme.typography.labelLarge.fontWeight};

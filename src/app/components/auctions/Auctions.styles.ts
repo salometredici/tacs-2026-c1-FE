@@ -78,6 +78,7 @@ export const AuctionCard = styled.div`
   gap: ${theme.spacing.sm};
   position: relative;
   overflow: hidden;
+  cursor: pointer;
 
   &::after {
     content: '';
@@ -314,4 +315,21 @@ export const EmptyMessage = styled.p`
   color: ${theme.colors.onSurfaceVariant};
   font-size: ${theme.typography.bodyLarge.fontSize};
   padding: ${theme.spacing.xl};
+`;
+
+// Texto secundario inline (M3 onSurfaceVariant)
+export const MutedText = styled.span`
+  color: ${theme.colors.onSurfaceVariant};
+`;
+
+export const MutedItalic = styled.span`
+  color: ${theme.colors.onSurfaceVariant};
+  font-style: italic;
+`;
+
+// Texto pequeño tipo "caption" para sub-info debajo de un valor principal
+export const CaptionText = styled.div`
+  font-size: ${theme.typography.bodySmall.fontSize};
+  color: ${theme.colors.onSurfaceVariant};
+  margin-top: ${theme.spacing.xs};
 `;

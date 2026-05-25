@@ -83,7 +83,6 @@ export const CollectionHeader = styled.div`
 export const TabButtons = styled.div`
   display: flex;
   gap: ${theme.spacing.sm};
-  margin-bottom: ${theme.spacing.xl};
   flex-wrap: wrap;
 `;
 
