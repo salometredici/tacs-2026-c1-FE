@@ -39,21 +39,21 @@ export const mockUserMissingCards: Card[] = [
 
 export const mockUsers: User[] = [
   {
-    id: '69e54c037de7f7e868da90f4',
-    name: 'Pepe Argento',
+    id: '69e54c037de7f7e868da90f5',
+    name: 'Pepe Racing',
     email: 'peperacing@gmail.com',
     rating: 4.5,
     exchangesAmount: 8,
-    avatarId: 'avatar_2',
+    avatarId: 'avatar_1',
     creationDate: '2025-02-01T00:00:00Z',
   },
   {
-    id: 'user_2',
-    name: 'Mónica Argento',
+    id: '69e54c037de7f7e868da90f6',
+    name: 'Moni Argento',
     email: 'moniargento@gmail.com',
     rating: 4.8,
     exchangesAmount: 15,
-    avatarId: 'avatar_3',
+    avatarId: 'avatar_2',
     creationDate: '2025-02-01T00:00:00Z',
   },
   {
@@ -65,15 +65,6 @@ export const mockUsers: User[] = [
     avatarId: 'avatar_4',
     creationDate: '2025-03-10T00:00:00Z',
   },
-  {
-    id: '69e54c037de7f7e868da90f5',
-    name: "Test User",
-    email: "user@test.com",
-    avatarId: "avatar_1",
-    rating: 4.2,
-    exchangesAmount: 0,
-    creationDate: Date.now().toLocaleString()
-  }
 ];
 
 export const getMockedUserCollection = (): CollectionCard[] => mockUserRepetidas;

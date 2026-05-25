@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import { FormEvent, useEffect, useMemo, useState } from 'react';
 import { CollectionCard } from '../../interfaces/cards/CollectionCard';
 import { getUserCollection } from '../../api/UsersService';
 import { publishFigurita } from '../../api/PublicationsService';
@@ -53,7 +53,7 @@ export default function PublishFiguritaModal({ userId, onClose, onSuccess }: Pro
     setError(null);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!selectedCard) { setError('Seleccioná una figurita.'); return; }
     if (quantity < 1 || quantity > maxQuantity) {

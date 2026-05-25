@@ -21,6 +21,7 @@ import {
   QtyButton,
   QtyDisplay,
   EmptyItem,
+  InfoText,
 } from '../proposals/MakeProposalModal.styles';
 
 interface Props {
@@ -110,15 +111,15 @@ export default function PlaceBidModal({ userId, card, auctionId, onClose, onSucc
           </CloseButton>
         </ModalHeader>
 
-        <p style={{ margin: 0 }}>
+        <InfoText>
           Querés: <strong>#{card.number} {card.description}</strong>
           {card.country && ` (${card.country})`}
-        </p>
+        </InfoText>
 
         {loading ? (
-          <p style={{ margin: 0 }}>Cargando tu colección...</p>
+          <InfoText>Cargando tu colección...</InfoText>
         ) : collection.length === 0 ? (
-          <p style={{ margin: 0 }}>No tenés figuritas para ofertar.</p>
+          <InfoText>No tenés figuritas para ofertar.</InfoText>
         ) : (
           <>
             <SearchInput

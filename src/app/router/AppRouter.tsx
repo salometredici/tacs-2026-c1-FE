@@ -13,7 +13,6 @@ import ExchangesPage from '../pages/exchanges/ExchangesPage'
 import PublicationDetailPage from '../pages/publications/PublicationDetailPage'
 import AdminLayout from '../components/admin/AdminLayout'
 import AdminRoute from '../components/admin/AdminRoute'
-import AdminLoginPage from '../pages/admin/AdminLoginPage'
 import AdminDashboardPage from '../pages/admin/AdminDashboardPage'
 import UserRoute from '../components/layout/UserRoute'
 
@@ -36,8 +35,8 @@ export default function AppRouter() {
             <Route path="/publications/:id" element={<PublicationDetailPage />} />
           </Route>
         </Route>
+        <Route path="/admin/login" element={<Navigate to="/login" replace />} />
         <Route element={<AdminLayout />}>
-          <Route path="/admin/login" element={<AdminLoginPage />} />
           <Route element={<AdminRoute />}>
             <Route path="/admin" element={<AdminDashboardPage />} />
           </Route>

@@ -8,7 +8,14 @@ export const UserContext = createContext<UserContextType | null>(null);
 export const UserProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const [currentUser, setCurrentUser] = useState<User | null>(() => {
     const saved = localStorage.getItem('currentUser');
-    return saved ? JSON.parse(saved) : null;
+    // localStorage puede devolver el string literal "undefined"/"null" si algún login viejo persistió un user vacío (JSON.stringify(undefined) === "undefined")
+    if (!saved || saved === 'undefined' || saved === 'null') return null;
+    try {
+      return JSON.parse(saved);
+    } catch {
+      localStorage.removeItem('currentUser');
+      return null;
+    }
   });
 
   const login = (user: User, token: string) => {

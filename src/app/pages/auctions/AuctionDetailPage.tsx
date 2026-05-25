@@ -5,7 +5,6 @@ import { Bid } from '../../interfaces/auctions/bid/Bid';
 import { getAuctionById, acceptOffer, rejectOffer, cancelAuction } from '../../api/AuctionsService';
 import PlaceBidModal from '../../components/auctions/PlaceBidModal';
 import { AuthedOutletContext } from '../../components/layout/UserRoute';
-import { theme } from '../../styles/theme';
 import { RULE_LABELS } from '../../interfaces/auctions/auctionRule/AuctionRule';
 import { formatCountdown } from '../../utils/utils';
 import {
@@ -42,6 +41,15 @@ import {
   ConfirmBtn,
   BidButton,
   Countdown,
+  BadgeRow,
+  RatingDecimal,
+  InfoRowRight,
+  InfoCaption,
+  HintText,
+  EmptyBidsText,
+  DangerBidButton,
+  OfferActions,
+  FinalizeErrorText,
 } from './AuctionDetailPage.styles';
 
 export default function AuctionDetailPage() {
@@ -144,10 +152,10 @@ export default function AuctionDetailPage() {
             <FiguritaInfo>
               <h2>{auction.figurita.description}</h2>
               <p>{auction.figurita.country} · {auction.figurita.team}</p>
-              <div style={{ marginTop: '0.5rem', display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+              <BadgeRow>
                 <CategoriaBadge $cat={auction.figurita.category}>{auction.figurita.category}</CategoriaBadge>
                 <EstadoBadge $estado={auction.status}>{auction.status}</EstadoBadge>
-              </div>
+              </BadgeRow>
             </FiguritaInfo>
           </FiguritaHeader>
 
@@ -156,19 +164,19 @@ export default function AuctionDetailPage() {
             <span className="value">
               {auction.publisherId.name}
               {' '}{'★'.repeat(Math.round(auction.publisherId.rating || 0))}
-              <span style={{ color: theme.colors.textSecondary, fontWeight: 400 }}>
+              <RatingDecimal>
                 {' '}({(auction.publisherId.rating ?? 0).toFixed(1)})
-              </span>
+              </RatingDecimal>
             </span>
           </InfoRow>
           <InfoRow>
             <span className="label">Cierre</span>
-            <div style={{ textAlign: 'right' }}>
-              <div style={{ fontSize: '0.85rem', color: theme.colors.textSecondary }}>
+            <InfoRowRight>
+              <InfoCaption>
                 {new Date(auction.endDate).toLocaleString('es-AR')}
-              </div>
+              </InfoCaption>
               <Countdown $urgente={urgent}>{countdown}</Countdown>
-            </div>
+            </InfoRowRight>
           </InfoRow>
           <InfoRow>
             <span className="label">Ofertas recibidas</span>
@@ -179,7 +187,7 @@ export default function AuctionDetailPage() {
         <Card>
           <SectionTitle>Condiciones de participación</SectionTitle>
           {auction.rules.length === 0 ? (
-            <p style={{ color: theme.colors.textSecondary, fontSize: '0.9rem' }}>Sin restricciones — cualquiera puede ofertar.</p>
+            <HintText>Sin restricciones — cualquiera puede ofertar.</HintText>
           ) : (
             auction.rules.map(r => (
               <ReglaItem key={r.type}>
@@ -193,12 +201,9 @@ export default function AuctionDetailPage() {
             </BidButton>
           )}
           {isActive && isOwner && (
-            <BidButton
-              style={{ background: theme.colors.danger }}
-              onClick={() => setConfirmCancel(true)}
-            >
+            <DangerBidButton onClick={() => setConfirmCancel(true)}>
               Cancelar subasta
-            </BidButton>
+            </DangerBidButton>
           )}
         </Card>
       </TopGrid>
@@ -206,9 +211,9 @@ export default function AuctionDetailPage() {
       <Card>
         <SectionTitle>Ofertas ({auction.bids.length})</SectionTitle>
         {auction.bids.length === 0 ? (
-          <p style={{ color: theme.colors.onSurfaceVariant, fontSize: theme.typography.bodyMedium.fontSize }}>
+          <EmptyBidsText>
             {isOwner ? 'Todavía no recibiste ofertas.' : 'Todavía no hay ofertas. ¡Sé el primero!'}
-          </p>
+          </EmptyBidsText>
         ) : (
           <>
             <OfertasGrid>
@@ -233,7 +238,7 @@ export default function AuctionDetailPage() {
                     </OfertaFiguritas>
                     <OfertaDate>{new Date(o.bidDate).toLocaleString('es-AR')}</OfertaDate>
                     {isOwner && isActive && o.status === 'ACTIVA' && (
-                      <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                      <OfferActions>
                         <ChooseWinnerButton
                           onClick={() => setPendingBid(o)}
                           disabled={finalizing || rejectingBidId !== null}
@@ -246,13 +251,13 @@ export default function AuctionDetailPage() {
                         >
                           {rejectingBidId === o.bidId ? 'Rechazando...' : 'Rechazar'}
                         </RejectOfferButton>
-                      </div>
+                      </OfferActions>
                     )}
                   </OfertaCard>
                 ))}
             </OfertasGrid>
             {finalizeError && (
-              <p style={{ color: theme.colors.error, fontSize: theme.typography.bodyMedium.fontSize, marginTop: theme.spacing.sm }}>{finalizeError}</p>
+              <FinalizeErrorText>{finalizeError}</FinalizeErrorText>
             )}
           </>
         )}

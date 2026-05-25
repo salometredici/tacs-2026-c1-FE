@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { ChangeEvent, FormEvent, useState } from 'react';
 import { defaultSearchFilters, SearchFiguritasFilters } from '../../interfaces/search/SearchFiguritasFilters';
 import {
   SearchContainer,
@@ -22,7 +22,7 @@ interface SearchFiguritasProps {
 export default function SearchFiguritas({ onSearch, onReset, loading }: SearchFiguritasProps) {
   const [filters, setFilters] = useState<SearchFiguritasFilters>(defaultSearchFilters);
 
-  const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleFilterChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFilters(prev => ({
       ...prev,
@@ -30,7 +30,7 @@ export default function SearchFiguritas({ onSearch, onReset, loading }: SearchFi
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     onSearch(filters);
   };

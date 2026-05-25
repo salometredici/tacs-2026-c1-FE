@@ -6,7 +6,7 @@ import { makeProposal } from '../../api/ProposalsService';
 import {
   Overlay, Modal, ModalHeader, ModalTitle, CloseButton,
   Footer, CancelButton, SubmitButton, ErrorMsg,
-  Field, Hint, Input,
+  Field, Hint,
 } from '../exchanges/PublishCardModal.styles';
 import {
   SearchInput,
@@ -22,6 +22,8 @@ import {
   QtyButton,
   QtyDisplay,
   EmptyItem,
+  InfoText,
+  NumericInput,
 } from './MakeProposalModal.styles';
 
 interface Props {
@@ -116,15 +118,15 @@ export default function MakeProposalModal({ userId, card, publicationId, maxRequ
           <CloseButton type="button" onClick={onClose}>✕</CloseButton>
         </ModalHeader>
 
-        <p style={{ margin: 0 }}>
+        <InfoText>
           Querés: <strong>#{card.number} {card.description}</strong>
           {card.country && ` (${card.country})`}
-        </p>
+        </InfoText>
 
         <Field>
           <label htmlFor="mp-requested">¿Cuántas pedís?</label>
           <Hint>Disponibles en la publicación: {maxRequestable}</Hint>
-          <Input
+          <NumericInput
             id="mp-requested"
             type="number"
             min={1}
@@ -134,14 +136,13 @@ export default function MakeProposalModal({ userId, card, publicationId, maxRequ
               const n = parseInt(e.target.value) || 1;
               setRequestedCount(clamp(n, 1, maxRequestable));
             }}
-            style={{ width: '120px' }}
           />
         </Field>
 
         {loading ? (
-          <p style={{ margin: 0 }}>Cargando tu colección...</p>
+          <InfoText>Cargando tu colección...</InfoText>
         ) : collection.length === 0 ? (
-          <p style={{ margin: 0 }}>No tenés figuritas para ofrecer.</p>
+          <InfoText>No tenés figuritas para ofrecer.</InfoText>
         ) : (
           <>
             <SearchInput

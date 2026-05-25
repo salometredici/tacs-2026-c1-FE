@@ -109,7 +109,7 @@ export default function ProposalsPage() {
       ) : (
         <ProposalList>
           {list.map(p => (
-            <ProposalCard key={p.id} onClick={() => setDetail(p)} style={{ cursor: 'pointer' }}>
+            <ProposalCard key={p.id} onClick={() => setDetail(p)}>
               <ProposalInfo>
                 <ProposalTitle>
                   #{p.publication.card.number} · {p.publication.card.description}
@@ -131,7 +131,7 @@ export default function ProposalsPage() {
                 )}
                 <ViewPublicationLink onClick={e => { e.stopPropagation(); navigate(`/publications/${p.publication.id}`); }}>
                   Ver publicación
-                  <span className="material-symbols-outlined" style={{ fontSize: '1rem' }} aria-hidden="true">arrow_forward</span>
+                  <span className="material-symbols-outlined" aria-hidden="true">arrow_forward</span>
                 </ViewPublicationLink>
               </ProposalInfo>
 

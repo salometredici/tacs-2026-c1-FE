@@ -1,7 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { Auction } from '../../interfaces/auctions/Auction';
 import { getRemainingTime } from '../../utils/auctionUtils';
-import { theme } from '../../styles/theme';
 import {
   AuctionCard,
   FiguritaInfo,
@@ -15,6 +14,9 @@ import {
   BestBidInfo,
   RequirmentsInfo,
   BidButton,
+  MutedText,
+  MutedItalic,
+  CaptionText,
 } from './Auctions.styles';
 
 interface AuctionCardProps {
@@ -31,7 +33,7 @@ export default function AuctionCardComponent({ auction, onBid, hideBidButton = f
   const minReputation = auction.rules.find(c => c.type === 'REPUTACION_MINIMA')?.value;
 
   return (
-    <AuctionCard onClick={() => navigate(`/auctions/${auction.id}`)} style={{ cursor: 'pointer' }}>
+    <AuctionCard onClick={() => navigate(`/auctions/${auction.id}`)}>
       <FiguritaInfo>
         <FiguritaNumber>#{auction.figurita.number}</FiguritaNumber>
         <FiguritaDetails>
@@ -63,14 +65,14 @@ export default function AuctionCardComponent({ auction, onBid, hideBidButton = f
             <>
               {'★'.repeat(Math.round(auction.publisherId.rating))}
               {' '}
-              <span style={{ color: theme.colors.onSurfaceVariant }}>
+              <MutedText>
                 ({auction.publisherId.rating.toFixed(1)})
-              </span>
+              </MutedText>
             </>
           ) : (
-            <span style={{ color: theme.colors.onSurfaceVariant, fontStyle: 'italic' }}>
+            <MutedItalic>
               Sin calificaciones aún
-            </span>
+            </MutedItalic>
           )}
         </span>
       </SellerInfo>
@@ -90,9 +92,9 @@ export default function AuctionCardComponent({ auction, onBid, hideBidButton = f
             <div className="bid-details">
               {lastBid.offeredFiguritas.length} figurita(s) ofrecidas
             </div>
-            <div style={{ fontSize: theme.typography.bodySmall.fontSize, color: theme.colors.onSurfaceVariant, marginTop: '0.25rem' }}>
+            <CaptionText>
               Por {lastBid.bidder.name}
-            </div>
+            </CaptionText>
           </BestBidInfo>
         ) : null;
       })()}

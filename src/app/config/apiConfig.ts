@@ -8,7 +8,6 @@ export const API_CONFIG = {
     login: `${API}/auth/login`,
     register: `${API}/auth/register`,
     logout: `${API}/auth/logout`,
-    adminLogin: `${API}/auth/admin/login`,
   },
 
   users: {

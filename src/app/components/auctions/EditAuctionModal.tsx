@@ -2,25 +2,24 @@ import { useState } from 'react';
 import { Auction } from '../../interfaces/auctions/Auction';
 import { AuctionRule } from '../../interfaces/auctions/auctionRule/AuctionRule';
 import { updateAuction } from '../../api/AuctionsService';
-import { theme } from '../../styles/theme';
 import {
   ConfirmOverlay,
-  ConfirmModal,
   ConfirmTitle,
   ConfirmFooter,
   CancelBtn,
-  ConfirmBtn,
+  EditModalCard,
+  PrimaryConfirmBtn,
 } from '../../pages/auctions/AuctionDetailPage.styles';
 import {
   Field,
   Label,
   Hint,
-  Input,
   Select,
   StarsRow,
   StarButton,
   StarLabel,
   ErrorMsg,
+  NumericInputSmall,
 } from '../../pages/auctions/CreateAuctionPage.styles';
 
 interface Props {
@@ -76,14 +75,14 @@ export default function EditAuctionModal({ auction, onClose, onSuccess }: Props)
 
   return (
     <ConfirmOverlay>
-      <ConfirmModal style={{ maxWidth: '520px', maxHeight: '90vh', overflowY: 'auto' }}>
+      <EditModalCard>
         <ConfirmTitle>Editar condiciones de participación</ConfirmTitle>
 
         <Field>
           <Label>
             <input type="checkbox" checked={reputationEnabled}
               onChange={e => setReputationEnabled(e.target.checked)}
-              style={{ marginRight: '0.5rem' }} />
+             />
             Reputación mínima
           </Label>
           {reputationEnabled && (
@@ -106,15 +105,14 @@ export default function EditAuctionModal({ auction, onClose, onSuccess }: Props)
           <Label>
             <input type="checkbox" checked={exchangesEnabled}
               onChange={e => setExchangesEnabled(e.target.checked)}
-              style={{ marginRight: '0.5rem' }} />
+             />
             Intercambios mínimos
           </Label>
           {exchangesEnabled && (
             <>
               <Hint>El postor debe tener al menos N intercambios concretados</Hint>
-              <Input type="number" min={1} value={minExchanges}
-                onChange={e => setMinExchanges(Math.max(1, Number(e.target.value)))}
-                style={{ width: '100px' }} />
+              <NumericInputSmall type="number" min={1} value={minExchanges}
+                onChange={e => setMinExchanges(Math.max(1, Number(e.target.value)))} />
             </>
           )}
         </Field>
@@ -123,15 +121,14 @@ export default function EditAuctionModal({ auction, onClose, onSuccess }: Props)
           <Label>
             <input type="checkbox" checked={cardCountEnabled}
               onChange={e => setCardCountEnabled(e.target.checked)}
-              style={{ marginRight: '0.5rem' }} />
+             />
             Cantidad mínima de figuritas en oferta
           </Label>
           {cardCountEnabled && (
             <>
               <Hint>La oferta debe incluir al menos N figuritas</Hint>
-              <Input type="number" min={1} value={minCardCount}
-                onChange={e => setMinCardCount(Math.max(1, Number(e.target.value)))}
-                style={{ width: '100px' }} />
+              <NumericInputSmall type="number" min={1} value={minCardCount}
+                onChange={e => setMinCardCount(Math.max(1, Number(e.target.value)))} />
             </>
           )}
         </Field>
@@ -140,7 +137,7 @@ export default function EditAuctionModal({ auction, onClose, onSuccess }: Props)
           <Label>
             <input type="checkbox" checked={categoryEnabled}
               onChange={e => setCategoryEnabled(e.target.checked)}
-              style={{ marginRight: '0.5rem' }} />
+             />
             Categoría mínima de figuritas ofrecidas
           </Label>
           {categoryEnabled && (
@@ -160,12 +157,11 @@ export default function EditAuctionModal({ auction, onClose, onSuccess }: Props)
 
         <ConfirmFooter>
           <CancelBtn onClick={onClose} disabled={saving}>Cancelar</CancelBtn>
-          <ConfirmBtn onClick={handleSave} disabled={saving}
-            style={{ background: theme.colors.primary }}>
+          <PrimaryConfirmBtn onClick={handleSave} disabled={saving}>
             {saving ? 'Guardando...' : 'Guardar cambios'}
-          </ConfirmBtn>
+          </PrimaryConfirmBtn>
         </ConfirmFooter>
-      </ConfirmModal>
+      </EditModalCard>
     </ConfirmOverlay>
   );
 }

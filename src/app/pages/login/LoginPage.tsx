@@ -2,8 +2,10 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useUserContext } from '../../context/useUserContext';
+import { useAdminContext } from '../../context/useAdminContext';
 import { API_CONFIG } from '../../config/apiConfig';
 import { register } from '../../api/AuthService';
+import { getRoleFromToken } from '../../utils/jwt';
 import {
   LoginContainer,
   LoginCard,
@@ -23,28 +25,71 @@ const LogoTACS = () => (
 );
 
 type Mode = 'login' | 'register';
+type FieldErrors = Partial<Record<'email' | 'password' | 'confirmPassword', string>>;
+
+// Regex razonable para validar formato de email del lado cliente
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const MIN_PASSWORD_LENGTH = 6;
 
 export default function LoginPage() {
   const navigate = useNavigate();
   const { login } = useUserContext();
+  const { setAdminLoggedIn } = useAdminContext();
   const [mode, setMode] = useState<Mode>('login');
-  const [form, setForm] = useState({ email: '', password: '' });
+  const [form, setForm] = useState({ email: '', password: '', confirmPassword: '' });
+  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
+    const { name, value } = e.target;
+    setForm(prev => ({ ...prev, [name]: value }));
     setError('');
+    // Limpia el error del campo que se está editando (UX: no insistir mientras el usuario corrige)
+    if (fieldErrors[name as keyof FieldErrors]) {
+      setFieldErrors(prev => ({ ...prev, [name]: undefined }));
+    }
   };
 
   const toggleMode = () => {
     setMode(prev => (prev === 'login' ? 'register' : 'login'));
     setError('');
+    setFieldErrors({});
+    setForm(prev => ({ ...prev, confirmPassword: '' }));
+  };
+
+  const validate = (): FieldErrors => {
+    const errors: FieldErrors = {};
+    if (!form.email.trim()) {
+      errors.email = 'El email es obligatorio';
+    } else if (!EMAIL_REGEX.test(form.email)) {
+      errors.email = 'Email con formato inválido';
+    }
+    if (!form.password) {
+      errors.password = 'La contraseña es obligatoria';
+    } else if (form.password.length < MIN_PASSWORD_LENGTH) {
+      errors.password = `La contraseña debe tener al menos ${MIN_PASSWORD_LENGTH} caracteres`;
+    }
+    if (mode === 'register') {
+      if (!form.confirmPassword) {
+        errors.confirmPassword = 'Confirmá la contraseña';
+      } else if (form.confirmPassword !== form.password) {
+        errors.confirmPassword = 'Las contraseñas no coinciden';
+      }
+    }
+    return errors;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+
+    const errors = validate();
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
+      return;
+    }
+    setFieldErrors({});
     setLoading(true);
     try {
       if (mode === 'register') {
@@ -64,7 +109,12 @@ export default function LoginPage() {
         const { token, user } = response.data;
         login(user, token);
       }
-      navigate('/');
+      if (getRoleFromToken() === 'ADMIN') {
+        setAdminLoggedIn(true);
+        navigate('/admin');
+      } else {
+        navigate('/');
+      }
     } catch {
       setError(
         mode === 'register'
@@ -94,7 +144,7 @@ export default function LoginPage() {
         <LoginSubtitle>
           {isRegister ? 'Creá tu cuenta para empezar' : 'Intercambio de Figuritas Mundial 2026'}
         </LoginSubtitle>
-        <LoginForm onSubmit={handleSubmit}>
+        <LoginForm onSubmit={handleSubmit} noValidate>
           <LoginLabel>Email</LoginLabel>
           <LoginInput
             name="email"
@@ -103,8 +153,10 @@ export default function LoginPage() {
             onChange={handleChange}
             placeholder="Ingresá tu email"
             autoComplete="email"
-            required
+            aria-invalid={!!fieldErrors.email}
           />
+          {fieldErrors.email && <ErrorText>{fieldErrors.email}</ErrorText>}
+
           <LoginLabel>Contraseña</LoginLabel>
           <LoginInput
             type="password"
@@ -113,8 +165,26 @@ export default function LoginPage() {
             onChange={handleChange}
             placeholder="Ingresá tu contraseña"
             autoComplete={isRegister ? 'new-password' : 'current-password'}
-            required
+            aria-invalid={!!fieldErrors.password}
           />
+          {fieldErrors.password && <ErrorText>{fieldErrors.password}</ErrorText>}
+
+          {isRegister && (
+            <>
+              <LoginLabel>Confirmar contraseña</LoginLabel>
+              <LoginInput
+                type="password"
+                name="confirmPassword"
+                value={form.confirmPassword}
+                onChange={handleChange}
+                placeholder="Repetí la contraseña"
+                autoComplete="new-password"
+                aria-invalid={!!fieldErrors.confirmPassword}
+              />
+              {fieldErrors.confirmPassword && <ErrorText>{fieldErrors.confirmPassword}</ErrorText>}
+            </>
+          )}
+
           {error && <ErrorText>{error}</ErrorText>}
           <LoginButton type="submit" disabled={loading}>
             {submitLabel}

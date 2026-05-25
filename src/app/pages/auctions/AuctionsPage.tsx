@@ -15,8 +15,10 @@ import {
   EmptyMessage,
   SectionActionButton,
 } from '../../components/auctions/Auctions.styles';
-import { theme } from '../../styles/theme';
-import { TabNav, TabBtn, MyBidCard, StatusBadge } from './AuctionsPage.styles';
+import {
+  TabNav, TabBtn, MyBidCard, StatusBadge,
+  MyBidHeader, MyBidTitle, MyBidMeta, MyBidSubMeta, StrongInline, CancelBidButton,
+} from './AuctionsPage.styles';
 
 type Tab = 'active' | 'my-auctions' | 'my-bids';
 
@@ -130,47 +132,33 @@ export default function AuctionsPage() {
                   const canCancel = o.bidStatus === 'ACTIVA' && o.auctionStatus === 'ACTIVA';
                   return (
                     <MyBidCard key={o.bidId} onClick={() => navigate(`/auctions/${o.auctionId}`)}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                      <MyBidHeader>
                         <div>
-                          <strong style={{ fontSize: '1.1rem' }}>#{o.figurita.number} {o.figurita.description}</strong>
+                          <MyBidTitle>#{o.figurita.number} {o.figurita.description}</MyBidTitle>
                           {subtitle && (
-                            <div style={{ fontSize: '0.85rem', color: theme.colors.textSecondary, marginTop: '0.25rem' }}>
-                              {subtitle}
-                            </div>
+                            <MyBidSubMeta>{subtitle}</MyBidSubMeta>
                           )}
                         </div>
                         <StatusBadge $status={o.bidStatus}>{o.bidStatus}</StatusBadge>
-                      </div>
-                      <div style={{ fontSize: '0.85rem', color: theme.colors.textSecondary }}>
-                        Subasta de: <strong style={{ color: theme.colors.text }}>{o.publisher.name}</strong>
-                      </div>
-                      <div style={{ fontSize: '0.85rem', color: theme.colors.textSecondary }}>
-                        Ofrecí: <strong style={{ color: theme.colors.text }}>{o.offeredFiguritas.length} figurita(s)</strong>
+                      </MyBidHeader>
+                      <MyBidMeta>
+                        Subasta de: <StrongInline>{o.publisher.name}</StrongInline>
+                      </MyBidMeta>
+                      <MyBidMeta>
+                        Ofrecí: <StrongInline>{o.offeredFiguritas.length} figurita(s)</StrongInline>
                         {' · '}{new Date(o.bidDate).toLocaleDateString('es-AR')}
-                      </div>
-                      <div style={{ fontSize: '0.85rem', color: theme.colors.textSecondary }}>
+                      </MyBidMeta>
+                      <MyBidMeta>
                         Cierra: {new Date(o.closingDate).toLocaleDateString('es-AR', { year: 'numeric', day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}
-                      </div>
+                      </MyBidMeta>
                       {canCancel && (
-                        <button
+                        <CancelBidButton
                           type="button"
                           onClick={(e) => { e.stopPropagation(); handleCancelOffer(o.auctionId, o.bidId); }}
                           disabled={cancellingBidId === o.bidId}
-                          style={{
-                            alignSelf: 'flex-start',
-                            marginTop: '0.25rem',
-                            padding: '0.35rem 0.85rem',
-                            background: 'transparent',
-                            border: `1px solid ${theme.colors.outlineVariant}`,
-                            borderRadius: theme.shape.full,
-                            color: theme.colors.error,
-                            fontSize: '0.8rem',
-                            fontWeight: 500,
-                            cursor: cancellingBidId === o.bidId ? 'wait' : 'pointer',
-                          }}
                         >
                           {cancellingBidId === o.bidId ? 'Cancelando...' : 'Cancelar oferta'}
-                        </button>
+                        </CancelBidButton>
                       )}
                     </MyBidCard>
                   );

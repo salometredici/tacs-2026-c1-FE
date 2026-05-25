@@ -15,7 +15,7 @@ import { getExchangesByUserId } from '../../api/ExchangesService';
 import { viewAs } from '../../utils/exchangeView';
 import { AuthedOutletContext } from '../../components/layout/UserRoute';
 import {
-  ProfileContainer, ProfileHeader, ProfileTitle, ProfileEmail, ProfileMeta, ProfileMetaStar,
+  ProfileContainer, ProfileHeader, ProfileAvatar, ProfileTitle, ProfileEmail, ProfileMeta, ProfileMetaStar,
   TabSection, TabNav, TabButton,
   SectionHeader, SectionTitle, SeeAllLink, RowList,
   StatusBadge, Divider,
@@ -112,11 +112,7 @@ export default function ProfilePage() {
   return (
     <ProfileContainer>
       <ProfileHeader>
-        <img
-          src="/assets/user-svgrepo-com.svg"
-          alt={user.name}
-          style={{ width: '48px', height: '48px', marginRight: '1rem' }}
-        />
+        <ProfileAvatar src="/assets/user-svgrepo-com.svg" alt={user.name} />
         <div>
           <ProfileTitle>{user.name}</ProfileTitle>
           <ProfileEmail>{user.email}</ProfileEmail>

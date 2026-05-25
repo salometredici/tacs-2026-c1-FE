@@ -103,6 +103,7 @@ export const ProposalCard = styled.div`
   justify-content: space-between;
   align-items: flex-start;
   gap: ${theme.spacing.lg};
+  cursor: pointer;
 
   @media (max-width: 480px) {
     flex-direction: column;
@@ -250,6 +251,8 @@ export const ViewPublicationLink = styled.button`
   align-items: center;
   gap: 4px;
   &:hover { text-decoration: underline; }
+
+  & .material-symbols-outlined { font-size: 1rem; }
 `;
 
 export const ErrorMsg = styled.p`

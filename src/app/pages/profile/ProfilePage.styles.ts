@@ -28,6 +28,11 @@ export const ProfileHeader = styled.div`
   }
 `;
 
+export const ProfileAvatar = styled.img`
+  width: 48px;
+  height: 48px;
+`;
+
 export const ProfileTitle = styled.h1`
   color: ${theme.colors.onSurface};
   margin: 0 0 ${theme.spacing.xs} 0;
