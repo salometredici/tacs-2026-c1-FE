@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useOutletContext } from 'react-router-dom';
 import { Proposal } from '../../interfaces/proposals/Proposal';
 import { getProposals, acceptProposal, rejectProposal } from '../../api/ProposalsService';
-import { useUserContext } from '../../context/useUserContext';
+import { AuthedOutletContext } from '../../components/layout/UserRoute';
 import { useSnackbar } from '../../context/useSnackbar';
 import ProposalDetailModal from '../../components/proposals/ProposalDetailModal';
 import {
@@ -23,7 +23,7 @@ const STATUS_LABEL: Record<ProposalStatus, string> = {
 
 export default function ProposalsPage() {
   const navigate = useNavigate();
-  const { currentUser } = useUserContext();
+  const { currentUser } = useOutletContext<AuthedOutletContext>();
   const { showError } = useSnackbar();
 
   const [tab, setTab] = useState<'received' | 'sent'>('received');
@@ -79,8 +79,6 @@ export default function ProposalsPage() {
       setActionLoading(null);
     }
   };
-
-  if (!currentUser) return null;
 
   const list = tab === 'received' ? received : sent;
 

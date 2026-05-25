@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useOutletContext } from 'react-router-dom';
 import { Publication } from '../../interfaces/publications/Publication';
 import { Proposal } from '../../interfaces/proposals/Proposal';
 import { ProposalStatus } from '../../interfaces/proposals/ProposalStatus';
 import { getPublicationById, cancelPublication } from '../../api/PublicationsService';
 import { getProposalsByPublicationId, acceptProposal, rejectProposal } from '../../api/ProposalsService';
-import { useUserContext } from '../../context/useUserContext';
+import { AuthedOutletContext } from '../../components/layout/UserRoute';
 import { useSnackbar } from '../../context/useSnackbar';
 import MakeProposalModal from '../../components/proposals/MakeProposalModal';
 import {
@@ -27,7 +27,7 @@ const PROPOSAL_STATUS_LABEL: Record<ProposalStatus, string> = {
 export default function PublicationDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { currentUser } = useUserContext();
+  const { currentUser } = useOutletContext<AuthedOutletContext>();
   const { showError } = useSnackbar();
 
   const [publication, setPublication] = useState<Publication | null>(null);
@@ -41,7 +41,7 @@ export default function PublicationDetailPage() {
     if (!id) return;
     setLoading(true);
     Promise.all([
-      getPublicationById(id, currentUser?.id),
+      getPublicationById(id, currentUser.id),
       getProposalsByPublicationId(id),
     ])
       .then(([pub, props]) => {
@@ -50,8 +50,6 @@ export default function PublicationDetailPage() {
       })
       .finally(() => setLoading(false));
   }, [id]);
-
-  if (!currentUser) { navigate('/login'); return null; }
 
   if (loading) {
     return (

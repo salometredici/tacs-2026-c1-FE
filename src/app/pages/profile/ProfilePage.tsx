@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useOutletContext } from 'react-router-dom';
 import { User } from '../../interfaces/auth/User';
 import { MissingCard } from '../../interfaces/cards/MissingCard';
 import { Proposal } from '../../interfaces/proposals/Proposal';
@@ -13,7 +13,7 @@ import { getProposals } from '../../api/ProposalsService';
 import { getMyPublications } from '../../api/PublicationsService';
 import { getExchangesByUserId } from '../../api/ExchangesService';
 import { viewAs } from '../../utils/exchangeView';
-import { useUserContext } from '../../context/useUserContext';
+import { AuthedOutletContext } from '../../components/layout/UserRoute';
 import {
   ProfileContainer, ProfileHeader, ProfileTitle, ProfileEmail, ProfileMeta, ProfileMetaStar,
   TabSection, TabNav, TabButton,
@@ -46,13 +46,7 @@ type Tab = 'collection' | 'faltantes' | 'publicaciones' | 'propuestas' | 'subast
 
 export default function ProfilePage() {
   const navigate = useNavigate();
-  const { currentUser } = useUserContext();
-
-  if (!currentUser) {
-    navigate('/login');
-    return null;
-  }
-
+  const { currentUser } = useOutletContext<AuthedOutletContext>();
   const user: User = currentUser;
 
   const [activeTab, setActiveTab] = useState<Tab>('collection');

@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useOutletContext } from 'react-router-dom';
 import { Auction } from '../../interfaces/auctions/Auction';
 import { UserBid } from '../../interfaces/auctions/bid/UserBid';
 import { getActiveAuctions, getAuctionsByUserId, getAuctionBidsByUserId, cancelOffer } from '../../api/AuctionsService';
 import AuctionCard from '../../components/auctions/AuctionCard';
 import PlaceBidModal from '../../components/auctions/PlaceBidModal';
-import { useUserContext } from '../../context/useUserContext';
+import { AuthedOutletContext } from '../../components/layout/UserRoute';
 import {
   AuctionsContainer,
   AuctionsHeader,
@@ -22,7 +22,7 @@ type Tab = 'active' | 'my-auctions' | 'my-bids';
 
 export default function AuctionsPage() {
   const navigate = useNavigate();
-  const { currentUser } = useUserContext();
+  const { currentUser } = useOutletContext<AuthedOutletContext>();
   const [activeTab, setActiveTab] = useState<Tab>('active');
 
   const [activeAuctions, setActiveAuctions] = useState<Auction[]>([]);
