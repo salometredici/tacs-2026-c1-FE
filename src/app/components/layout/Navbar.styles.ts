@@ -52,26 +52,26 @@ export const BrandIcon = styled.span`
   & .material-symbols-outlined { font-size: 28px; }
 `;
 
-// Center nav links section
+// Nav links agrupados a la izquierda, después del brand
 export const NavLinksSection = styled.div`
   display: flex;
-  align-items: center;
-  gap: ${theme.spacing.xs};
+  align-items: stretch;
+  height: 100%;
+  margin-left: ${theme.spacing.lg};
 
   @media (max-width: 600px) {
     display: none;
   }
 `;
 
-// M3 Text Button used for nav links
 export const NavTextLink = styled.button`
   background: none;
   border: none;
-  color: ${theme.colors.onSurfaceVariant};
+  color: ${theme.colors.onPrimary};
   cursor: pointer;
-  height: 40px;
-  padding: 0 12px;
-  border-radius: ${theme.shape.full};
+  height: 100%;
+  padding: 0 ${theme.spacing.lg};
+  border-radius: 0;
   display: flex;
   align-items: center;
   font-size: ${theme.typography.labelLarge.fontSize};
@@ -86,14 +86,17 @@ export const NavTextLink = styled.button`
     content: '';
     position: absolute;
     inset: 0;
-    background: currentColor;
+    background: ${theme.colors.onPrimary};
     opacity: 0;
     transition: opacity 0.15s;
-    border-radius: inherit;
+  }
+
+  &[aria-current='page'] {
+    font-weight: 600;
+    &::after { opacity: ${theme.state.hover}; }
   }
 
   &:hover {
-    color: ${theme.colors.onSurface};
     &::after { opacity: ${theme.state.hover}; }
   }
 
@@ -104,6 +107,7 @@ export const ActionsSection = styled.div`
   display: flex;
   align-items: center;
   gap: ${theme.spacing.xs};
+  margin-left: auto;
 
   @media (max-width: 480px) {
     gap: 0;

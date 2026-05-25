@@ -1,61 +1,35 @@
-import { createContext, useCallback, useEffect, useRef, useState, ReactNode } from 'react';
-import {
-  SnackbarContextType,
-  SnackbarMessage,
-  SnackbarSeverity,
-} from './SnackbarContextType';
+import { createContext, ReactNode, useMemo } from 'react';
+import { toast } from 'sonner';
+import Snackbar from '../components/feedback/Snackbar';
+import { SnackbarContextType, SnackbarSeverity } from './SnackbarContextType';
 
 export const SnackbarContext = createContext<SnackbarContextType | null>(null);
-
-const AUTO_DISMISS_MS = 4000;
-const EXIT_ANIMATION_MS = 150;
-
-let nextId = 1;
 
 interface Props {
   children: ReactNode;
 }
 
+/**
+ * Wrapper sobre sonner. Conserva la API `useSnackbar()` previa (show/showSuccess/showError/dismiss) para no romper los consumidores
+ * Por dentro delega en `toast.custom` de sonner, que maneja la queue, accessibility y dismissal. El render M3 vive en el componente Snackbar
+ */
 export function SnackbarProvider({ children }: Props) {
-  const [current, setCurrent] = useState<SnackbarMessage | null>(null);
-  const [closing, setClosing] = useState(false);
-  const dismissTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const exitTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const value = useMemo<SnackbarContextType>(() => {
+    const show = (text: string, severity: SnackbarSeverity = 'info') =>
+      toast.custom(
+        (id) => <Snackbar id={id} text={text} severity={severity} />,
+        { duration: 4000 }
+      );
 
-  const clearTimers = () => {
-    if (dismissTimer.current) clearTimeout(dismissTimer.current);
-    if (exitTimer.current) clearTimeout(exitTimer.current);
-  };
-
-  const dismiss = useCallback(() => {
-    clearTimers();
-    setClosing(true);
-    exitTimer.current = setTimeout(() => {
-      setCurrent(null);
-      setClosing(false);
-    }, EXIT_ANIMATION_MS);
+    return {
+      show,
+      showSuccess: (text: string) => show(text, 'success'),
+      showError:   (text: string) => show(text, 'error'),
+      dismiss:     () => toast.dismiss(),
+    };
   }, []);
 
-  const show = useCallback(
-    (text: string, severity: SnackbarSeverity = 'info') => {
-      clearTimers();
-      setClosing(false);
-      setCurrent({ id: nextId++, text, severity });
-      dismissTimer.current = setTimeout(() => dismiss(), AUTO_DISMISS_MS);
-    },
-    [dismiss]
-  );
-
-  const showSuccess = useCallback((text: string) => show(text, 'success'), [show]);
-  const showError = useCallback((text: string) => show(text, 'error'), [show]);
-
-  useEffect(() => () => clearTimers(), []);
-
   return (
-    <SnackbarContext.Provider
-      value={{ current, closing, show, showSuccess, showError, dismiss }}
-    >
-      {children}
-    </SnackbarContext.Provider>
+    <SnackbarContext.Provider value={value}>{children}</SnackbarContext.Provider>
   );
 }
