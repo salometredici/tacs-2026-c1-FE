@@ -3,6 +3,7 @@ import { Card } from '../../interfaces/cards/Card';
 import { CollectionCard } from '../../interfaces/cards/CollectionCard';
 import { getUserCollection } from '../../api/UsersService';
 import { placeBid } from '../../api/AuctionsService';
+import { useSnackbar } from '../../context/useSnackbar';
 import {
   Overlay, Modal, ModalHeader, ModalTitle, CloseButton,
   Footer, CancelButton, SubmitButton, ErrorMsg,
@@ -35,6 +36,7 @@ interface Props {
 const availableOf = (c: CollectionCard) => c.quantity - c.compromisedCount;
 
 export default function PlaceBidModal({ userId, card, auctionId, onClose, onSuccess }: Props) {
+  const { showSuccess } = useSnackbar();
   const [collection, setCollection] = useState<CollectionCard[]>([]);
   const [selected, setSelected] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(true);
@@ -91,6 +93,7 @@ export default function PlaceBidModal({ userId, card, auctionId, onClose, onSucc
       // Expandimos por qty (se agrupa en el service al armar items).
       const cardIds = Object.entries(selected).flatMap(([id, qty]) => Array(qty).fill(id));
       await placeBid(auctionId, userId, cardIds);
+      showSuccess(`Oferta enviada en la subasta de la figurita #${card.number}`);
       onSuccess();
       onClose();
     } catch (err: any) {

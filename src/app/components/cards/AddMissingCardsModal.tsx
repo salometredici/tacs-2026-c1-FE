@@ -3,6 +3,7 @@ import { Card } from '../../interfaces/cards/Card';
 import { Category } from '../../interfaces/Categoria';
 import { getCatalog } from '../../api/CardsService';
 import { addMissingCard, getUserCollection, getUserMissingCards } from '../../api/UsersService';
+import { useSnackbar } from '../../context/useSnackbar';
 import {
   Overlay, Modal, ModalHeader, ModalTitle, CloseButton,
   Field, Hint, Input, Select, Row,
@@ -22,6 +23,7 @@ interface Props {
 }
 
 export default function AddMissingCardsModal({ userId, onClose, onSuccess }: Props) {
+  const { showSuccess } = useSnackbar();
   const [catalog, setCatalog] = useState<Card[]>([]);
   const [excludedIds, setExcludedIds] = useState<Set<string>>(new Set());
   const [query, setQuery] = useState('');
@@ -68,6 +70,7 @@ export default function AddMissingCardsModal({ userId, onClose, onSuccess }: Pro
       for (const f of pending) {
         await addMissingCard(userId, f.id);
       }
+      showSuccess(`${pending.length} figurita${pending.length === 1 ? '' : 's'} agregada${pending.length === 1 ? '' : 's'} a faltantes`);
       onSuccess();
       onClose();
     } catch {

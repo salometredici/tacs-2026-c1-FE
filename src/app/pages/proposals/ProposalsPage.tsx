@@ -24,7 +24,7 @@ const STATUS_LABEL: Record<ProposalStatus, string> = {
 export default function ProposalsPage() {
   const navigate = useNavigate();
   const { currentUser } = useOutletContext<AuthedOutletContext>();
-  const { showError } = useSnackbar();
+  const { showError, showSuccess } = useSnackbar();
 
   const [tab, setTab] = useState<'received' | 'sent'>('received');
   const [received, setReceived] = useState<Proposal[]>([]);
@@ -59,6 +59,7 @@ export default function ProposalsPage() {
       setReceived(prev =>
         prev.map(p => p.id === proposal.id ? { ...p, status: 'ACEPTADA' } : p)
       );
+      showSuccess('Propuesta aceptada');
     } catch {
       showError('Error al aceptar la propuesta. Intentá nuevamente.');
     } finally {
@@ -73,6 +74,7 @@ export default function ProposalsPage() {
       setReceived(prev =>
         prev.map(p => p.id === proposal.id ? { ...p, status: 'RECHAZADA' } : p)
       );
+      showSuccess('Propuesta rechazada');
     } catch {
       showError('Error al rechazar la propuesta. Intentá nuevamente.');
     } finally {

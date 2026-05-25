@@ -3,6 +3,7 @@ import { Card } from '../../interfaces/cards/Card';
 import { CollectionCard } from '../../interfaces/cards/CollectionCard';
 import { getUserCollection } from '../../api/UsersService';
 import { makeProposal } from '../../api/ProposalsService';
+import { useSnackbar } from '../../context/useSnackbar';
 import {
   Overlay, Modal, ModalHeader, ModalTitle, CloseButton,
   Footer, CancelButton, SubmitButton, ErrorMsg,
@@ -39,6 +40,7 @@ const clamp = (n: number, min: number, max: number) => Math.min(Math.max(n, min)
 const availableOf = (c: CollectionCard) => c.quantity - c.compromisedCount;
 
 export default function MakeProposalModal({ userId, card, publicationId, maxRequestable, onClose, onSuccess }: Props) {
+  const { showSuccess } = useSnackbar();
   const [collection, setCollection] = useState<CollectionCard[]>([]);
   const [selected, setSelected] = useState<Record<string, number>>({});
   const [requestedCount, setRequestedCount] = useState(1);
@@ -100,6 +102,7 @@ export default function MakeProposalModal({ userId, card, publicationId, maxRequ
         ([id, qty]) => Array(qty).fill(id)
       );
       await makeProposal(publicationId, userId, cardIds, requestedCount);
+      showSuccess(`Propuesta enviada por la figurita #${card.number}`);
       onSuccess();
       onClose();
     } catch (err: any) {

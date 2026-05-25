@@ -4,6 +4,7 @@ import { CollectionCard } from '../../interfaces/cards/CollectionCard';
 import { getUserCollection } from '../../api/UsersService';
 import { createAuction } from '../../api/AuctionsService';
 import { AuthedOutletContext } from '../../components/layout/UserRoute';
+import { useSnackbar } from '../../context/useSnackbar';
 import { AUCTION_DURATION_MIN, AUCTION_DURATION_MAX } from '../../constants/auctions';
 import { formatDuration } from '../../utils/utils';
 import {
@@ -21,6 +22,7 @@ import {
 export default function CreateAuctionPage() {
   const navigate = useNavigate();
   const { currentUser } = useOutletContext<AuthedOutletContext>();
+  const { showSuccess } = useSnackbar();
 
   const [collection, setCollection] = useState<CollectionCard[]>([]);
   const [loadingCollection, setLoadingCollection] = useState(true);
@@ -71,12 +73,13 @@ export default function CreateAuctionPage() {
         rules.push({ type: 'CANTIDAD_MINIMA_FIGURITAS' as const, value: String(minCardCount) });
       if (categoryEnabled)
         rules.push({ type: 'CATEGORIA_MINIMA' as const, value: minCategory });
-      await createAuction({
+      const auction = await createAuction({
         cardId: cardId as string,
         duration: durationHours,
         rules,
       });
-      navigate('/auctions');
+      showSuccess(`Subasta creada para la figurita #${auction.figurita.number}: ${auction.figurita.description}`);
+      navigate(`/auctions/${auction.id}`);
     } catch (err: any) {
       const msg = err?.response?.data?.message ?? err?.message ?? 'Error al crear la subasta.';
       setError(msg);

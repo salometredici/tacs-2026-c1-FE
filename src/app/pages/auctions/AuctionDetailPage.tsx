@@ -5,6 +5,7 @@ import { Bid } from '../../interfaces/auctions/bid/Bid';
 import { getAuctionById, acceptOffer, rejectOffer, cancelAuction } from '../../api/AuctionsService';
 import PlaceBidModal from '../../components/auctions/PlaceBidModal';
 import { AuthedOutletContext } from '../../components/layout/UserRoute';
+import { useSnackbar } from '../../context/useSnackbar';
 import { RULE_LABELS } from '../../interfaces/auctions/auctionRule/AuctionRule';
 import { formatCountdown } from '../../utils/utils';
 import {
@@ -56,6 +57,7 @@ export default function AuctionDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { currentUser } = useOutletContext<AuthedOutletContext>();
+  const { showSuccess } = useSnackbar();
 
   const [auction, setAuction] = useState<Auction | null>(null);
   const [loading, setLoading] = useState(true);
@@ -83,6 +85,7 @@ export default function AuctionDetailPage() {
       setConfirmCancel(false);
       const updated = await getAuctionById(auction.id);
       setAuction(updated);
+      showSuccess('Subasta cancelada');
     } catch {
       setFinalizeError('Error al cancelar la subasta. Intentá de nuevo.');
       setConfirmCancel(false);
@@ -100,6 +103,7 @@ export default function AuctionDetailPage() {
       setPendingBid(null);
       const updated = await getAuctionById(auction.id);
       setAuction(updated);
+      showSuccess('Oferta aceptada — Subasta finalizada');
     } catch {
       setFinalizeError('Error al finalizar la subasta. Intentá de nuevo.');
       setPendingBid(null);
@@ -116,6 +120,7 @@ export default function AuctionDetailPage() {
       await rejectOffer(auction.id, bidId);
       const updated = await getAuctionById(auction.id);
       setAuction(updated);
+      showSuccess('Oferta rechazada');
     } catch {
       setFinalizeError('Error al rechazar la oferta. Intentá de nuevo.');
     } finally {

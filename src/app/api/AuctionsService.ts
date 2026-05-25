@@ -4,7 +4,7 @@ import { Auction } from '../interfaces/auctions/Auction';
 import { AuctionStatus } from '../interfaces/auctions/AuctionStatus';
 import { UserBid } from '../interfaces/auctions/bid/UserBid';
 import { CreateAuctionRequest } from '../interfaces/auctions/CreateAuctionRequest';
-import { CreateAuctionResponse } from '../interfaces/auctions/CreateAuctionResponse';
+import { CreatedResponse } from '../interfaces/common/CreatedResponse';
 import { AuctionRule } from '../interfaces/auctions/auctionRule/AuctionRule';
 import { Card } from '../interfaces/cards/Card';
 import { User } from '../interfaces/auth/User';
@@ -14,7 +14,7 @@ const BASE = API_CONFIG.auctions.base;
 
 interface Paginated<T> { data: T[]; currentPage: number; totalPages: number }
 
-interface AuctionOfferDtoBE {
+export interface AuctionOfferDtoBE {
   offerId: string;
   auctionId: string;
   bidderUserId: string;
@@ -121,14 +121,14 @@ export const getActiveAuctions = async (): Promise<Auction[]> => {
   return (res.data?.data ?? []).map(mapAuction);
 };
 
-export const createAuction = async (data: CreateAuctionRequest): Promise<CreateAuctionResponse> => {
+export const createAuction = async (data: CreateAuctionRequest): Promise<Auction> => {
   const body = {
     cardId: data.cardId,
     auctionDurationHours: data.duration,
     conditions: data.rules.map(mapRuleToCondition),
   };
-  const res = await axios.post<{ auctionId: string; message?: string }>(BASE, body);
-  return { success: true, message: res.data.message ?? 'OK', auctionId: res.data.auctionId };
+  const res = await axios.post<CreatedResponse<AuctionDto>>(BASE, body);
+  return mapAuction(res.data.data);
 };
 
 export const getAuctionsByUserId = async (userId: string): Promise<Auction[]> => {
@@ -215,11 +215,12 @@ export const updateAuction = async (_auctionId: string, _data: { rules: AuctionR
   return;
 };
 
-export const placeBid = async (auctionId: string, _userId: string, cardIds: string[]): Promise<void> => {
+export const placeBid = async (auctionId: string, _userId: string, cardIds: string[]): Promise<AuctionOfferDtoBE> => {
   const grouped = cardIds.reduce<Record<string, number>>((acc, id) => {
     acc[id] = (acc[id] ?? 0) + 1;
     return acc;
   }, {});
   const items = Object.entries(grouped).map(([cardId, amount]) => ({ cardId, amount }));
-  await axios.post(`${BASE}/${auctionId}/offers`, { auctionId, items });
+  const res = await axios.post<CreatedResponse<AuctionOfferDtoBE>>(`${BASE}/${auctionId}/offers`, { auctionId, items });
+  return res.data.data;
 };

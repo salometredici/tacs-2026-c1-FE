@@ -6,6 +6,7 @@ import { getActiveAuctions, getAuctionsByUserId, getAuctionBidsByUserId, cancelO
 import AuctionCard from '../../components/auctions/AuctionCard';
 import PlaceBidModal from '../../components/auctions/PlaceBidModal';
 import { AuthedOutletContext } from '../../components/layout/UserRoute';
+import { useSnackbar } from '../../context/useSnackbar';
 import {
   AuctionsContainer,
   AuctionsHeader,
@@ -25,6 +26,7 @@ type Tab = 'active' | 'my-auctions' | 'my-bids';
 export default function AuctionsPage() {
   const navigate = useNavigate();
   const { currentUser } = useOutletContext<AuthedOutletContext>();
+  const { showSuccess, showError } = useSnackbar();
   const [activeTab, setActiveTab] = useState<Tab>('active');
 
   const [activeAuctions, setActiveAuctions] = useState<Auction[]>([]);
@@ -41,8 +43,9 @@ export default function AuctionsPage() {
     try {
       await cancelOffer(auctionId, bidId);
       setMyBids(prev => prev.filter(b => b.bidId !== bidId));
+      showSuccess('Oferta cancelada');
     } catch {
-      window.alert('No se pudo cancelar la oferta. Intentá de nuevo.');
+      showError('No se pudo cancelar la oferta. Intentá de nuevo.');
     } finally {
       setCancellingBidId(null);
     }

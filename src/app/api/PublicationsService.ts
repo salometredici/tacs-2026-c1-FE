@@ -3,6 +3,7 @@ import { API_CONFIG } from '../config/apiConfig';
 import { Publication } from '../interfaces/publications/Publication';
 import { PublicationStatus } from '../interfaces/publications/publicationTypes';
 import { PublishCardRequest } from '../interfaces/exchanges/PublishCardRequest';
+import { CreatedResponse } from '../interfaces/common/CreatedResponse';
 import { CardType } from '../interfaces/CardType';
 
 const BASE = API_CONFIG.publications.base;
@@ -90,8 +91,9 @@ export const getPublicationById = async (id: string, _asUserId?: string): Promis
   return mapPublication(res.data);
 };
 
-export const publishFigurita = async (_userId: string, data: PublishCardRequest): Promise<void> => {
-  await axios.post(BASE, { cardId: data.cardId, quantity: data.quantity });
+export const publishFigurita = async (_userId: string, data: PublishCardRequest): Promise<Publication> => {
+  const res = await axios.post<CreatedResponse<TradePublicationDto>>(BASE, { cardId: data.cardId, quantity: data.quantity });
+  return mapPublication(res.data.data);
 };
 
 export const cancelPublication = async (id: string, _userId: string): Promise<void> => {

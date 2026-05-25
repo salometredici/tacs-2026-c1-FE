@@ -28,7 +28,7 @@ export default function PublicationDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { currentUser } = useOutletContext<AuthedOutletContext>();
-  const { showError } = useSnackbar();
+  const { showError, showSuccess } = useSnackbar();
 
   const [publication, setPublication] = useState<Publication | null>(null);
   const [proposals, setProposals] = useState<Proposal[]>([]);
@@ -106,6 +106,7 @@ export default function PublicationDetailPage() {
       setProposals(prev => prev.map(p =>
         p.status === 'PENDIENTE' ? { ...p, status: 'RECHAZADA' } : p
       ));
+      showSuccess('Publicación cancelada');
     } catch {
       showError('Error al cancelar la publicación. Intentá nuevamente.');
     } finally {
@@ -136,6 +137,7 @@ export default function PublicationDetailPage() {
         if (finalized && p.status === 'PENDIENTE') return { ...p, status: 'RECHAZADA' };
         return p;
       }));
+      showSuccess(finalized ? 'Propuesta aceptada — Publicación finalizada' : 'Propuesta aceptada');
     } catch {
       showError('Error al aceptar la propuesta. Intentá nuevamente.');
     } finally {
@@ -148,6 +150,7 @@ export default function PublicationDetailPage() {
     try {
       await rejectProposal(proposal.id, currentUser.id);
       setProposals(prev => prev.map(p => p.id === proposal.id ? { ...p, status: 'RECHAZADA' } : p));
+      showSuccess('Propuesta rechazada');
     } catch {
       showError('Error al rechazar la propuesta. Intentá nuevamente.');
     } finally {
