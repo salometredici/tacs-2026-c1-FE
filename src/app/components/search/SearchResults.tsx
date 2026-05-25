@@ -177,7 +177,7 @@ export default function SearchResults({
       {selectedAuction && currentUser && (
         <PlaceBidModal
           userId={currentUser.id}
-          figurita={selectedAuction.figurita}
+          card={selectedAuction.figurita}
           auctionId={selectedAuction.id}
           onClose={() => setSelectedAuction(null)}
           onSuccess={() => setSelectedAuction(null)}

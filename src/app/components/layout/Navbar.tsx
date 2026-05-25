@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useNotificationsContext } from '../../context/useNotificationsContext';
 import { useUserContext } from '../../context/useUserContext';
 import {
@@ -6,6 +7,8 @@ import {
   BrandSection,
   BrandIcon,
   BrandTitle,
+  NavLinksSection,
+  NavTextLink,
   ActionsSection,
   NavButton,
   BellWrapper,
@@ -21,6 +24,14 @@ interface NavbarProps {
   onLogout?: () => void;
 }
 
+const NAV_LINKS = [
+  { label: 'Inicio',       path: '/' },
+  { label: 'Catálogo',     path: '/catalog' },
+  { label: 'Buscar',       path: '/search' },
+  { label: 'Subastas',     path: '/auctions' },
+  { label: 'Intercambios', path: '/exchanges' },
+];
+
 const IconPerson = () => (
   <span className="material-symbols-outlined" aria-hidden="true">person</span>
 );
@@ -29,11 +40,13 @@ const IconBell = () => (
   <span className="material-symbols-outlined" aria-hidden="true">notifications</span>
 );
 
-export default function Navbar({ onHomeClick, onProfileClick, onLogout }: NavbarProps) {
+export default function Navbar({ onProfileClick, onLogout }: NavbarProps) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const { currentUser } = useUserContext();
   const { notifications, unreadCount, markAllAsRead } = useNotificationsContext();
   const bellRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -53,15 +66,27 @@ export default function Navbar({ onHomeClick, onProfileClick, onLogout }: Navbar
   return (
     <NavbarContainer>
       <BrandSection>
-        <BrandIcon onClick={onHomeClick} aria-label="Inicio">
+        <BrandIcon onClick={() => navigate('/')} aria-label="Inicio">
           <span className="material-symbols-outlined" aria-hidden="true">sports_soccer</span>
         </BrandIcon>
-        <BrandTitle onClick={onHomeClick}>
+        <BrandTitle onClick={() => navigate('/')}>
           TACS K3061
         </BrandTitle>
       </BrandSection>
 
-<ActionsSection>
+      <NavLinksSection>
+        {NAV_LINKS.map(({ label, path }) => (
+          <NavTextLink
+            key={path}
+            onClick={() => navigate(path)}
+            aria-current={location.pathname === path ? 'page' : undefined}
+          >
+            {label}
+          </NavTextLink>
+        ))}
+      </NavLinksSection>
+
+      <ActionsSection>
         {currentUser && (
           <BellWrapper ref={bellRef}>
             <NavButton title="Notificaciones" onClick={handleBellClick}>

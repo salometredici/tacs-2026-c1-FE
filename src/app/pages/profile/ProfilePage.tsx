@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useOutletContext } from 'react-router-dom';
 import { User } from '../../interfaces/auth/User';
 import { MissingCard } from '../../interfaces/cards/MissingCard';
 import { Proposal } from '../../interfaces/proposals/Proposal';
@@ -13,7 +13,7 @@ import { getProposals } from '../../api/ProposalsService';
 import { getMyPublications } from '../../api/PublicationsService';
 import { getExchangesByUserId } from '../../api/ExchangesService';
 import { viewAs } from '../../utils/exchangeView';
-import { useUserContext } from '../../context/useUserContext';
+import { AuthedOutletContext } from '../../components/layout/UserRoute';
 import {
   ProfileContainer, ProfileHeader, ProfileTitle, ProfileEmail, ProfileMeta, ProfileMetaStar,
   TabSection, TabNav, TabButton,
@@ -46,13 +46,7 @@ type Tab = 'collection' | 'faltantes' | 'publicaciones' | 'propuestas' | 'subast
 
 export default function ProfilePage() {
   const navigate = useNavigate();
-  const { currentUser } = useUserContext();
-
-  if (!currentUser) {
-    navigate('/login');
-    return null;
-  }
-
+  const { currentUser } = useOutletContext<AuthedOutletContext>();
   const user: User = currentUser;
 
   const [activeTab, setActiveTab] = useState<Tab>('collection');
@@ -73,26 +67,25 @@ export default function ProfilePage() {
   useEffect(() => {
     setLoading(true);
     setError(false);
-    Promise.all([
+    Promise.allSettled([
       getUserMissingCards(user.id),
-      getProposals(user.id), // Recibidas -> publisherId = el usuario (hizo la publicación)
-      getProposals('', user.id), // Enviadas -> postorId = el usuario (hizo la propuesta)
+      getProposals(user.id),
+      getProposals('', user.id),
       getMyPublications(user.id),
       getAuctionsByUserId(user.id),
       getAuctionBidsByUserId(user.id),
       getExchangesByUserId(user.id),
-    ])
-      .then(([falt, rec, env, pubs, sub, bids, exch]) => {
-        setFaltantes(falt);
-        setRecibidas(rec);
-        setEnviadas(env);
-        setPublicaciones(pubs);
-        setMisSubastas(sub);
-        setMisOfertas(bids);
-        setIntercambios(exch);
-      })
-      .catch(() => setError(true))
-      .finally(() => setLoading(false));
+    ]).then(([falt, rec, env, pubs, sub, bids, exch]) => {
+      if (falt.status === 'fulfilled') setFaltantes(falt.value);
+      if (rec.status === 'fulfilled') setRecibidas(rec.value);
+      if (env.status === 'fulfilled') setEnviadas(env.value);
+      if (pubs.status === 'fulfilled') setPublicaciones(pubs.value);
+      if (sub.status === 'fulfilled') setMisSubastas(sub.value);
+      if (bids.status === 'fulfilled') setMisOfertas(bids.value);
+      if (exch.status === 'fulfilled') setIntercambios(exch.value);
+      const allFailed = [falt, rec, env, pubs, sub, bids, exch].every(r => r.status === 'rejected');
+      if (allFailed) setError(true);
+    }).finally(() => setLoading(false));
   }, [user.id]);
 
   const loadUserMissingCards = async () => {

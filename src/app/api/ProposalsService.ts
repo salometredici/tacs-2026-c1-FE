@@ -51,7 +51,7 @@ const stubPublication = (id: string): Publication => ({
 const mapProposalDto = (dto: TradeProposalDto, pub: Publication | null): Proposal => ({
   id: dto.id,
   publication: pub ?? stubPublication(dto.publicationId),
-  offeredCards: dto.cardIds.map(stubCard),  // BE devuelve solo ids; descripciones quedarán vacías
+  offeredCards: dto.cardIds.map(stubCard),
   requestedCount: dto.requestedCount,
   bidder: stubUser(dto.proposerUserId),
   status: STATUS_BE_TO_FE[dto.status] ?? 'PENDIENTE',
@@ -59,7 +59,6 @@ const mapProposalDto = (dto: TradeProposalDto, pub: Publication | null): Proposa
 });
 
 const enrichProposals = async (dtos: TradeProposalDto[]): Promise<Proposal[]> => {
-  // Fetch única por publicationId para no repetir requests
   const uniquePubIds = Array.from(new Set(dtos.map(d => d.publicationId)));
   const pubsById = new Map<string, Publication | null>();
   await Promise.all(uniquePubIds.map(async id => {
@@ -68,32 +67,19 @@ const enrichProposals = async (dtos: TradeProposalDto[]): Promise<Proposal[]> =>
   return dtos.map(d => mapProposalDto(d, pubsById.get(d.publicationId) ?? null));
 };
 
-/**
- * Lista propuestas. Pasar `publisherId` para recibidas, `bidderId` para enviadas.
- */
 export const getProposals = async (publisherId: string = '', bidderId: string = '', status: string = ''): Promise<Proposal[]> => {
-  try {
-    const userId = publisherId || bidderId;
-    if (!userId) return [];
-    const role = publisherId ? 'publisher' : 'proposer';
-    const params: Record<string, string> = { userId, role };
-    if (status && status in STATUS_FE_TO_BE) params.status = STATUS_FE_TO_BE[status as ProposalStatus];
-    const response = await axios.get<TradeProposalDto[]>(BASE, { params });
-    return enrichProposals(response.data);
-  } catch (error: any) {
-    console.error('Error al obtener propuestas:', error?.response?.status, error?.response?.data ?? error?.message);
-    return [];
-  }
+  const userId = publisherId || bidderId;
+  if (!userId) return [];
+  const role = publisherId ? 'publisher' : 'proposer';
+  const params: Record<string, string> = { userId, role };
+  if (status && status in STATUS_FE_TO_BE) params.status = STATUS_FE_TO_BE[status as ProposalStatus];
+  const response = await axios.get<TradeProposalDto[]>(BASE, { params });
+  return enrichProposals(response.data);
 };
 
 export const getProposalsByPublicationId = async (publicationId: string): Promise<Proposal[]> => {
-  try {
-    const response = await axios.get<TradeProposalDto[]>(BASE, { params: { publicationId } });
-    return enrichProposals(response.data);
-  } catch (error: any) {
-    console.error(`Error al obtener propuestas de publicación ${publicationId}:`, error?.response?.status, error?.response?.data ?? error?.message);
-    return [];
-  }
+  const response = await axios.get<TradeProposalDto[]>(BASE, { params: { publicationId } });
+  return enrichProposals(response.data);
 };
 
 export const makeProposal = async (
@@ -102,37 +88,17 @@ export const makeProposal = async (
   cardIds: string[],
   requestedCount: number,
 ): Promise<void> => {
-  try {
-    await axios.post(BASE, { publicationId, cardIds, requestedCount });
-  } catch (error) {
-    console.error('Error al realizar propuesta:', error);
-    throw error;
-  }
+  await axios.post(BASE, { publicationId, cardIds, requestedCount });
 };
 
 export const acceptProposal = async (proposalId: string, _userId: string): Promise<void> => {
-  try {
-    await axios.put(API_CONFIG.proposals.accept(proposalId));
-  } catch (error) {
-    console.error('Error al aceptar propuesta:', error);
-    throw error;
-  }
+  await axios.put(API_CONFIG.proposals.accept(proposalId));
 };
 
 export const rejectProposal = async (proposalId: string, _userId: string): Promise<void> => {
-  try {
-    await axios.put(API_CONFIG.proposals.reject(proposalId));
-  } catch (error) {
-    console.error('Error al rechazar propuesta:', error);
-    throw error;
-  }
+  await axios.put(API_CONFIG.proposals.reject(proposalId));
 };
 
 export const cancelProposal = async (proposalId: string, _userId: string): Promise<void> => {
-  try {
-    await axios.put(API_CONFIG.proposals.cancel(proposalId));
-  } catch (error) {
-    console.error('Error al cancelar propuesta:', error);
-    throw error;
-  }
+  await axios.put(API_CONFIG.proposals.cancel(proposalId));
 };

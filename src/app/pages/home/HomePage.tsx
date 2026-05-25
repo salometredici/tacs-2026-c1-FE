@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useOutletContext } from 'react-router-dom';
 import { Publication } from '../../interfaces/publications/Publication';
 import { Card as CatalogCard } from '../../interfaces/cards/Card';
 import { getUserSuggestions } from '../../api/UsersService';
+import { AuthedOutletContext } from '../../components/layout/UserRoute';
 import { getCatalog } from '../../api/CardsService';
-import { useUserContext } from '../../context/useUserContext';
 import MakeProposalModal from '../../components/proposals/MakeProposalModal';
 import {
   HomeContainer,
@@ -37,7 +37,7 @@ import {
 
 export default function HomePage() {
   const navigate = useNavigate();
-  const { currentUser } = useUserContext();
+  const { currentUser } = useOutletContext<AuthedOutletContext>();
 
   const [suggestions, setSuggestions] = useState<Publication[]>([]);
   const [loading, setLoading] = useState(false);
@@ -51,7 +51,6 @@ export default function HomePage() {
   const dragScrollLeft = useRef(0);
 
   useEffect(() => {
-    if (!currentUser) return;
     setLoading(true);
     getUserSuggestions(currentUser.id)
       .then(data => setSuggestions(data))
@@ -107,53 +106,51 @@ export default function HomePage() {
 
   return (
     <HomeContainer>
-      <Title>¡Bienvenido{currentUser?.name ? `, ${currentUser.name}` : ''}!</Title>
+      <Title>¡Bienvenido, {currentUser.name}!</Title>
       <Subtitle>Intercambia figuritas con otros coleccionistas</Subtitle>
 
-      {currentUser && (
-        <SuggestionsSection>
-          <SectionHeader>
-            <SectionIcon>
-              <span className="material-symbols-outlined" aria-hidden="true">recommend</span>
-            </SectionIcon>
-            <SectionTitle>Sugerencias para vos</SectionTitle>
-          </SectionHeader>
+      <SuggestionsSection>
+        <SectionHeader>
+          <SectionIcon>
+            <span className="material-symbols-outlined" aria-hidden="true">recommend</span>
+          </SectionIcon>
+          <SectionTitle>Sugerencias para vos</SectionTitle>
+        </SectionHeader>
 
-          {loading ? (
-            <EmptyMessage>Cargando sugerencias...</EmptyMessage>
-          ) : suggestions.length === 0 ? (
-            <EmptyMessage>No hay sugerencias disponibles por ahora.</EmptyMessage>
-          ) : (
-            <CarouselWrapper>
-              <CarouselArrow $side="left" onClick={() => scrollCarousel('left')} aria-label="Anterior">
-                <span className="material-symbols-outlined" aria-hidden="true">chevron_left</span>
-              </CarouselArrow>
-              <SuggestionsCarousel
-                ref={carouselRef}
-                onMouseDown={handleMouseDown}
-                onMouseMove={handleMouseMove}
-                onMouseUp={handleMouseUp}
-                onMouseLeave={handleMouseUp}
-              >
-                {suggestions.map(s => (
-                  <SuggestionCard key={s.id} onClick={() => { if (!isDragging.current) setSelected(s); }}>
-                    <CategoryBadge $category={s.card.category}>
-                      {s.card.category}
-                    </CategoryBadge>
-                    <CardNumber>#{s.card.number}</CardNumber>
-                    <CardPlayer>{s.card.description}</CardPlayer>
-                    <CardMeta>{s.card.country}</CardMeta>
-                    <CardOwner>Ofrecida por {s.publisher.name}</CardOwner>
-                  </SuggestionCard>
-                ))}
-              </SuggestionsCarousel>
-              <CarouselArrow $side="right" onClick={() => scrollCarousel('right')} aria-label="Siguiente">
-                <span className="material-symbols-outlined" aria-hidden="true">chevron_right</span>
-              </CarouselArrow>
-            </CarouselWrapper>
-          )}
-        </SuggestionsSection>
-      )}
+        {loading ? (
+          <EmptyMessage>Cargando sugerencias...</EmptyMessage>
+        ) : suggestions.length === 0 ? (
+          <EmptyMessage>No hay sugerencias disponibles por ahora.</EmptyMessage>
+        ) : (
+          <CarouselWrapper>
+            <CarouselArrow $side="left" onClick={() => scrollCarousel('left')} aria-label="Anterior">
+              <span className="material-symbols-outlined" aria-hidden="true">chevron_left</span>
+            </CarouselArrow>
+            <SuggestionsCarousel
+              ref={carouselRef}
+              onMouseDown={handleMouseDown}
+              onMouseMove={handleMouseMove}
+              onMouseUp={handleMouseUp}
+              onMouseLeave={handleMouseUp}
+            >
+              {suggestions.map(s => (
+                <SuggestionCard key={s.id} onClick={() => { if (!isDragging.current) setSelected(s); }}>
+                  <CategoryBadge $category={s.card.category}>
+                    {s.card.category}
+                  </CategoryBadge>
+                  <CardNumber>#{s.card.number}</CardNumber>
+                  <CardPlayer>{s.card.description}</CardPlayer>
+                  <CardMeta>{s.card.country}</CardMeta>
+                  <CardOwner>Ofrecida por {s.publisher.name}</CardOwner>
+                </SuggestionCard>
+              ))}
+            </SuggestionsCarousel>
+            <CarouselArrow $side="right" onClick={() => scrollCarousel('right')} aria-label="Siguiente">
+              <span className="material-symbols-outlined" aria-hidden="true">chevron_right</span>
+            </CarouselArrow>
+          </CarouselWrapper>
+        )}
+      </SuggestionsSection>
 
       <CatalogSection>
         <SectionHeader>
@@ -211,7 +208,7 @@ export default function HomePage() {
         </Card>
       </CardsGrid>
 
-      {selected && currentUser && (
+      {selected && (
         <MakeProposalModal
           userId={currentUser.id}
           card={selected.card}

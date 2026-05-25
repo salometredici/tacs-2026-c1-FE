@@ -7,7 +7,6 @@ import { CardType } from '../interfaces/CardType';
 
 const BASE = API_CONFIG.publications.base;
 
-// BE PublicationStatus enum (ACTIVE/FINALIZED/CANCELLED) → FE labels (ACTIVA/...)
 const STATUS_BE_TO_FE: Record<string, PublicationStatus> = {
   ACTIVE: 'ACTIVA',
   FINALIZED: 'FINALIZADA',
@@ -68,62 +67,33 @@ export interface SearchPublicationsParams {
 }
 
 export const searchActivePublications = async (params: SearchPublicationsParams): Promise<Publication[]> => {
-  try {
-    const cleaned: Record<string, string> = {};
-    if (params.name?.trim()) cleaned.name = params.name.trim();
-    if (params.country?.trim()) cleaned.country = params.country.trim();
-    if (params.team?.trim()) cleaned.team = params.team.trim();
-    if (params.category?.trim()) cleaned.category = params.category.trim().toUpperCase();
-    const response = await axios.get<Paginated<TradePublicationDto> | TradePublicationDto[]>(BASE, { params: cleaned });
-    const list = Array.isArray(response.data) ? response.data : (response.data?.data ?? []);
-    return list.map(p => mapPublication(p));
-  } catch (error: any) {
-    console.error('Error al buscar publicaciones:', error?.response?.status, error?.response?.data ?? error?.message);
-    return [];
-  }
+  const cleaned: Record<string, string> = {};
+  if (params.name?.trim()) cleaned.name = params.name.trim();
+  if (params.country?.trim()) cleaned.country = params.country.trim();
+  if (params.team?.trim()) cleaned.team = params.team.trim();
+  if (params.category?.trim()) cleaned.category = params.category.trim().toUpperCase();
+  const response = await axios.get<Paginated<TradePublicationDto> | TradePublicationDto[]>(BASE, { params: cleaned });
+  const list = Array.isArray(response.data) ? response.data : (response.data?.data ?? []);
+  return list.map(p => mapPublication(p));
 };
 
 export const getMyPublications = async (userId: string, status?: PublicationStatus): Promise<Publication[]> => {
-  try {
-    const params: Record<string, string> = { userId };
-    if (status) params.status = STATUS_FE_TO_BE[status];
-    const response = await axios.get<Paginated<TradePublicationDto> | TradePublicationDto[]>(BASE, { params });
-    const list = Array.isArray(response.data) ? response.data : (response.data?.data ?? []);
-    return list.map(mapPublication);
-  } catch (error: any) {
-    console.error(
-      'Error al obtener publicaciones del usuario:',
-      error?.response?.status,
-      error?.response?.data ?? error?.message,
-    );
-    return [];
-  }
+  const params: Record<string, string> = { userId };
+  if (status) params.status = STATUS_FE_TO_BE[status];
+  const response = await axios.get<Paginated<TradePublicationDto> | TradePublicationDto[]>(BASE, { params });
+  const list = Array.isArray(response.data) ? response.data : (response.data?.data ?? []);
+  return list.map(mapPublication);
 };
 
 export const getPublicationById = async (id: string, _asUserId?: string): Promise<Publication | null> => {
-  try {
-    const res = await axios.get<TradePublicationDto>(API_CONFIG.publications.byId(id));
-    return mapPublication(res.data);
-  } catch (error) {
-    console.error(`Error al obtener publicación ${id}:`, error);
-    return null;
-  }
+  const res = await axios.get<TradePublicationDto>(API_CONFIG.publications.byId(id));
+  return mapPublication(res.data);
 };
 
 export const publishFigurita = async (_userId: string, data: PublishCardRequest): Promise<void> => {
-  try {
-    await axios.post(BASE, { cardId: data.cardId, quantity: data.quantity });
-  } catch (error) {
-    console.error('Error al publicar figurita:', error);
-    throw error;
-  }
+  await axios.post(BASE, { cardId: data.cardId, quantity: data.quantity });
 };
 
 export const cancelPublication = async (id: string, _userId: string): Promise<void> => {
-  try {
-    await axios.delete(API_CONFIG.publications.byId(id));
-  } catch (error) {
-    console.error('Error al cancelar publicación:', error);
-    throw error;
-  }
+  await axios.delete(API_CONFIG.publications.byId(id));
 };

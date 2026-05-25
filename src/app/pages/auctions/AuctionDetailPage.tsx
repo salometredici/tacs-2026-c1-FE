@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useOutletContext } from 'react-router-dom';
 import { Auction } from '../../interfaces/auctions/Auction';
 import { Bid } from '../../interfaces/auctions/bid/Bid';
 import { getAuctionById, acceptOffer, rejectOffer, cancelAuction } from '../../api/AuctionsService';
 import PlaceBidModal from '../../components/auctions/PlaceBidModal';
-import { useUserContext } from '../../context/useUserContext';
+import { AuthedOutletContext } from '../../components/layout/UserRoute';
 import { theme } from '../../styles/theme';
 import { RULE_LABELS } from '../../interfaces/auctions/auctionRule/AuctionRule';
 import { formatCountdown } from '../../utils/utils';
@@ -47,7 +47,7 @@ import {
 export default function AuctionDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { currentUser } = useUserContext();
+  const { currentUser } = useOutletContext<AuthedOutletContext>();
 
   const [auction, setAuction] = useState<Auction | null>(null);
   const [loading, setLoading] = useState(true);
@@ -126,7 +126,7 @@ export default function AuctionDetailPage() {
     </Page>
   );
 
-  const { texto: countdown, urgente } = formatCountdown(auction.endDate);
+  const { text: countdown, urgent } = formatCountdown(auction.endDate);
   const isActive = auction.status === 'ACTIVA';
   return (
     <Page>
@@ -167,7 +167,7 @@ export default function AuctionDetailPage() {
               <div style={{ fontSize: '0.85rem', color: theme.colors.textSecondary }}>
                 {new Date(auction.endDate).toLocaleString('es-AR')}
               </div>
-              <Countdown $urgente={urgente}>{countdown}</Countdown>
+              <Countdown $urgente={urgent}>{countdown}</Countdown>
             </div>
           </InfoRow>
           <InfoRow>
@@ -328,7 +328,7 @@ export default function AuctionDetailPage() {
       {showBidModal && currentUser && (
         <PlaceBidModal
           userId={currentUser.id}
-          figurita={auction.figurita}
+          card={auction.figurita}
           auctionId={auction.id}
           onClose={() => setShowBidModal(false)}
           onSuccess={() => setShowBidModal(false)}

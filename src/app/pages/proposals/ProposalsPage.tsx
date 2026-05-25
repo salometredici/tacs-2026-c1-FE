@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useOutletContext } from 'react-router-dom';
 import { Proposal } from '../../interfaces/proposals/Proposal';
 import { getProposals, acceptProposal, rejectProposal } from '../../api/ProposalsService';
-import { useUserContext } from '../../context/useUserContext';
+import { AuthedOutletContext } from '../../components/layout/UserRoute';
 import { useSnackbar } from '../../context/useSnackbar';
 import ProposalDetailModal from '../../components/proposals/ProposalDetailModal';
 import {
@@ -23,30 +23,31 @@ const STATUS_LABEL: Record<ProposalStatus, string> = {
 
 export default function ProposalsPage() {
   const navigate = useNavigate();
-  const { currentUser } = useUserContext();
+  const { currentUser } = useOutletContext<AuthedOutletContext>();
   const { showError } = useSnackbar();
-
-  if (!currentUser) {
-    navigate('/login');
-    return null;
-  }
 
   const [tab, setTab] = useState<'received' | 'sent'>('received');
   const [received, setReceived] = useState<Proposal[]>([]);
   const [sent, setSent] = useState<Proposal[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [detail, setDetail] = useState<Proposal | null>(null);
 
   useEffect(() => {
     const load = async () => {
-      const [rec, env] = await Promise.all([
-        getProposals(currentUser.id),
-        getProposals('', currentUser.id),
-      ]);
-      setReceived(rec);
-      setSent(env);
-      setLoading(false);
+      try {
+        const [rec, env] = await Promise.all([
+          getProposals(currentUser.id),
+          getProposals('', currentUser.id),
+        ]);
+        setReceived(rec);
+        setSent(env);
+      } catch {
+        setLoadError(true);
+      } finally {
+        setLoading(false);
+      }
     };
     load();
   }, [currentUser.id]);
@@ -101,6 +102,8 @@ export default function ProposalsPage() {
 
       {loading ? (
         <EmptyMessage>Cargando propuestas...</EmptyMessage>
+      ) : loadError ? (
+        <EmptyMessage>Ocurrió un error al cargar las propuestas. Intentá de nuevo más tarde.</EmptyMessage>
       ) : list.length === 0 ? (
         <EmptyMessage>No hay propuestas {tab === 'received' ? 'recibidas' : 'enviadas'}.</EmptyMessage>
       ) : (

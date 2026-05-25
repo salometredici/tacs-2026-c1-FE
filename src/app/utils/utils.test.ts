@@ -27,20 +27,20 @@ describe('formatCountdown', () => {
     vi.useRealTimers();
   });
 
-  it('returns Finalizada and urgente=true when the date has passed', () => {
-    expect(formatCountdown('2026-01-01T10:00:00Z')).toEqual({ texto: 'Finalizada', urgente: true });
+  it('returns Finalizada and urgent=true when the date has passed', () => {
+    expect(formatCountdown('2026-01-01T10:00:00Z')).toEqual({ text: 'Finalizada', urgent: true });
   });
 
-  it('returns hours+minutes and urgente=true when less than 2 hours remain', () => {
-    expect(formatCountdown('2026-01-01T13:00:00Z')).toEqual({ texto: '1h 0m', urgente: true });
+  it('returns hours+minutes and urgent=true when less than 2 hours remain', () => {
+    expect(formatCountdown('2026-01-01T13:00:00Z')).toEqual({ text: '1h 0m', urgent: true });
   });
 
-  it('returns hours+minutes and urgente=false when between 2 and 24 hours remain', () => {
-    expect(formatCountdown('2026-01-01T17:00:00Z')).toEqual({ texto: '5h 0m', urgente: false });
+  it('returns hours+minutes and urgent=false when between 2 and 24 hours remain', () => {
+    expect(formatCountdown('2026-01-01T17:00:00Z')).toEqual({ text: '5h 0m', urgent: false });
   });
 
-  it('returns days+hours and urgente=false when more than 24 hours remain', () => {
-    expect(formatCountdown('2026-01-03T15:00:00Z')).toEqual({ texto: '2d 3h', urgente: false });
+  it('returns days+hours and urgent=false when more than 24 hours remain', () => {
+    expect(formatCountdown('2026-01-03T15:00:00Z')).toEqual({ text: '2d 3h', urgent: false });
   });
 });
 

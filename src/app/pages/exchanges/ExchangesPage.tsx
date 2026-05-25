@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useOutletContext } from 'react-router-dom';
 import { Exchange } from '../../interfaces/exchanges/Exchange';
 import { getExchangesByUserId, submitFeedback } from '../../api/ExchangesService';
-import { useUserContext } from '../../context/useUserContext';
+import { AuthedOutletContext } from '../../components/layout/UserRoute';
 import { useSnackbar } from '../../context/useSnackbar';
 import { viewAs } from '../../utils/exchangeView';
 import {
@@ -17,13 +17,8 @@ const ORIGIN_LABEL = { PROPUESTA: 'Propuesta', SUBASTA: 'Subasta' } as const;
 
 export default function ExchangesPage() {
   const navigate = useNavigate();
-  const { currentUser } = useUserContext();
+  const { currentUser } = useOutletContext<AuthedOutletContext>();
   const { showError } = useSnackbar();
-
-  if (!currentUser) {
-    navigate('/login');
-    return null;
-  }
 
   const [exchanges, setExchanges] = useState<Exchange[]>([]);
   const [loading, setLoading] = useState(true);

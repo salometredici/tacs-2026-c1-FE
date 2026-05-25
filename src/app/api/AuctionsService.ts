@@ -54,7 +54,7 @@ const OFFER_STATUS_BE_TO_FE: Record<string, 'ACTIVA' | 'SUPERADA' | 'GANADORA' |
 };
 
 export const mapAuction = (dto: AuctionDto): Auction => {
-  const figurita: Card = {
+  const card: Card = {
     id: '',
     number: dto.cardNumber,
     type: 'JUGADOR' as CardType,
@@ -77,8 +77,8 @@ export const mapAuction = (dto: AuctionDto): Auction => {
     bidder: {
       userId: o.bidderUserId,
       name: o.bidderUserName,
-      rating: 0,                 // BE no incluye rating en AuctionOfferDto todavía
-      avatarId: 'avatar_1',      // BE no incluye avatar en AuctionOfferDto todavía
+      rating: 0,
+      avatarId: 'avatar_1',
     },
     offeredFiguritas: o.offeredItems.flatMap(it =>
       Array(it.amount).fill({
@@ -96,34 +96,29 @@ export const mapAuction = (dto: AuctionDto): Auction => {
   }));
   return {
     id: dto.id,
-    figurita,
+    figurita: card,
     publisherId: publisher,
     status: STATUS_BE_TO_FE[dto.status] ?? 'ACTIVA',
-    creationDate: '',              // no en DTO
+    creationDate: '',
     endDate: dto.closeDate,
-    rules: [],                     // no en DTO
+    rules: [],
     bids,
   };
 };
 
 const mapRuleToCondition = (r: AuctionRule) => {
   switch (r.type) {
-    case 'REPUTACION_MINIMA':       return { filterName: 'MIN_REPUTATION',  quantity: parseInt(r.value) };
-    case 'INTERCAMBIOS_MINIMOS':    return { filterName: 'MIN_EXCHANGES',   quantity: parseInt(r.value) };
-    case 'CANTIDAD_MINIMA_FIGURITAS': return { filterName: 'MIN_CARD_COUNT', quantity: parseInt(r.value) };
-    case 'CATEGORIA_MINIMA':        return { filterName: 'MIN_CATEGORY',    value: r.value };
-    default:                         return { filterName: r.type, value: r.value };
+    case 'REPUTACION_MINIMA':         return { filterName: 'MIN_REPUTATION',  quantity: parseInt(r.value) };
+    case 'INTERCAMBIOS_MINIMOS':      return { filterName: 'MIN_EXCHANGES',   quantity: parseInt(r.value) };
+    case 'CANTIDAD_MINIMA_FIGURITAS': return { filterName: 'MIN_CARD_COUNT',  quantity: parseInt(r.value) };
+    case 'CATEGORIA_MINIMA':          return { filterName: 'MIN_CATEGORY',    value: r.value };
+    default:                          return { filterName: r.type, value: r.value };
   }
 };
 
 export const getActiveAuctions = async (): Promise<Auction[]> => {
-  try {
-    const res = await axios.get<Paginated<AuctionDto>>(BASE);
-    return (res.data?.data ?? []).map(mapAuction);
-  } catch (error: any) {
-    console.error('Error al obtener subastas activas:', error?.response?.status, error?.response?.data ?? error?.message);
-    return [];
-  }
+  const res = await axios.get<Paginated<AuctionDto>>(BASE);
+  return (res.data?.data ?? []).map(mapAuction);
 };
 
 export const createAuction = async (data: CreateAuctionRequest): Promise<CreateAuctionResponse> => {
@@ -137,60 +132,29 @@ export const createAuction = async (data: CreateAuctionRequest): Promise<CreateA
 };
 
 export const getAuctionsByUserId = async (userId: string): Promise<Auction[]> => {
-  try {
-    // BE: GET /api/auctions?userId=X — todas las subastas del usuario (cualquier estado)
-    const res = await axios.get<Paginated<AuctionDto>>(BASE, { params: { userId } });
-    return (res.data?.data ?? []).map(mapAuction);
-  } catch (error: any) {
-    console.error('Error al obtener subastas del usuario:', error?.response?.status, error?.response?.data ?? error?.message);
-    return [];
-  }
+  const res = await axios.get<Paginated<AuctionDto>>(BASE, { params: { userId } });
+  return (res.data?.data ?? []).map(mapAuction);
 };
 
 export const getAuctionById = async (id: string): Promise<Auction | null> => {
-  try {
-    const res = await axios.get<AuctionDto>(`${BASE}/${id}`);
-    return mapAuction(res.data);
-  } catch (error: any) {
-    console.error(`Error al obtener la subasta ${id}:`, error?.response?.status, error?.response?.data ?? error?.message);
-    return null;
-  }
+  const res = await axios.get<AuctionDto>(`${BASE}/${id}`);
+  return mapAuction(res.data);
 };
 
 export const acceptOffer = async (auctionId: string, winnerOfferId: string): Promise<void> => {
-  try {
-    await axios.put(`${BASE}/${auctionId}/offers/${winnerOfferId}/accept`);
-  } catch (error) {
-    console.error(`Error al aceptar la oferta ${winnerOfferId} en la subasta ${auctionId}:`, error);
-    throw error;
-  }
+  await axios.put(`${BASE}/${auctionId}/offers/${winnerOfferId}/accept`);
 };
 
 export const rejectOffer = async (auctionId: string, offerId: string): Promise<void> => {
-  try {
-    await axios.put(`${BASE}/${auctionId}/offers/${offerId}/reject`);
-  } catch (error) {
-    console.error(`Error al rechazar la oferta ${offerId} en la subasta ${auctionId}:`, error);
-    throw error;
-  }
+  await axios.put(`${BASE}/${auctionId}/offers/${offerId}/reject`);
 };
 
 export const cancelAuction = async (auctionId: string): Promise<void> => {
-  try {
-    await axios.delete(`${BASE}/${auctionId}`);
-  } catch (error) {
-    console.error(`Error al cancelar la subasta ${auctionId}:`, error);
-    throw error;
-  }
+  await axios.delete(`${BASE}/${auctionId}`);
 };
 
 export const cancelOffer = async (auctionId: string, offerId: string): Promise<void> => {
-  try {
-    await axios.delete(`${BASE}/${auctionId}/offers/${offerId}`);
-  } catch (error) {
-    console.error(`Error al cancelar la oferta ${offerId}:`, error);
-    throw error;
-  }
+  await axios.delete(`${BASE}/${auctionId}/offers/${offerId}`);
 };
 
 interface UserBidDtoBE {
@@ -210,45 +174,40 @@ interface UserBidDtoBE {
 }
 
 export const getAuctionBidsByUserId = async (userId: string): Promise<UserBid[]> => {
-  try {
-    const res = await axios.get<UserBidDtoBE[]>(`${BASE}/offers`, { params: { userId } });
-    return res.data.map(b => ({
-      auctionId: b.auctionId,
-      figurita: {
-        id: '',
-        number: b.cardNumber,
+  const res = await axios.get<UserBidDtoBE[]>(`${BASE}/offers`, { params: { userId } });
+  return res.data.map(b => ({
+    auctionId: b.auctionId,
+    figurita: {
+      id: '',
+      number: b.cardNumber,
+      type: 'JUGADOR' as CardType,
+      description: b.cardDescription,
+      country: b.cardCountry,
+      team: b.cardTeam,
+      category: 'COMUN' as Card['category'],
+    },
+    publisher: {
+      id: b.publisherUserId ?? '',
+      name: b.publisherName ?? '',
+      email: '', rating: null, exchangesAmount: 0,
+      avatarId: 'avatar_1' as User['avatarId'],
+      creationDate: '',
+    },
+    auctionStatus: STATUS_BE_TO_FE[b.auctionStatus] ?? 'ACTIVA',
+    closingDate: b.closeDate,
+    bidId: b.offerId,
+    offeredFiguritas: b.offeredItems.flatMap(it =>
+      Array(it.amount).fill({
+        id: it.cardId ?? '',
+        number: it.cardNumber ?? 0,
         type: 'JUGADOR' as CardType,
-        description: b.cardDescription,
-        country: b.cardCountry,
-        team: b.cardTeam,
-        category: 'COMUN' as Card['category'],
-      },
-      publisher: {
-        id: b.publisherUserId ?? '',
-        name: b.publisherName ?? '',
-        email: '', rating: null, exchangesAmount: 0,
-        avatarId: 'avatar_1' as User['avatarId'],
-        creationDate: '',
-      },
-      auctionStatus: STATUS_BE_TO_FE[b.auctionStatus] ?? 'ACTIVA',
-      closingDate: b.closeDate,
-      bidId: b.offerId,
-      offeredFiguritas: b.offeredItems.flatMap(it =>
-        Array(it.amount).fill({
-          id: it.cardId ?? '',
-          number: it.cardNumber ?? 0,
-          type: 'JUGADOR' as CardType,
-          description: it.cardDescription ?? '',
-          country: null, team: null, category: 'COMUN' as Card['category'],
-        })
-      ),
-      bidStatus: OFFER_STATUS_BE_TO_FE[b.offerStatus] ?? 'ACTIVA',
-      bidDate: b.bidDate,
-    }));
-  } catch (error: any) {
-    console.error('Error al obtener ofertas del usuario:', error?.response?.status, error?.response?.data ?? error?.message);
-    return [];
-  }
+        description: it.cardDescription ?? '',
+        country: null, team: null, category: 'COMUN' as Card['category'],
+      })
+    ),
+    bidStatus: OFFER_STATUS_BE_TO_FE[b.offerStatus] ?? 'ACTIVA',
+    bidDate: b.bidDate,
+  }));
 };
 
 /** BE no expone update de subasta. Pendiente endpoint. */
@@ -257,16 +216,10 @@ export const updateAuction = async (_auctionId: string, _data: { rules: AuctionR
 };
 
 export const placeBid = async (auctionId: string, _userId: string, cardIds: string[]): Promise<void> => {
-  try {
-    // Agrupamos por cardId para mandar { cardId, amount } en cada item.
-    const grouped = cardIds.reduce<Record<string, number>>((acc, id) => {
-      acc[id] = (acc[id] ?? 0) + 1;
-      return acc;
-    }, {});
-    const items = Object.entries(grouped).map(([cardId, amount]) => ({ cardId, amount }));
-    await axios.post(`${BASE}/${auctionId}/offers`, { auctionId, items });
-  } catch (e) {
-    console.error('Error al realizar la oferta:', e);
-    throw e;
-  }
+  const grouped = cardIds.reduce<Record<string, number>>((acc, id) => {
+    acc[id] = (acc[id] ?? 0) + 1;
+    return acc;
+  }, {});
+  const items = Object.entries(grouped).map(([cardId, amount]) => ({ cardId, amount }));
+  await axios.post(`${BASE}/${auctionId}/offers`, { auctionId, items });
 };

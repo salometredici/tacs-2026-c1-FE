@@ -1,17 +1,19 @@
-import { Outlet, useNavigate } from 'react-router-dom';
+import { Outlet, useNavigate, useOutletContext } from 'react-router-dom';
 import Navbar from './Navbar';
 import Footer from './Footer';
 import SnackbarHost from '../feedback/SnackbarHost';
 import { LayoutContainer, MainContent } from './AppLayout.styles';
 import { useUserContext } from '../../context/useUserContext';
-import { mockUser } from '../../../mocks/usersMock';
+import { AuthedOutletContext } from './UserRoute';
 
 export default function AppLayout() {
   const navigate = useNavigate();
-  const { currentUser, login, logout } = useUserContext();
+  const { logout } = useUserContext();
+  const outletContext = useOutletContext<AuthedOutletContext>();
+  const { currentUser } = outletContext;
 
   const handleProfileClick = () => {
-    navigate(`/profile/${currentUser?.id}`);
+    navigate(`/profile/${currentUser.id}`);
   };
 
   const handleLogout = () => {
@@ -22,12 +24,11 @@ export default function AppLayout() {
   return (
     <LayoutContainer>
       <Navbar
-        onHomeClick={() => {navigate('/');}}
         onProfileClick={handleProfileClick}
         onLogout={handleLogout}
       />
       <MainContent>
-        <Outlet />
+        <Outlet context={outletContext} />
       </MainContent>
       <Footer />
       <SnackbarHost />

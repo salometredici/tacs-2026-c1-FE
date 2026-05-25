@@ -25,7 +25,7 @@ import {
 
 interface Props {
   userId: string;
-  figurita: Card;
+  card: Card;
   auctionId: string;
   onClose: () => void;
   onSuccess: () => void;
@@ -33,7 +33,7 @@ interface Props {
 
 const availableOf = (c: CollectionCard) => c.quantity - c.compromisedCount;
 
-export default function PlaceBidModal({ userId, figurita, auctionId, onClose, onSuccess }: Props) {
+export default function PlaceBidModal({ userId, card, auctionId, onClose, onSuccess }: Props) {
   const [collection, setCollection] = useState<CollectionCard[]>([]);
   const [selected, setSelected] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(true);
@@ -42,13 +42,13 @@ export default function PlaceBidModal({ userId, figurita, auctionId, onClose, on
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    getUserCollection(userId).then(col => {
-      setCollection(col);
-      setLoading(false);
-    });
+    getUserCollection(userId)
+      .then(col => setCollection(col))
+      .catch(() => setError('No se pudo cargar tu colección. Intentá de nuevo.'))
+      .finally(() => setLoading(false));
   }, [userId]);
 
-  const toggleFigurita = (cardId: string) => {
+  const toggleCard = (cardId: string) => {
     setSelected(prev => {
       if (cardId in prev) {
         const { [cardId]: _, ...rest } = prev;
@@ -111,8 +111,8 @@ export default function PlaceBidModal({ userId, figurita, auctionId, onClose, on
         </ModalHeader>
 
         <p style={{ margin: 0 }}>
-          Querés: <strong>#{figurita.number} {figurita.description}</strong>
-          {figurita.country && ` (${figurita.country})`}
+          Querés: <strong>#{card.number} {card.description}</strong>
+          {card.country && ` (${card.country})`}
         </p>
 
         {loading ? (
@@ -137,7 +137,7 @@ export default function PlaceBidModal({ userId, figurita, auctionId, onClose, on
                     <CardNum>#{fc.number}</CardNum>
                     <CardDescription>{fc.description}</CardDescription>
                     <CardQuantityLabel>{availableOf(fc)} disp. / {fc.quantity} tot.</CardQuantityLabel>
-                    <AddButton onClick={() => toggleFigurita(fc.cardId)}>Agregar</AddButton>
+                    <AddButton onClick={() => toggleCard(fc.cardId)}>Agregar</AddButton>
                   </FiguritaItem>
                 ))}
               </CardList>
@@ -163,7 +163,7 @@ export default function PlaceBidModal({ userId, figurita, auctionId, onClose, on
                         disabled={selected[fc.cardId] >= availableOf(fc)}
                       >+</QtyButton>
                     </QtyRow>
-                    <RemoveButton onClick={() => toggleFigurita(fc.cardId)}>Quitar</RemoveButton>
+                    <RemoveButton onClick={() => toggleCard(fc.cardId)}>Quitar</RemoveButton>
                   </FiguritaItem>
                 ))}
               </CardList>

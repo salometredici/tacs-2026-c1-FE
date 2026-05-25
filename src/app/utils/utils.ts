@@ -1,19 +1,19 @@
-export function formatCountdown(fechaCierre: string): { texto: string; urgente: boolean } {
-  const diff = new Date(fechaCierre).getTime() - Date.now();
-  if (diff <= 0) return { texto: 'Finalizada', urgente: true };
+export function formatCountdown(closingDate: string): { text: string; urgent: boolean } {
+  const diff = new Date(closingDate).getTime() - Date.now();
+  if (diff <= 0) return { text: 'Finalizada', urgent: true };
   const h = Math.floor(diff / 3600000);
   const m = Math.floor((diff % 3600000) / 60000);
-  if (h < 2) return { texto: `${h}h ${m}m`, urgente: true };
-  if (h < 24) return { texto: `${h}h ${m}m`, urgente: false };
+  if (h < 2) return { text: `${h}h ${m}m`, urgent: true };
+  if (h < 24) return { text: `${h}h ${m}m`, urgent: false };
   const d = Math.floor(h / 24);
-  return { texto: `${d}d ${h % 24}h`, urgente: false };
+  return { text: `${d}d ${h % 24}h`, urgent: false };
 }
 
-export function formatDuration(horas: number): string {
-  if (horas < 24) return `${horas}h`;
-  const dias = Math.floor(horas / 24);
-  const resto = horas % 24;
-  return resto > 0 ? `${dias}d ${resto}h` : `${dias}d`;
+export function formatDuration(hours: number): string {
+  if (hours < 24) return `${hours}h`;
+  const days = Math.floor(hours / 24);
+  const remainder = hours % 24;
+  return remainder > 0 ? `${days}d ${remainder}h` : `${days}d`;
 }
 
 export function formatTimeAgo(isoDate: string): string {
