@@ -1,14 +1,18 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Exchange } from '../../interfaces/exchanges/Exchange';
 import { CardSnapshot } from '../../interfaces/exchanges/CardSnapshot';
 import { Feedback } from '../../interfaces/exchanges/Feedback';
 import { viewAs } from '../../utils/exchangeView';
+import { submitFeedback } from '../../api/ExchangesService';
+import { useSnackbar } from '../../context/useSnackbar';
 import {
   Overlay, Modal, ModalHeader, ModalTitle, ModalSubtitle, CloseButton,
   OriginBadge, HeaderActions, TwoColumns, Column, ColumnLabel,
   PartyRow, PartyAvatar,
   CardItem, CardMeta,
   FeedbackBlock, FeedbackHeader, FeedbackStars, FeedbackComment, FeedbackPending,
+  InteractiveStar, FeedbackTextarea, FeedbackFormActions, SecondaryButton,
   Footer, FooterButton,
 } from './ExchangeDetailModal.styles';
 
@@ -69,6 +73,73 @@ const renderFeedback = (fb: Feedback | null, label: string) => (
 export default function ExchangeDetailModal({ exchange, currentUserId, onClose }: Props) {
   const navigate = useNavigate();
   const v = viewAs(exchange, currentUserId);
+  const { showSuccess, showError } = useSnackbar();
+  const [showFeedbackForm, setShowFeedbackForm] = useState(false);
+  const [selectedScore, setSelectedScore] = useState(0);
+  const [comment, setComment] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+
+  const handleSubmitFeedback = async () => {
+    if (selectedScore === 0 || submitting) return;
+    setSubmitting(true);
+    try {
+      await submitFeedback(exchange.id, { score: selectedScore, comment: comment.trim() || undefined });
+      showSuccess('¡Calificación enviada!');
+      onClose();
+    } catch {
+      showError('Error al enviar la calificación. Intentá nuevamente.');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const renderMyFeedbackSlot = () => {
+    if (v.myFeedback) return renderFeedback(v.myFeedback, 'Tu calificación');
+    if (showFeedbackForm) {
+      return (
+        <FeedbackBlock>
+          <FeedbackHeader><span>Calificá a {v.other.name}</span></FeedbackHeader>
+          <FeedbackStars aria-label={`${selectedScore} de 5 estrellas seleccionadas`}>
+            {Array.from({ length: 5 }, (_, i) => (
+              <InteractiveStar
+                key={i}
+                className="material-symbols-outlined"
+                onClick={() => setSelectedScore(i + 1)}
+                aria-hidden="true"
+              >
+                {i < selectedScore ? 'star' : 'star_border'}
+              </InteractiveStar>
+            ))}
+          </FeedbackStars>
+          <FeedbackTextarea
+            placeholder="Comentario (opcional)"
+            value={comment}
+            onChange={e => setComment(e.target.value)}
+            rows={2}
+            maxLength={500}
+          />
+          <FeedbackFormActions>
+            <SecondaryButton type="button" onClick={() => setShowFeedbackForm(false)} disabled={submitting}>
+              Cancelar
+            </SecondaryButton>
+            <FooterButton type="button" onClick={handleSubmitFeedback} disabled={selectedScore === 0 || submitting}>
+              {submitting ? 'Enviando…' : 'Enviar calificación'}
+            </FooterButton>
+          </FeedbackFormActions>
+        </FeedbackBlock>
+      );
+    }
+    return (
+      <FeedbackBlock>
+        <FeedbackHeader><span>Tu calificación</span></FeedbackHeader>
+        <FeedbackFormActions>
+          <FooterButton type="button" onClick={() => setShowFeedbackForm(true)}>
+            Calificar a {v.other.name}
+          </FooterButton>
+        </FeedbackFormActions>
+      </FeedbackBlock>
+    );
+  };
 
   const goToOrigin = () => {
     if (exchange.origin.type === 'PROPUESTA') {
@@ -121,7 +192,7 @@ export default function ExchangeDetailModal({ exchange, currentUserId, onClose }
         </TwoColumns>
 
         <TwoColumns>
-          {renderFeedback(v.myFeedback, 'Tu calificación')}
+          {renderMyFeedbackSlot()}
           {renderFeedback(v.theirFeedback, `${v.other.name} sobre vos`)}
         </TwoColumns>
 

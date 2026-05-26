@@ -7,12 +7,15 @@ import { useSnackbar } from '../../context/useSnackbar';
 import { useFetch } from '../../hooks/useFetch';
 import ProposalDetailModal from '../../components/proposals/ProposalDetailModal';
 import {
-  PageContainer, Header, BackButton, Title,
+  PageContainer, Header, Title,
   TabNav, TabButton, ProposalList, ProposalCard,
   ProposalInfo, ProposalTitle, ProposalDetail,
-  CardRight, StatusBadge, ActionButtons, AcceptButton, RejectButton,
-  EmptyMessage, ViewPublicationLink,
+  CardRight, ActionButtons, AcceptButton, RejectButton,
+  ViewPublicationLink,
 } from './ProposalsPage.styles';
+import EmptyState from '../../components/common/EmptyState';
+import StatusBadge from '../../components/common/StatusBadge';
+import BackButton from '../../components/common/BackButton';
 import { ProposalStatus } from '../../interfaces/proposals/ProposalStatus';
 
 const STATUS_LABEL: Record<ProposalStatus, string> = {
@@ -21,6 +24,7 @@ const STATUS_LABEL: Record<ProposalStatus, string> = {
   RECHAZADA: 'Rechazada',
   CANCELADA: 'Cancelada'
 };
+const STATUS_TONE = { PENDIENTE: 'warning', ACEPTADA: 'success', RECHAZADA: 'error', CANCELADA: 'error' } as const;
 
 export default function ProposalsPage() {
   const navigate = useNavigate();
@@ -74,9 +78,7 @@ export default function ProposalsPage() {
   return (
     <PageContainer>
       <Header>
-        <BackButton onClick={() => navigate(`/profile/${currentUser.id}`)} title="Volver al perfil">
-          ←
-        </BackButton>
+        <BackButton onClick={() => navigate(`/profile/${currentUser.id}`)} ariaLabel="Volver al perfil" />
         <Title>Mis Propuestas</Title>
       </Header>
 
@@ -90,11 +92,11 @@ export default function ProposalsPage() {
       </TabNav>
 
       {loading ? (
-        <EmptyMessage>Cargando propuestas...</EmptyMessage>
+        <EmptyState>Cargando propuestas...</EmptyState>
       ) : loadError ? (
-        <EmptyMessage>Ocurrió un error al cargar las propuestas. Intentá de nuevo más tarde.</EmptyMessage>
+        <EmptyState>Ocurrió un error al cargar las propuestas. Intentá de nuevo más tarde.</EmptyState>
       ) : list.length === 0 ? (
-        <EmptyMessage>No hay propuestas {tab === 'received' ? 'recibidas' : 'enviadas'}.</EmptyMessage>
+        <EmptyState>No hay propuestas {tab === 'received' ? 'recibidas' : 'enviadas'}.</EmptyState>
       ) : (
         <ProposalList>
           {list.map(p => (
@@ -125,7 +127,7 @@ export default function ProposalsPage() {
               </ProposalInfo>
 
               <CardRight>
-                <StatusBadge $status={p.status}>{STATUS_LABEL[p.status]}</StatusBadge>
+                <StatusBadge tone={STATUS_TONE[p.status]}>{STATUS_LABEL[p.status]}</StatusBadge>
 
                 {tab === 'received' && p.status === 'PENDIENTE' && (
                   <ActionButtons>

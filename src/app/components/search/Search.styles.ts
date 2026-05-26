@@ -155,13 +155,6 @@ export const LoadingMessage = styled.p`
   padding: ${theme.spacing.xl};
 `;
 
-export const EmptyMessage = styled.p`
-  text-align: center;
-  color: ${theme.colors.onSurfaceVariant};
-  font-size: ${theme.typography.bodyLarge.fontSize};
-  padding: ${theme.spacing.xl};
-`;
-
 // M3 Filled Tonal Button
 export const ProposeButton = styled.button`
   margin-top: ${theme.spacing.sm};

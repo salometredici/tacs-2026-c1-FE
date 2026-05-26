@@ -14,12 +14,12 @@ import {
   SearchResultCard,
   CardNumber,
   CardInfo,
-  EmptyMessage,
   ProposeButton,
   Pagination,
   PageButton,
   PageInfo,
 } from './Search.styles';
+import EmptyState from '../common/EmptyState';
 
 interface SearchResultsProps {
   results: SearchAvailableResponse;
@@ -76,7 +76,7 @@ export default function SearchResults({
         <ResultsHeader>
           <ResultCount>No se encontraron publicaciones ni subastas activas</ResultCount>
         </ResultsHeader>
-        <EmptyMessage>Intentá con otros filtros de búsqueda</EmptyMessage>
+        <EmptyState>Intentá con otros filtros de búsqueda</EmptyState>
       </ResultsContainer>
     );
   }

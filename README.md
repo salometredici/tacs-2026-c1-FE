@@ -73,6 +73,7 @@ Todos los users del seed comparten el mismo password: **`123456`**
 |--------------------------|-------|----------------------------------------------------------------------------------|
 | `peperacing@gmail.com`   | USER  | Tiene cards en colección (3x card_001, 2x card_005, 1x card_010) y missing cards |
 | `moniargento@gmail.com`  | USER  | Tiene 2 publicaciones activas (card_003 y card_004)                      |
+| `dfuseneco@outlook.com`  | USER  | Usuario "vacío" — sin colección, faltantes, publicaciones ni propuestas. Para probar los empty states de cada sección |
 | `admin@mail.com`         | ADMIN | Usuario administrador. Login desde la misma pantalla — el FE detecta el rol del JWT y redirige a `/admin` |
 
 > **Corrección respecto de la entrega anterior:** el admin ya no se valida contra variables `ADMIN_EMAIL`/`ADMIN_PASSWORD` del `.env`. Ahora es un `User` más en Mongo con campo `role: ADMIN`. El endpoint de login es único (`POST /api/auth/login`) y el FE decodifica el claim `role` del JWT para decidir a qué UI redirigir

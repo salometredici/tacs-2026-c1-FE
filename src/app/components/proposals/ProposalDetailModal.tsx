@@ -8,7 +8,7 @@ import {
   CardItem, CardMeta,
   Footer, FooterButton,
 } from '../exchanges/ExchangeDetailModal.styles';
-import { StatusBadge } from '../../pages/profile/ProfilePage.styles';
+import StatusBadge from '../common/StatusBadge';
 import { AcceptButton, RejectButton } from '../../pages/proposals/ProposalsPage.styles';
 
 const STATUS_LABEL: Record<ProposalStatus, string> = {
@@ -17,6 +17,7 @@ const STATUS_LABEL: Record<ProposalStatus, string> = {
   RECHAZADA: 'Rechazada',
   CANCELADA: 'Cancelada',
 };
+const STATUS_TONE = { PENDIENTE: 'warning', ACEPTADA: 'success', RECHAZADA: 'error', CANCELADA: 'error' } as const;
 
 interface Props {
   proposal: Proposal;
@@ -77,7 +78,7 @@ export default function ProposalDetailModal({ proposal, onClose, onAccept, onRej
             <span className="material-symbols-outlined" aria-hidden="true">open_in_new</span>
             Ver publicación
           </OriginBadge>
-          <StatusBadge $status={proposal.status}>{STATUS_LABEL[proposal.status]}</StatusBadge>
+          <StatusBadge tone={STATUS_TONE[proposal.status]}>{STATUS_LABEL[proposal.status]}</StatusBadge>
         </HeaderActions>
 
         <TwoColumns>

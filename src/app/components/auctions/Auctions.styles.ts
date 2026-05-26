@@ -303,19 +303,6 @@ export const BidButton = styled.button`
   }
 `;
 
-export const LoadingMessage = styled.p`
-  text-align: center;
-  color: ${theme.colors.onSurfaceVariant};
-  font-size: ${theme.typography.bodyLarge.fontSize};
-  padding: ${theme.spacing.xl};
-`;
-
-export const EmptyMessage = styled.p`
-  text-align: center;
-  color: ${theme.colors.onSurfaceVariant};
-  font-size: ${theme.typography.bodyLarge.fontSize};
-  padding: ${theme.spacing.xl};
-`;
 
 // Texto secundario inline (M3 onSurfaceVariant)
 export const MutedText = styled.span`

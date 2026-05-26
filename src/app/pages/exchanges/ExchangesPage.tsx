@@ -9,10 +9,12 @@ import { Exchange } from '../../interfaces/exchanges/Exchange';
 import {
   PageContainer, PageTitle, ExchangeList, ExchangeCard,
   ExchangeInfo, ExchangeTitle, ExchangeDetail, TypeBadge,
-  RateButton, RatedLabel, EmptyMessage,
-  Overlay, Modal, ModalTitle, StarsRow, StarButton,
+  RateButton, RatedLabel,
+  Overlay, Modal, ModalTitle,
   CommentInput, ModalActions, CancelButton, SubmitButton,
 } from './ExchangesPage.styles';
+import EmptyState from '../../components/common/EmptyState';
+import RatingStars from '../../components/common/RatingStars';
 
 const ORIGIN_LABEL = { PROPUESTA: 'Propuesta', SUBASTA: 'Subasta' } as const;
 
@@ -70,9 +72,9 @@ export default function ExchangesPage() {
       <PageTitle>Intercambios completados</PageTitle>
 
       {loading ? (
-        <EmptyMessage>Cargando...</EmptyMessage>
+        <EmptyState>Cargando...</EmptyState>
       ) : exchanges.length === 0 ? (
-        <EmptyMessage>No tenés intercambios concretados todavía.</EmptyMessage>
+        <EmptyState>No tenés intercambios concretados todavía.</EmptyState>
       ) : (
         <ExchangeList>
           {exchanges.map(e => {
@@ -106,19 +108,7 @@ export default function ExchangesPage() {
         <Overlay onClick={ev => { if (ev.target === ev.currentTarget) closeRatingModal(); }}>
           <Modal>
             <ModalTitle>Calificar a {viewAs(ratingTarget, currentUser.id).other.name}</ModalTitle>
-            <StarsRow>
-              {[1, 2, 3, 4, 5].map(n => (
-                <StarButton
-                  key={n}
-                  type="button"
-                  $active={n <= stars}
-                  onClick={() => setStars(n === stars ? n - 1 : n)}
-                  title={`${n} estrella${n !== 1 ? 's' : ''}`}
-                >
-                  ★
-                </StarButton>
-              ))}
-            </StarsRow>
+            <RatingStars value={stars} onChange={setStars} />
             <CommentInput
               placeholder="Comentario opcional..."
               value={comment}

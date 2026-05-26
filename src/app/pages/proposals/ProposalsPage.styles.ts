@@ -1,6 +1,5 @@
 import styled from 'styled-components';
 import { theme } from '../../styles/theme';
-import { ProposalStatus } from '../../interfaces/proposals/ProposalStatus';
 
 export const PageContainer = styled.div`
   max-width: 900px;
@@ -15,34 +14,6 @@ export const Header = styled.div`
   align-items: center;
   gap: ${theme.spacing.md};
   margin-bottom: ${theme.spacing.xl};
-`;
-
-export const BackButton = styled.button`
-  background: none;
-  border: none;
-  font-size: 1.4rem;
-  cursor: pointer;
-  color: ${theme.colors.onSurfaceVariant};
-  width: 40px;
-  height: 40px;
-  border-radius: ${theme.shape.full};
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  overflow: hidden;
-
-  &::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: ${theme.colors.onSurface};
-    opacity: 0;
-    transition: opacity 0.2s;
-    border-radius: inherit;
-  }
-
-  &:hover::after { opacity: ${theme.state.hover}; }
 `;
 
 export const Title = styled.h1`
@@ -145,26 +116,6 @@ export const CardRight = styled.div`
   }
 `;
 
-// M3 Assist Chip – proposal status
-export const StatusBadge = styled.span<{ $status: ProposalStatus }>`
-  display: inline-flex;
-  align-items: center;
-  padding: 2px 10px;
-  border-radius: ${theme.shape.small};
-  font-size: ${theme.typography.labelSmall.fontSize};
-  font-weight: ${theme.typography.labelSmall.fontWeight};
-  letter-spacing: 0.04em;
-  white-space: nowrap;
-  background: ${({ $status }) =>
-    $status === 'PENDIENTE' ? theme.colors.tertiaryContainer :
-    $status === 'ACEPTADA'  ? theme.colors.successContainer :
-                               theme.colors.errorContainer};
-  color: ${({ $status }) =>
-    $status === 'PENDIENTE' ? theme.colors.onTertiaryContainer :
-    $status === 'ACEPTADA'  ? theme.colors.success :
-                               theme.colors.onErrorContainer};
-`;
-
 export const ActionButtons = styled.div`
   display: flex;
   gap: ${theme.spacing.sm};
@@ -226,13 +177,6 @@ export const RejectButton = styled.button`
 
   &:hover::after { opacity: ${theme.state.hover}; }
   &:disabled { opacity: 0.38; pointer-events: none; }
-`;
-
-export const EmptyMessage = styled.p`
-  text-align: center;
-  color: ${theme.colors.onSurfaceVariant};
-  padding: ${theme.spacing.xl};
-  font-size: ${theme.typography.bodyLarge.fontSize};
 `;
 
 // M3 Text Button — link a la publi relacionada

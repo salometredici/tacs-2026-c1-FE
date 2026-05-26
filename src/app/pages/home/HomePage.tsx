@@ -1,11 +1,9 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { useNavigate, useOutletContext } from 'react-router-dom';
-import { Publication } from '../../interfaces/publications/Publication';
 import { getUserSuggestions } from '../../api/UsersService';
 import { AuthedOutletContext } from '../../components/layout/UserRoute';
 import { getCatalog } from '../../api/CardsService';
 import { useFetch } from '../../hooks/useFetch';
-import MakeProposalModal from '../../components/proposals/MakeProposalModal';
 import {
   HomeContainer,
   Title,
@@ -44,15 +42,16 @@ export default function HomePage() {
     [currentUser.id],
   );
   const { data: catalogData } = useFetch(() => getCatalog(), []);
-  // Permite remover sugerencias del carousel optimistamente al hacer propuesta sin tocar la fuente del fetch
-  const [removedSuggestionIds, setRemovedSuggestionIds] = useState<Set<string>>(new Set());
-  const [selected, setSelected] = useState<Publication | null>(null);
 
-  const suggestions = useMemo(
-    () => (suggestionsData ?? []).filter(s => !removedSuggestionIds.has(s.id)),
-    [suggestionsData, removedSuggestionIds],
-  );
+  const suggestions = useMemo(() => suggestionsData ?? [], [suggestionsData]);
   const catalogPreview = useMemo(() => (catalogData ?? []).slice(0, 12), [catalogData]);
+
+  // Navega a la publication/auction sugerida — el cron regenera, no hace falta optimistic-remove
+  const openSuggestion = (sourceType: 'PUBLICATION' | 'AUCTION', sourceId: string) => {
+    if (isDragging.current) return;
+    const route = sourceType === 'PUBLICATION' ? '/publications' : '/auctions';
+    navigate(`${route}/${sourceId}`);
+  };
 
   const carouselRef = useRef<HTMLDivElement>(null);
   const catalogCarouselRef = useRef<HTMLDivElement>(null);
@@ -133,14 +132,19 @@ export default function HomePage() {
               onMouseLeave={handleMouseUp}
             >
               {suggestions.map(s => (
-                <SuggestionCard key={s.id} onClick={() => { if (!isDragging.current) setSelected(s); }}>
-                  <CategoryBadge $category={s.card.category}>
-                    {s.card.category}
+                <SuggestionCard
+                  key={`${s.sourceType}-${s.sourceId}`}
+                  onClick={() => openSuggestion(s.sourceType, s.sourceId)}
+                >
+                  <CategoryBadge $category={s.cardCategory}>
+                    {s.cardCategory}
                   </CategoryBadge>
-                  <CardNumber>#{s.card.number}</CardNumber>
-                  <CardPlayer>{s.card.description}</CardPlayer>
-                  <CardMeta>{s.card.country}</CardMeta>
-                  <CardOwner>Ofrecida por {s.publisher.name}</CardOwner>
+                  <CardNumber>#{s.cardNumber}</CardNumber>
+                  <CardPlayer>{s.cardDescription}</CardPlayer>
+                  <CardMeta>{s.cardCountry}</CardMeta>
+                  <CardOwner>
+                    {s.sourceType === 'AUCTION' ? 'Subastada por' : 'Ofrecida por'} {s.publisherName}
+                  </CardOwner>
                 </SuggestionCard>
               ))}
             </SuggestionsCarousel>
@@ -207,19 +211,6 @@ export default function HomePage() {
         </Card>
       </CardsGrid>
 
-      {selected && (
-        <MakeProposalModal
-          userId={currentUser.id}
-          card={selected.card}
-          publicationId={selected.id}
-          maxRequestable={selected.remainingCount}
-          onClose={() => setSelected(null)}
-          onSuccess={() => {
-            setRemovedSuggestionIds(prev => new Set(prev).add(selected!.id));
-            setSelected(null);
-          }}
-        />
-      )}
     </HomeContainer>
   );
 }

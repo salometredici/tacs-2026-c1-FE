@@ -14,38 +14,6 @@ export const Header = styled.div`
   margin-bottom: ${theme.spacing.xl};
 `;
 
-// M3 Filled Tonal Icon Button — más visible que el standard sobre fondo blanco
-export const BackButton = styled.button`
-  width: 40px;
-  height: 40px;
-  background: ${theme.colors.secondaryContainer};
-  border: none;
-  border-radius: ${theme.shape.full};
-  color: ${theme.colors.onSecondaryContainer};
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  overflow: hidden;
-  transition: box-shadow 0.15s;
-  flex-shrink: 0;
-
-  & .material-symbols-outlined { font-size: 22px; }
-
-  &::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: ${theme.colors.onSecondaryContainer};
-    opacity: 0;
-    transition: opacity 0.15s;
-  }
-
-  &:hover { box-shadow: ${theme.elevation[1]}; &::after { opacity: ${theme.state.hover}; } }
-  &:active::after { opacity: ${theme.state.pressed}; }
-`;
-
 export const Title = styled.h1`
   color: ${theme.colors.primary};
   font-size: 1.8rem;
@@ -162,24 +130,6 @@ export const StarsRow = styled.div`
   display: flex;
   gap: ${theme.spacing.xs};
   align-items: center;
-`;
-
-export const StarButton = styled.button<{ $active: boolean }>`
-  background: none;
-  border: none;
-  font-size: 2rem;
-  cursor: pointer;
-  padding: 0 2px;
-  color: ${({ $active }) => ($active ? '#f57c00' : theme.colors.border)};
-  transition: color 0.15s;
-  line-height: 1;
-  &:hover { color: #f57c00; }
-`;
-
-export const StarLabel = styled.span`
-  margin-left: ${theme.spacing.sm};
-  font-size: 0.9rem;
-  color: ${theme.colors.textSecondary};
 `;
 
 export const ErrorMsg = styled.p`
