@@ -1,6 +1,8 @@
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import { useAdminContext } from '../../context/useAdminContext';
-import { adminStatsMock } from '../../../mocks/adminStatsMock';
+import { API_CONFIG } from '../../config/apiConfig';
 import {
   DashboardOuter,
   DashboardHeaderBar,
@@ -10,7 +12,6 @@ import {
   LogoutButton,
   DashboardContent,
   DashboardSubtitle,
-  WipNotice,
   SectionTitle,
   StatsGrid,
   StatCard,
@@ -19,23 +20,44 @@ import {
   StatLabel,
 } from './AdminDashboardPage.styles';
 
-interface StatItem {
-  icon: string;
-  value: number;
-  label: string;
+interface AdminStats {
+  totalUsers: number | null;
+  activeAuctions: number | null;
+  activePublications: number | null;
 }
 
-const stats: StatItem[] = [
-  { icon: 'group', value: adminStatsMock.totalUsuarios, label: 'Usuarios registrados' },
-  { icon: 'style', value: adminStatsMock.figuritasPublicadas, label: 'Figuritas publicadas' },
-  { icon: 'description', value: adminStatsMock.propuestasRealizadas, label: 'Propuestas realizadas' },
-  { icon: 'gavel', value: adminStatsMock.subastasActivas, label: 'Subastas activas' },
-  { icon: 'handshake', value: adminStatsMock.intercambiosConcretados, label: 'Intercambios concretados' },
+interface Paginated<T> { data: T[]; currentPage: number; totalPages: number }
+
+const fetchAdminStats = async (): Promise<AdminStats> => {
+  const [usersRes, auctionsRes, publicationsRes] = await Promise.allSettled([
+    axios.get<unknown[]>(API_CONFIG.users.base),
+    axios.get<Paginated<unknown>>(API_CONFIG.auctions.base, { params: { per_page: 9999, page: 1 } }),
+    axios.get<Paginated<unknown>>(API_CONFIG.publications.base, { params: { per_page: 9999, page: 1 } }),
+  ]);
+  return {
+    totalUsers:        usersRes.status        === 'fulfilled' ? usersRes.value.data.length               : null,
+    activeAuctions:    auctionsRes.status     === 'fulfilled' ? auctionsRes.value.data.data.length       : null,
+    activePublications: publicationsRes.status === 'fulfilled' ? publicationsRes.value.data.data.length  : null,
+  };
+};
+
+const STAT_ITEMS = (stats: AdminStats) => [
+  { icon: 'group',   value: stats.totalUsers,          label: 'Usuarios registrados'   },
+  { icon: 'gavel',   value: stats.activeAuctions,       label: 'Subastas activas'        },
+  { icon: 'style',   value: stats.activePublications,   label: 'Publicaciones activas'   },
 ];
 
 export default function AdminDashboardPage() {
   const navigate = useNavigate();
   const { adminLogout } = useAdminContext();
+  const [stats, setStats] = useState<AdminStats>({ totalUsers: null, activeAuctions: null, activePublications: null });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchAdminStats()
+      .then(setStats)
+      .finally(() => setLoading(false));
+  }, []);
 
   const handleLogout = () => {
     adminLogout();
@@ -60,19 +82,16 @@ export default function AdminDashboardPage() {
       <DashboardContent>
         <DashboardSubtitle>Intercambio de Figuritas Mundial 2026</DashboardSubtitle>
 
-        <WipNotice>
-          <span className="material-symbols-outlined" aria-hidden="true">construction</span>
-          Datos mostrados a partir de mocks — integración con el backend pendiente (WIP)
-        </WipNotice>
-
         <SectionTitle>Estadísticas generales</SectionTitle>
         <StatsGrid>
-          {stats.map((stat) => (
+          {STAT_ITEMS(stats).map(stat => (
             <StatCard key={stat.label}>
               <StatIcon>
                 <span className="material-symbols-outlined" aria-hidden="true">{stat.icon}</span>
               </StatIcon>
-              <StatValue>{stat.value.toLocaleString('es-AR')}</StatValue>
+              <StatValue>
+                {loading ? '…' : stat.value !== null ? stat.value.toLocaleString('es-AR') : 'N/D'}
+              </StatValue>
               <StatLabel>{stat.label}</StatLabel>
             </StatCard>
           ))}
