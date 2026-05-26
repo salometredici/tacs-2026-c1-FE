@@ -45,7 +45,7 @@ const AUCTION_STATUS_LABEL = { ACTIVA: 'Activa', FINALIZADA: 'Finalizada', CANCE
 const ORIGIN_LABEL = { PROPUESTA: 'Propuesta', SUBASTA: 'Subasta' } as const;
 const PREVIEW = 3;
 
-type Tab = 'collection' | 'faltantes' | 'publicaciones' | 'propuestas' | 'subastas' | 'intercambios';
+type Tab = 'collection' | 'missing' | 'publications' | 'propuestas' | 'subastas' | 'exchanges';
 
 export default function ProfilePage() {
   const navigate = useNavigate();
@@ -77,24 +77,24 @@ export default function ProfilePage() {
       const valueOr = <U,>(r: PromiseSettledResult<U>, fallback: U): U =>
         r.status === 'fulfilled' ? r.value : fallback;
       return {
-        faltantes:     valueOr<MissingCard[]>(results[0] as PromiseSettledResult<MissingCard[]>, []),
-        recibidas:     valueOr<Proposal[]>(results[1] as PromiseSettledResult<Proposal[]>, []),
-        enviadas:      valueOr<Proposal[]>(results[2] as PromiseSettledResult<Proposal[]>, []),
-        publicaciones: valueOr<Publication[]>(results[3] as PromiseSettledResult<Publication[]>, []),
-        misSubastas:   valueOr<Auction[]>(results[4] as PromiseSettledResult<Auction[]>, []),
-        misOfertas:    valueOr<UserBid[]>(results[5] as PromiseSettledResult<UserBid[]>, []),
-        intercambios:  valueOr<Exchange[]>(results[6] as PromiseSettledResult<Exchange[]>, []),
+        missing:     valueOr<MissingCard[]>(results[0] as PromiseSettledResult<MissingCard[]>, []),
+        received:     valueOr<Proposal[]>(results[1] as PromiseSettledResult<Proposal[]>, []),
+        sent:      valueOr<Proposal[]>(results[2] as PromiseSettledResult<Proposal[]>, []),
+        publications: valueOr<Publication[]>(results[3] as PromiseSettledResult<Publication[]>, []),
+        myAuctions:   valueOr<Auction[]>(results[4] as PromiseSettledResult<Auction[]>, []),
+        myOffers:    valueOr<UserBid[]>(results[5] as PromiseSettledResult<UserBid[]>, []),
+        exchanges:  valueOr<Exchange[]>(results[6] as PromiseSettledResult<Exchange[]>, []),
       };
     }),
     [user.id],
   );
-  const faltantes     = data?.faltantes     ?? [];
-  const recibidas     = data?.recibidas     ?? [];
-  const enviadas      = data?.enviadas      ?? [];
-  const publicaciones = data?.publicaciones ?? [];
-  const misSubastas   = data?.misSubastas   ?? [];
-  const misOfertas    = data?.misOfertas    ?? [];
-  const intercambios  = data?.intercambios  ?? [];
+  const missing     = data?.missing     ?? [];
+  const received     = data?.received     ?? [];
+  const sent      = data?.sent      ?? [];
+  const publications = data?.publications ?? [];
+  const myAuctions   = data?.myAuctions   ?? [];
+  const myOffers    = data?.myOffers    ?? [];
+  const exchanges  = data?.exchanges  ?? [];
 
   const handleRemoveMissingCard = async (cardId: string) => {
     // "Ya la conseguí" = agregar a colección. La entity del BE limpia missingCards
@@ -153,20 +153,20 @@ export default function ProfilePage() {
           <TabButton $active={activeTab === 'collection'} onClick={() => setActiveTab('collection')}>
             Mi Colección
           </TabButton>
-          <TabButton $active={activeTab === 'faltantes'} onClick={() => setActiveTab('faltantes')}>
-            Faltantes {!isLoading && `(${faltantes.length})`}
+          <TabButton $active={activeTab === 'missing'} onClick={() => setActiveTab('missing')}>
+            Faltantes {!isLoading && `(${missing.length})`}
           </TabButton>
-          <TabButton $active={activeTab === 'publicaciones'} onClick={() => setActiveTab('publicaciones')}>
-            Publicaciones {!isLoading && `(${publicaciones.length})`}
+          <TabButton $active={activeTab === 'publications'} onClick={() => setActiveTab('publications')}>
+            Publicaciones {!isLoading && `(${publications.length})`}
           </TabButton>
           <TabButton $active={activeTab === 'propuestas'} onClick={() => setActiveTab('propuestas')}>
-            Propuestas {!isLoading && `(${recibidas.length + enviadas.length})`}
+            Propuestas {!isLoading && `(${received.length + sent.length})`}
           </TabButton>
           <TabButton $active={activeTab === 'subastas'} onClick={() => setActiveTab('subastas')}>
-            Subastas {!isLoading && `(${misSubastas.length + misOfertas.length})`}
+            Subastas {!isLoading && `(${myAuctions.length + myOffers.length})`}
           </TabButton>
-          <TabButton $active={activeTab === 'intercambios'} onClick={() => setActiveTab('intercambios')}>
-            Intercambios {!isLoading && `(${intercambios.length})`}
+          <TabButton $active={activeTab === 'exchanges'} onClick={() => setActiveTab('exchanges')}>
+            Intercambios {!isLoading && `(${exchanges.length})`}
           </TabButton>
         </TabNav>
 
@@ -182,20 +182,20 @@ export default function ProfilePage() {
             )}
 
             {/* Faltantes */}
-            {activeTab === 'faltantes' && (
+            {activeTab === 'missing' && (
               <>
                 <SectionHeader>
-                  <SectionTitle>Mis faltantes ({faltantes.length})</SectionTitle>
+                  <SectionTitle>Mis faltantes ({missing.length})</SectionTitle>
                   <SectionActionButton onClick={() => setShowAddMissingModal(true)}>
                     <span className="material-symbols-outlined" aria-hidden="true">add</span>
                     Agregar Faltantes
                   </SectionActionButton>
                 </SectionHeader>
-                {faltantes.length === 0 ? (
+                {missing.length === 0 ? (
                   <EmptyMessage>No tenés figuritas faltantes.</EmptyMessage>
                 ) : (
                   <CollectionContainer>
-                    {faltantes.map(card => (
+                    {missing.map(card => (
                       <CardItem key={card.cardId}>
                         <CardImage $category={card.category}>
                           <span className="material-symbols-outlined" aria-hidden="true">sports_soccer</span>
@@ -223,20 +223,20 @@ export default function ProfilePage() {
             )}
 
             {/* Publicaciones */}
-            {activeTab === 'publicaciones' && (
+            {activeTab === 'publications' && (
               <>
                 <SectionHeader>
-                  <SectionTitle>Mis Publicaciones ({publicaciones.length})</SectionTitle>
+                  <SectionTitle>Mis Publicaciones ({publications.length})</SectionTitle>
                   <SectionActionButton onClick={() => setShowPublishModal(true)}>
                     <span className="material-symbols-outlined" aria-hidden="true">add</span>
                     Publicar Figurita
                   </SectionActionButton>
                 </SectionHeader>
-                {publicaciones.length === 0 ? (
+                {publications.length === 0 ? (
                   <EmptyMessage>No tenés publicaciones realizadas.</EmptyMessage>
                 ) : (
                   <RowList>
-                    {publicaciones.map(pub => (
+                    {publications.map(pub => (
                       <OutlinedListItem key={pub.id} onClick={() => navigate(`/publications/${pub.id}`)}>
                         <div>
                           <strong>#{pub.card.number} {pub.card.description}</strong>
@@ -256,22 +256,22 @@ export default function ProfilePage() {
             {activeTab === 'propuestas' && (
               <>
                 <SectionHeader>
-                  <SectionTitle>Recibidas ({recibidas.length})</SectionTitle>
-                  {recibidas.length > PREVIEW && (
+                  <SectionTitle>Recibidas ({received.length})</SectionTitle>
+                  {received.length > PREVIEW && (
                     <SeeAllLink onClick={() => navigate('/proposals')}>Ver todas →</SeeAllLink>
                   )}
                 </SectionHeader>
-                {recibidas.length === 0 ? (
+                {received.length === 0 ? (
                   <EmptyMessage>No tenés propuestas recibidas.</EmptyMessage>
                 ) : (
                   <RowList>
-                    {recibidas.slice(0, PREVIEW).map(p => (
+                    {received.slice(0, PREVIEW).map(p => (
                       <OutlinedListItem key={p.id} onClick={() => setProposalDetail(p)}>
                         <div>
                           <strong>Por {p.requestedCount}× #{p.publication.card.number} {p.publication.card.description}</strong>
                           <span>De {p.bidder.name} · Te ofrece {p.offeredCards.length} figurita{p.offeredCards.length === 1 ? '' : 's'}</span>
                         </div>
-                        <StatusBadge $estado={p.status}>{STATUS_LABEL[p.status]}</StatusBadge>
+                        <StatusBadge $status={p.status}>{STATUS_LABEL[p.status]}</StatusBadge>
                       </OutlinedListItem>
                     ))}
                   </RowList>
@@ -280,22 +280,22 @@ export default function ProfilePage() {
                 <Divider />
 
                 <SectionHeader>
-                  <SectionTitle>Enviadas ({enviadas.length})</SectionTitle>
-                  {enviadas.length > PREVIEW && (
+                  <SectionTitle>Enviadas ({sent.length})</SectionTitle>
+                  {sent.length > PREVIEW && (
                     <SeeAllLink onClick={() => navigate('/proposals')}>Ver todas →</SeeAllLink>
                   )}
                 </SectionHeader>
-                {enviadas.length === 0 ? (
+                {sent.length === 0 ? (
                   <EmptyMessage>No tenés propuestas enviadas.</EmptyMessage>
                 ) : (
                   <RowList>
-                    {enviadas.slice(0, PREVIEW).map(p => (
+                    {sent.slice(0, PREVIEW).map(p => (
                       <OutlinedListItem key={p.id} onClick={() => setProposalDetail(p)}>
                         <div>
                           <strong>Por {p.requestedCount}× #{p.publication.card.number} {p.publication.card.description}</strong>
                           <span>A {p.publication.publisher.name} · Ofrecés {p.offeredCards.length} figurita{p.offeredCards.length === 1 ? '' : 's'}</span>
                         </div>
-                        <StatusBadge $estado={p.status}>{STATUS_LABEL[p.status]}</StatusBadge>
+                        <StatusBadge $status={p.status}>{STATUS_LABEL[p.status]}</StatusBadge>
                       </OutlinedListItem>
                     ))}
                   </RowList>
@@ -307,23 +307,23 @@ export default function ProfilePage() {
             {activeTab === 'subastas' && (
               <>
                 <SectionHeader>
-                  <SectionTitle>Mis Subastas ({misSubastas.length})</SectionTitle>
+                  <SectionTitle>Mis Subastas ({myAuctions.length})</SectionTitle>
                   <SectionActionButton onClick={() => navigate('/auctions/create')}>
                     <span className="material-symbols-outlined" aria-hidden="true">gavel</span>
                     Crear Subasta
                   </SectionActionButton>
                 </SectionHeader>
-                {misSubastas.length > PREVIEW && (
+                {myAuctions.length > PREVIEW && (
                   <SeeAllLink onClick={() => navigate('/auctions')}>Ver todas →</SeeAllLink>
                 )}
-                {misSubastas.length === 0 ? (
+                {myAuctions.length === 0 ? (
                   <EmptyMessage>No tenés subastas publicadas.</EmptyMessage>
                 ) : (
                   <RowList>
-                    {misSubastas.slice(0, PREVIEW).map(a => (
+                    {myAuctions.slice(0, PREVIEW).map(a => (
                       <OutlinedListItem key={a.id} onClick={() => navigate(`/auctions/${a.id}`)}>
                         <div>
-                          <strong>#{a.figurita.number} {a.figurita.description}</strong>
+                          <strong>#{a.card.number} {a.card.description}</strong>
                           <span>Cierra {new Date(a.endDate).toLocaleString('es-AR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}</span>
                         </div>
                         <StatusIndicator $active={a.status === 'ACTIVA'}>
@@ -337,19 +337,19 @@ export default function ProfilePage() {
                 <Divider />
 
                 <SectionHeader>
-                  <SectionTitle>Mis Ofertas ({misOfertas.length})</SectionTitle>
-                  {misOfertas.length > PREVIEW && (
+                  <SectionTitle>Mis Ofertas ({myOffers.length})</SectionTitle>
+                  {myOffers.length > PREVIEW && (
                     <SeeAllLink onClick={() => navigate('/auctions')}>Ver todas →</SeeAllLink>
                   )}
                 </SectionHeader>
-                {misOfertas.length === 0 ? (
+                {myOffers.length === 0 ? (
                   <EmptyMessage>No tenés ofertas en subastas.</EmptyMessage>
                 ) : (
                   <RowList>
-                    {misOfertas.slice(0, PREVIEW).map(o => (
+                    {myOffers.slice(0, PREVIEW).map(o => (
                       <OutlinedListItem key={o.bidId} onClick={() => navigate(`/auctions/${o.auctionId}`)}>
                         <div>
-                          <strong>#{o.figurita.number} {o.figurita.description}</strong>
+                          <strong>#{o.card.number} {o.card.description}</strong>
                           <span>De {o.publisher.name} · Cierra {new Date(o.closingDate).toLocaleString('es-AR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}</span>
                         </div>
                         <StatusIndicator $active={o.auctionStatus === 'ACTIVA'}>
@@ -363,19 +363,19 @@ export default function ProfilePage() {
             )}
 
             {/* Intercambios */}
-            {activeTab === 'intercambios' && (
+            {activeTab === 'exchanges' && (
               <>
                 <SectionHeader>
-                  <SectionTitle>Histórico ({intercambios.length})</SectionTitle>
-                  {intercambios.length > PREVIEW && (
+                  <SectionTitle>Histórico ({exchanges.length})</SectionTitle>
+                  {exchanges.length > PREVIEW && (
                     <SeeAllLink onClick={() => navigate('/exchanges')}>Ver todos →</SeeAllLink>
                   )}
                 </SectionHeader>
-                {intercambios.length === 0 ? (
+                {exchanges.length === 0 ? (
                   <EmptyMessage>No tenés intercambios concretados todavía.</EmptyMessage>
                 ) : (
                   <RowList>
-                    {intercambios.slice(0, PREVIEW).map(ex => {
+                    {exchanges.slice(0, PREVIEW).map(ex => {
                       const v = viewAs(ex, user.id);
                       const headlineCard = v.theirCards[0];
                       const extras = v.theirCards.length - 1;

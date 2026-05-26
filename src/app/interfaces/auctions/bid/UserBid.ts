@@ -6,12 +6,12 @@ import { BidStatus } from './BidStatus';
 // Para la vista de "Mis Ofertas", a fin de mostrar en el perfil o desde el tab sin cargar la subasta completa
 export interface UserBid {
   auctionId: string;
-  figurita: Card;
+  card: Card;
   publisher: User;
   auctionStatus: AuctionStatus;
   closingDate: string;
   bidId: string;
-  offeredFiguritas: Card[];
+  offeredCards: Card[];
   bidStatus: BidStatus;
   bidDate: string;
 }

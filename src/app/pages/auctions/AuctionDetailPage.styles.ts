@@ -60,7 +60,7 @@ export const Card = styled.div`
   margin-bottom: ${theme.spacing.lg};
 `;
 
-export const FiguritaHeader = styled.div`
+export const CardHeader = styled.div`
   display: flex;
   align-items: center;
   gap: ${theme.spacing.sm};
@@ -69,7 +69,7 @@ export const FiguritaHeader = styled.div`
   margin-bottom: ${theme.spacing.sm};
 `;
 
-export const FiguritaNumero = styled.div`
+export const CardNumber = styled.div`
   font-size: ${theme.typography.headlineSmall.fontSize};
   font-weight: 600;
   color: ${theme.colors.primary};
@@ -77,7 +77,7 @@ export const FiguritaNumero = styled.div`
   text-align: center;
 `;
 
-export const FiguritaInfo = styled.div`
+export const CardInfo = styled.div`
   flex: 1;
   h2 {
     margin: 0 0 0.1rem;
@@ -91,32 +91,32 @@ export const FiguritaInfo = styled.div`
   }
 `;
 
-export const CategoriaBadge = styled.span<{ $cat: string }>`
+export const CategoryBadge = styled.span<{ $category: string }>`
   padding: 3px 12px;
   border-radius: 999px;
   font-size: 0.8rem;
   font-weight: 700;
-  background: ${({ $cat }) =>
-    $cat === 'LEGENDARIO' ? '#fff3e0' :
-    $cat === 'EPICO' ? '#e3f2fd' : '#f5f5f5'};
-  color: ${({ $cat }) =>
-    $cat === 'LEGENDARIO' ? '#e65100' :
-    $cat === 'EPICO' ? '#1565c0' : '#555'};
+  background: ${({ $category }) =>
+    $category === 'LEGENDARIO' ? '#fff3e0' :
+    $category === 'EPICO' ? '#e3f2fd' : '#f5f5f5'};
+  color: ${({ $category }) =>
+    $category === 'LEGENDARIO' ? '#e65100' :
+    $category === 'EPICO' ? '#1565c0' : '#555'};
 `;
 
-export const EstadoBadge = styled.span<{ $estado: string }>`
+export const StatusBadge = styled.span<{ $status: string }>`
   padding: 4px 14px;
   border-radius: 999px;
   font-size: 0.85rem;
   font-weight: 700;
-  background: ${({ $estado }) =>
-    $estado === 'ACTIVA' ? '#e8f5e9' :
-    $estado === 'FINALIZADA' ? '#e3f2fd' :
-    $estado === 'DESIERTA' ? '#f5f5f5' : '#fce4ec'};
-  color: ${({ $estado }) =>
-    $estado === 'ACTIVA' ? '#2e7d32' :
-    $estado === 'FINALIZADA' ? '#1565c0' :
-    $estado === 'DESIERTA' ? '#555' : '#b71c1c'};
+  background: ${({ $status }) =>
+    $status === 'ACTIVA' ? '#e8f5e9' :
+    $status === 'FINALIZADA' ? '#e3f2fd' :
+    $status === 'DESIERTA' ? '#f5f5f5' : '#fce4ec'};
+  color: ${({ $status }) =>
+    $status === 'ACTIVA' ? '#2e7d32' :
+    $status === 'FINALIZADA' ? '#1565c0' :
+    $status === 'DESIERTA' ? '#555' : '#b71c1c'};
 `;
 
 export const SectionTitle = styled.h3`
@@ -139,7 +139,7 @@ export const InfoRow = styled.div`
   .value { font-weight: 500; color: ${theme.colors.onSurface}; }
 `;
 
-export const ReglaItem = styled.div`
+export const RuleItem = styled.div`
   display: flex;
   align-items: center;
   gap: ${theme.spacing.xs};
@@ -152,21 +152,21 @@ export const ReglaItem = styled.div`
 `;
 
 // Grid de bid cards (estilo sugerencias del home)
-export const OfertasGrid = styled.div`
+export const OffersGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   gap: ${theme.spacing.md};
 `;
 
 // Bid card compacta — outlined card M3
-export const OfertaCard = styled.div<{ $estado: string }>`
+export const OfferCard = styled.div<{ $status: string }>`
   position: relative;
   background: ${theme.colors.surface};
   border: 1px solid ${theme.colors.outlineVariant};
-  border-left: 4px solid ${({ $estado }) =>
-    $estado === 'GANADORA' ? theme.colors.success :
-    $estado === 'ACTIVA' ? theme.colors.primary :
-    $estado === 'SUPERADA' ? theme.colors.warning : theme.colors.outline};
+  border-left: 4px solid ${({ $status }) =>
+    $status === 'GANADORA' ? theme.colors.success :
+    $status === 'ACTIVA' ? theme.colors.primary :
+    $status === 'SUPERADA' ? theme.colors.warning : theme.colors.outline};
   border-radius: ${theme.shape.medium};
   padding: ${theme.spacing.sm} ${theme.spacing.md};
   display: flex;
@@ -177,21 +177,21 @@ export const OfertaCard = styled.div<{ $estado: string }>`
   &:hover { box-shadow: ${theme.elevation[1]}; }
 `;
 
-export const OfertaHeader = styled.div`
+export const OfferHeader = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
   gap: ${theme.spacing.sm};
 `;
 
-export const OfertaBidder = styled.div`
+export const OfferBidder = styled.div`
   font-size: ${theme.typography.titleSmall.fontSize};
   font-weight: 600;
   color: ${theme.colors.onSurface};
   line-height: 1.2;
 `;
 
-export const OfertaRating = styled.div`
+export const OfferRating = styled.div`
   font-size: ${theme.typography.bodySmall.fontSize};
   color: ${theme.colors.tertiary};
   margin-top: 2px;
@@ -202,7 +202,7 @@ export const OfertaRating = styled.div`
   }
 `;
 
-export const OfertaFiguritas = styled.div`
+export const OfferedCards = styled.div`
   font-size: ${theme.typography.bodySmall.fontSize};
   color: ${theme.colors.onSurfaceVariant};
   line-height: 1.4;
@@ -210,7 +210,7 @@ export const OfertaFiguritas = styled.div`
   & strong { color: ${theme.colors.onSurface}; font-weight: 500; }
 `;
 
-export const OfertaDate = styled.div`
+export const OfferDate = styled.div`
   font-size: ${theme.typography.labelSmall.fontSize};
   color: ${theme.colors.onSurfaceVariant};
 `;
@@ -261,19 +261,19 @@ export const RejectOfferButton = styled.button`
 `;
 
 
-export const OfertaEstadoBadge = styled.span<{ $estado: string }>`
+export const OfferStatusBadge = styled.span<{ $status: string }>`
   padding: 2px 10px;
   border-radius: 999px;
   font-size: 0.75rem;
   font-weight: 700;
-  background: ${({ $estado }) =>
-    $estado === 'GANADORA' ? '#e8f5e9' :
-    $estado === 'ACTIVA' ? '#e3f2fd' :
-    $estado === 'SUPERADA' ? '#fff3e0' : '#f5f5f5'};
-  color: ${({ $estado }) =>
-    $estado === 'GANADORA' ? '#2e7d32' :
-    $estado === 'ACTIVA' ? '#1565c0' :
-    $estado === 'SUPERADA' ? '#e65100' : '#555'};
+  background: ${({ $status }) =>
+    $status === 'GANADORA' ? '#e8f5e9' :
+    $status === 'ACTIVA' ? '#e3f2fd' :
+    $status === 'SUPERADA' ? '#fff3e0' : '#f5f5f5'};
+  color: ${({ $status }) =>
+    $status === 'GANADORA' ? '#2e7d32' :
+    $status === 'ACTIVA' ? '#1565c0' :
+    $status === 'SUPERADA' ? '#e65100' : '#555'};
 `;
 
 export const ConfirmOverlay = styled.div`

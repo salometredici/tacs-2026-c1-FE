@@ -11,9 +11,9 @@ import {
   ResultsHeader,
   ResultCount,
   ResultsGrid,
-  FiguritaCard,
-  FiguritaNumber,
-  FiguritaInfo,
+  SearchResultCard,
+  CardNumber,
+  CardInfo,
   EmptyMessage,
   ProposeButton,
   Pagination,
@@ -90,25 +90,25 @@ export default function SearchResults({
           </ResultsHeader>
           <ResultsGrid>
             {pubs.data.map(pub => (
-              <FiguritaCard key={`pub-${pub.id}`}>
-                <FiguritaNumber>#{pub.card.number}</FiguritaNumber>
-                <FiguritaInfo><strong>{pub.card.description}</strong></FiguritaInfo>
-                <FiguritaInfo>
+              <SearchResultCard key={`pub-${pub.id}`}>
+                <CardNumber>#{pub.card.number}</CardNumber>
+                <CardInfo><strong>{pub.card.description}</strong></CardInfo>
+                <CardInfo>
                   {[pub.card.country, pub.card.team].filter(Boolean).join(' - ')}
-                </FiguritaInfo>
-                <FiguritaInfo>{pub.card.category}</FiguritaInfo>
-                <FiguritaInfo>
+                </CardInfo>
+                <CardInfo>{pub.card.category}</CardInfo>
+                <CardInfo>
                   Ofrecida por <strong>{pub.publisher.name}</strong>
-                </FiguritaInfo>
-                <FiguritaInfo>
+                </CardInfo>
+                <CardInfo>
                   Quedan <strong>{pub.remainingCount}</strong> de {pub.initialCount}
-                </FiguritaInfo>
+                </CardInfo>
                 {currentUser && pub.remainingCount > 0 && pub.publisher.id !== currentUser.id && (
                   <ProposeButton onClick={() => setSelectedPub(pub)}>
                     Proponer intercambio
                   </ProposeButton>
                 )}
-              </FiguritaCard>
+              </SearchResultCard>
             ))}
           </ResultsGrid>
           <PaginationControls
@@ -126,22 +126,22 @@ export default function SearchResults({
           </ResultsHeader>
           <ResultsGrid>
             {aucs.data.map(a => (
-              <FiguritaCard key={`auc-${a.id}`}>
-                <FiguritaNumber>#{a.figurita.number}</FiguritaNumber>
-                <FiguritaInfo><strong>{a.figurita.description}</strong></FiguritaInfo>
-                <FiguritaInfo>
-                  {[a.figurita.country, a.figurita.team].filter(Boolean).join(' - ')}
-                </FiguritaInfo>
-                <FiguritaInfo>{a.figurita.category}</FiguritaInfo>
-                <FiguritaInfo>
+              <SearchResultCard key={`auc-${a.id}`}>
+                <CardNumber>#{a.card.number}</CardNumber>
+                <CardInfo><strong>{a.card.description}</strong></CardInfo>
+                <CardInfo>
+                  {[a.card.country, a.card.team].filter(Boolean).join(' - ')}
+                </CardInfo>
+                <CardInfo>{a.card.category}</CardInfo>
+                <CardInfo>
                   Subastada por <strong>{a.publisherId.name}</strong>
-                </FiguritaInfo>
-                <FiguritaInfo>
+                </CardInfo>
+                <CardInfo>
                   Cierra: {new Date(a.endDate).toLocaleDateString('es-AR', {
                     year: 'numeric', day: '2-digit', month: '2-digit',
                     hour: '2-digit', minute: '2-digit',
                   })}
-                </FiguritaInfo>
+                </CardInfo>
                 {currentUser && a.publisherId.id !== currentUser.id && a.status === 'ACTIVA' && (
                   <ProposeButton onClick={() => setSelectedAuction(a)}>
                     Hacer oferta
@@ -152,7 +152,7 @@ export default function SearchResults({
                     Ver mi subasta
                   </ProposeButton>
                 )}
-              </FiguritaCard>
+              </SearchResultCard>
             ))}
           </ResultsGrid>
           <PaginationControls
@@ -177,7 +177,7 @@ export default function SearchResults({
       {selectedAuction && currentUser && (
         <PlaceBidModal
           userId={currentUser.id}
-          card={selectedAuction.figurita}
+          card={selectedAuction.card}
           auctionId={selectedAuction.id}
           onClose={() => setSelectedAuction(null)}
           onSuccess={() => setSelectedAuction(null)}

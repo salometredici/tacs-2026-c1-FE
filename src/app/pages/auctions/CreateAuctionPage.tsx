@@ -78,7 +78,7 @@ export default function CreateAuctionPage() {
         duration: durationHours,
         rules,
       });
-      showSuccess(`Subasta creada para la figurita #${auction.figurita.number}: ${auction.figurita.description}`);
+      showSuccess(`Subasta creada para la figurita #${auction.card.number}: ${auction.card.description}`);
       navigate(`/auctions/${auction.id}`);
     } catch (err: any) {
       const msg = err?.response?.data?.message ?? err?.message ?? 'Error al crear la subasta.';

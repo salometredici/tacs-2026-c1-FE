@@ -6,7 +6,7 @@ import { AuctionStatus } from './AuctionStatus';
 
 export interface Auction {
   id: string;
-  figurita: Card;
+  card: Card;
   publisherId: User;
   status: AuctionStatus;
   creationDate: string;

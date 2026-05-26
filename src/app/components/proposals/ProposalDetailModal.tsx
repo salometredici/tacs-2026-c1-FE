@@ -77,7 +77,7 @@ export default function ProposalDetailModal({ proposal, onClose, onAccept, onRej
             <span className="material-symbols-outlined" aria-hidden="true">open_in_new</span>
             Ver publicación
           </OriginBadge>
-          <StatusBadge $estado={proposal.status}>{STATUS_LABEL[proposal.status]}</StatusBadge>
+          <StatusBadge $status={proposal.status}>{STATUS_LABEL[proposal.status]}</StatusBadge>
         </HeaderActions>
 
         <TwoColumns>

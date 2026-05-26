@@ -3,10 +3,10 @@ import { Auction } from '../../interfaces/auctions/Auction';
 import { getRemainingTime } from '../../utils/auctionUtils';
 import {
   AuctionCard,
-  FiguritaInfo,
-  FiguritaNumber,
-  FiguritaDetails,
-  FiguritaImage,
+  CardInfo,
+  CardNumber,
+  CardDetails,
+  CardImage,
   CategoryChip,
   SellerInfo,
   AuctionStatus,
@@ -34,28 +34,28 @@ export default function AuctionCardComponent({ auction, onBid, hideBidButton = f
 
   return (
     <AuctionCard onClick={() => navigate(`/auctions/${auction.id}`)}>
-      <FiguritaInfo>
-        <FiguritaNumber>#{auction.figurita.number}</FiguritaNumber>
-        <FiguritaDetails>
+      <CardInfo>
+        <CardNumber>#{auction.card.number}</CardNumber>
+        <CardDetails>
           <p>
-            <strong>{auction.figurita.description}</strong>
+            <strong>{auction.card.description}</strong>
           </p>
-          <p>{[auction.figurita.country, auction.figurita.team].filter(Boolean).join(' - ')}</p>
-          <CategoryChip $category={auction.figurita.category}>
-            {auction.figurita.category}
+          <p>{[auction.card.country, auction.card.team].filter(Boolean).join(' - ')}</p>
+          <CategoryChip $category={auction.card.category}>
+            {auction.card.category}
           </CategoryChip>
-        </FiguritaDetails>
-        <FiguritaImage
-          $imageUrl={auction.figurita.imageUrl}
-          $category={auction.figurita.category}
+        </CardDetails>
+        <CardImage
+          $imageUrl={auction.card.imageUrl}
+          $category={auction.card.category}
         >
-          {!auction.figurita.imageUrl && (
+          {!auction.card.imageUrl && (
             <span className="material-symbols-outlined" aria-hidden="true">
               sports_soccer
             </span>
           )}
-        </FiguritaImage>
-      </FiguritaInfo>
+        </CardImage>
+      </CardInfo>
 
       <SellerInfo>
         <span>Publicante:</span>
@@ -90,7 +90,7 @@ export default function AuctionCardComponent({ auction, onBid, hideBidButton = f
           <BestBidInfo>
             <div className="bid-label">Última oferta:</div>
             <div className="bid-details">
-              {lastBid.offeredFiguritas.length} figurita(s) ofrecidas
+              {lastBid.offeredCards.length} figurita(s) ofrecidas
             </div>
             <CaptionText>
               Por {lastBid.bidder.name}

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Card } from '../../interfaces/cards/Card';
-import { Category } from '../../interfaces/Categoria';
+import { Category } from '../../interfaces/Category';
 import { getCatalog } from '../../api/CardsService';
 import { addMissingCard, getUserCollection, getUserMissingCards } from '../../api/UsersService';
 import { useSnackbar } from '../../context/useSnackbar';
@@ -10,7 +10,7 @@ import {
   Footer, CancelButton, SubmitButton, ErrorMsg,
 } from '../exchanges/PublishCardModal.styles';
 import {
-  CardList, FiguritaItem, CardNum, CardDescription, CardQuantityLabel,
+  CardList, CardItem, CardNum, CardDescription, CardQuantityLabel,
   AddButton, RemoveButton, EmptyItem, SectionLabel,
 } from '../proposals/MakeProposalModal.styles';
 
@@ -113,12 +113,12 @@ export default function AddMissingCardsModal({ userId, onClose, onSuccess }: Pro
           ) : (
             <CardList>
               {filtered.map(f => (
-                <FiguritaItem key={f.id}>
+                <CardItem key={f.id}>
                   <CardNum>#{f.number}</CardNum>
                   <CardDescription>{f.description}</CardDescription>
                   <CardQuantityLabel>{f.category}</CardQuantityLabel>
                   <AddButton type="button" onClick={() => handleAdd(f)}>Agregar</AddButton>
-                </FiguritaItem>
+                </CardItem>
               ))}
               {filtered.length === 0 && (
                 <EmptyItem>Sin resultados</EmptyItem>
@@ -132,12 +132,12 @@ export default function AddMissingCardsModal({ userId, onClose, onSuccess }: Pro
             <SectionLabel>Para registrar ({pending.length})</SectionLabel>
             <CardList>
               {pending.map(f => (
-                <FiguritaItem key={f.id}>
+                <CardItem key={f.id}>
                   <CardNum>#{f.number}</CardNum>
                   <CardDescription>{f.description}</CardDescription>
                   <CardQuantityLabel>{f.category}</CardQuantityLabel>
                   <RemoveButton type="button" onClick={() => handleRemove(f.id)}>Quitar</RemoveButton>
-                </FiguritaItem>
+                </CardItem>
               ))}
             </CardList>
           </Field>

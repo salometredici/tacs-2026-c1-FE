@@ -40,14 +40,18 @@ export default function Collection({ userId: userId }: CollectionProps) {
 
   if (loading) return <p>Cargando colección...</p>;
 
-  const repetidas = collection.filter((fc) => fc.quantity > 1);
+  // Filtra entries con quantity 0 — pueden quedar residuales en el BE tras un trade
+  // (cuando todas las copias se transfirieron). Conceptualmente la figurita ya no está
+  // en la colección del usuario
+  const owned = collection.filter((fc) => fc.quantity > 0);
+  const repetidas = owned.filter((fc) => fc.quantity > 1);
 
   return (
     <div>
       <CollectionHeader>
         <TabButtons>
           <TabButton active={tab === 'todas'} onClick={() => setTab('todas')}>
-            Todas ({collection.length})
+            Todas ({owned.length})
           </TabButton>
           <TabButton active={tab === 'repetidas'} onClick={() => setTab('repetidas')}>
             Repetidas ({repetidas.length})
@@ -60,7 +64,7 @@ export default function Collection({ userId: userId }: CollectionProps) {
       </CollectionHeader>
 
       <CollectionContainer>
-        {tab === 'todas' && collection.map((fc) => (
+        {tab === 'todas' && owned.map((fc) => (
           <CardItem key={fc.cardId}>
             <CardImage $category={fc.category}>
               <span className="material-symbols-outlined" aria-hidden="true">sports_soccer</span>
@@ -84,7 +88,7 @@ export default function Collection({ userId: userId }: CollectionProps) {
         ))}
       </CollectionContainer>
 
-      {tab === 'todas' && collection.length === 0 && (
+      {tab === 'todas' && owned.length === 0 && (
         <EmptyMessage>No tenés figuritas en tu colección.</EmptyMessage>
       )}
       {tab === 'repetidas' && repetidas.length === 0 && (

@@ -117,7 +117,7 @@ export const Select = styled.select`
   }
 `;
 
-// Selectable list item (single-select figurita) — extends FiguritaItem visual with state
+// Selectable list item (single-select card) — extends CardItem visual with state
 export const SelectableItem = styled.div<{ $selected: boolean }>`
   display: flex;
   align-items: center;

@@ -96,7 +96,7 @@ export const AuctionCard = styled.div`
   }
 `;
 
-export const FiguritaInfo = styled.div`
+export const CardInfo = styled.div`
   display: flex;
   align-items: center;
   gap: ${theme.spacing.md};
@@ -105,7 +105,7 @@ export const FiguritaInfo = styled.div`
 `;
 
 // Figurita visual (image when available, themed placeholder otherwise)
-export const FiguritaImage = styled.div<{ $imageUrl?: string; $category: string }>`
+export const CardImage = styled.div<{ $imageUrl?: string; $category: string }>`
   width: 64px;
   height: 64px;
   flex-shrink: 0;
@@ -132,7 +132,7 @@ export const FiguritaImage = styled.div<{ $imageUrl?: string; $category: string 
   }
 `;
 
-export const FiguritaNumber = styled.h3`
+export const CardNumber = styled.h3`
   margin: 0;
   color: ${theme.colors.primary};
   font-size: ${theme.typography.titleLarge.fontSize};
@@ -140,7 +140,7 @@ export const FiguritaNumber = styled.h3`
   min-width: 48px;
 `;
 
-export const FiguritaDetails = styled.div`
+export const CardDetails = styled.div`
   flex: 1;
   display: flex;
   flex-direction: column;

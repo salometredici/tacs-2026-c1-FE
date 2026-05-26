@@ -125,7 +125,7 @@ export default function ProposalsPage() {
               </ProposalInfo>
 
               <CardRight>
-                <StatusBadge $estado={p.status}>{STATUS_LABEL[p.status]}</StatusBadge>
+                <StatusBadge $status={p.status}>{STATUS_LABEL[p.status]}</StatusBadge>
 
                 {tab === 'received' && p.status === 'PENDIENTE' && (
                   <ActionButtons>

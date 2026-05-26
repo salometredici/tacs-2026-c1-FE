@@ -23,8 +23,8 @@ export function viewAs(exchange: Exchange, userId: string): ExchangeView {
     isUserA,
     me: isUserA ? exchange.userA : exchange.userB,
     other: isUserA ? exchange.userB : exchange.userA,
-    myCards: isUserA ? exchange.figuritasDeA : exchange.figuritasDeB,
-    theirCards: isUserA ? exchange.figuritasDeB : exchange.figuritasDeA,
+    myCards: (isUserA ? exchange.cardsFromA : exchange.cardsFromB) ?? [],
+    theirCards: (isUserA ? exchange.cardsFromB : exchange.cardsFromA) ?? [],
     myFeedback: (isUserA ? exchange.feedbackFromA : exchange.feedbackFromB) ?? null,
     theirFeedback: (isUserA ? exchange.feedbackFromB : exchange.feedbackFromA) ?? null,
   };
