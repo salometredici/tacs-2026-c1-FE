@@ -1,11 +1,9 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { useNavigate, useOutletContext } from 'react-router-dom';
-import { Publication } from '../../interfaces/publications/Publication';
 import { getUserSuggestions } from '../../api/UsersService';
 import { AuthedOutletContext } from '../../components/layout/UserRoute';
 import { getCatalog } from '../../api/CardsService';
 import { useFetch } from '../../hooks/useFetch';
-import MakeProposalModal from '../../components/proposals/MakeProposalModal';
 import {
   HomeContainer,
   Title,
@@ -44,14 +42,8 @@ export default function HomePage() {
     [currentUser.id],
   );
   const { data: catalogData } = useFetch(() => getCatalog(), []);
-  // Permite remover sugerencias del carousel optimistamente al hacer propuesta sin tocar la fuente del fetch
-  const [removedSuggestionIds, setRemovedSuggestionIds] = useState<Set<string>>(new Set());
-  const [selected, setSelected] = useState<Publication | null>(null);
 
-  const suggestions = useMemo(
-    () => (suggestionsData ?? []).filter(s => !removedSuggestionIds.has(s.id)),
-    [suggestionsData, removedSuggestionIds],
-  );
+  const suggestions = useMemo(() => suggestionsData ?? [], [suggestionsData]);
   const catalogPreview = useMemo(() => (catalogData ?? []).slice(0, 12), [catalogData]);
 
   const carouselRef = useRef<HTMLDivElement>(null);
@@ -132,17 +124,27 @@ export default function HomePage() {
               onMouseUp={handleMouseUp}
               onMouseLeave={handleMouseUp}
             >
-              {suggestions.map(s => (
-                <SuggestionCard key={s.id} onClick={() => { if (!isDragging.current) setSelected(s); }}>
-                  <CategoryBadge $category={s.card.category}>
-                    {s.card.category}
-                  </CategoryBadge>
-                  <CardNumber>#{s.card.number}</CardNumber>
-                  <CardPlayer>{s.card.description}</CardPlayer>
-                  <CardMeta>{s.card.country}</CardMeta>
-                  <CardOwner>Ofrecida por {s.publisher.name}</CardOwner>
-                </SuggestionCard>
-              ))}
+              {suggestions.map(s => {
+                const firstCard = s.obtainableCards[0];
+                return (
+                  <SuggestionCard
+                    key={s.suggestedUserId}
+                    onClick={() => { if (!isDragging.current) navigate(`/profile/${s.suggestedUserId}`); }}
+                  >
+                    {firstCard && (
+                      <CategoryBadge $category={firstCard.category}>
+                        {firstCard.category}
+                      </CategoryBadge>
+                    )}
+                    {firstCard && <CardNumber>#{firstCard.number}</CardNumber>}
+                    {firstCard && <CardPlayer>{firstCard.description}</CardPlayer>}
+                    {s.obtainableCards.length > 1 && (
+                      <CardMeta>+{s.obtainableCards.length - 1} figurita{s.obtainableCards.length - 1 !== 1 ? 's' : ''} más</CardMeta>
+                    )}
+                    <CardOwner>De {s.suggestedUserName} {'★'.repeat(Math.round(s.suggestedUserRating))}</CardOwner>
+                  </SuggestionCard>
+                );
+              })}
             </SuggestionsCarousel>
             <CarouselArrow $side="right" onClick={() => scrollCarousel('right')} aria-label="Siguiente">
               <span className="material-symbols-outlined" aria-hidden="true">chevron_right</span>
@@ -206,20 +208,6 @@ export default function HomePage() {
           </CardDescription>
         </Card>
       </CardsGrid>
-
-      {selected && (
-        <MakeProposalModal
-          userId={currentUser.id}
-          card={selected.card}
-          publicationId={selected.id}
-          maxRequestable={selected.remainingCount}
-          onClose={() => setSelected(null)}
-          onSuccess={() => {
-            setRemovedSuggestionIds(prev => new Set(prev).add(selected!.id));
-            setSelected(null);
-          }}
-        />
-      )}
     </HomeContainer>
   );
 }

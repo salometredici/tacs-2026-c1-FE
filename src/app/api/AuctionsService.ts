@@ -23,6 +23,14 @@ export interface AuctionOfferDtoBE {
   offeredItems: Array<{ cardId: string; cardNumber: number; cardDescription: string | null; amount: number }>;
   status: string;
   bidDate: string;
+  bidderRating: number | null;
+  bidderAvatarId: string | null;
+}
+
+interface AuctionConditionBE {
+  filterName: string;
+  quantity: number | null;
+  value: string | null;
 }
 
 export interface AuctionDto {
@@ -39,6 +47,7 @@ export interface AuctionDto {
   publisherName: string | null;
   publisherAvatarId: string | null;
   offers: AuctionOfferDtoBE[] | null;
+  conditions: AuctionConditionBE[] | null;
 }
 
 const STATUS_BE_TO_FE: Record<string, AuctionStatus> = {
@@ -78,8 +87,8 @@ export const mapAuction = (dto: AuctionDto): Auction => {
     bidder: {
       userId: o.bidderUserId,
       name: o.bidderUserName,
-      rating: 0,
-      avatarId: 'avatar_1',
+      rating: o.bidderRating ?? 0,
+      avatarId: (o.bidderAvatarId ?? 'avatar_1') as User['avatarId'],
     },
     offeredCards: o.offeredItems.flatMap(it =>
       Array(it.amount).fill({
@@ -95,6 +104,15 @@ export const mapAuction = (dto: AuctionDto): Auction => {
     status: OFFER_STATUS_BE_TO_FE[o.status] ?? 'ACTIVA',
     bidDate: o.bidDate,
   }));
+  const rules = (dto.conditions ?? []).map(c => {
+    switch (c.filterName) {
+      case 'MIN_REPUTATION':  return { type: 'REPUTACION_MINIMA'         as const, value: String(c.quantity ?? 0) };
+      case 'MIN_EXCHANGES':   return { type: 'INTERCAMBIOS_MINIMOS'      as const, value: String(c.quantity ?? 0) };
+      case 'MIN_CARD_COUNT':  return { type: 'CANTIDAD_MINIMA_FIGURITAS' as const, value: String(c.quantity ?? 0) };
+      case 'MIN_CATEGORY':    return { type: 'CATEGORIA_MINIMA'          as const, value: c.value ?? '' };
+      default:                return { type: c.filterName as AuctionRule['type'], value: c.value ?? String(c.quantity ?? '') };
+    }
+  });
   return {
     id: dto.id,
     card,
@@ -102,7 +120,7 @@ export const mapAuction = (dto: AuctionDto): Auction => {
     status: STATUS_BE_TO_FE[dto.status] ?? 'ACTIVA',
     creationDate: '',
     endDate: dto.closeDate,
-    rules: [],
+    rules,
     bids,
   };
 };
