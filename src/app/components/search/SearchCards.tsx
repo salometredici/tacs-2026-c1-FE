@@ -3,6 +3,7 @@ import { defaultSearchFilters, SearchFiguritasFilters } from '../../interfaces/s
 import {
   SearchContainer,
   SearchTitle,
+  SearchSubtitle,
   FilterSection,
   FiltersGrid,
   FilterGroup,
@@ -43,6 +44,9 @@ export default function SearchFiguritas({ onSearch, onReset, loading }: SearchFi
   return (
     <SearchContainer>
       <SearchTitle>Búsqueda de Figuritas</SearchTitle>
+      <SearchSubtitle>
+        Encontrá la figurita que buscás en publicaciones o subastas activas para intercambiar con otros jugadores
+      </SearchSubtitle>
 
       <FilterSection>
         <form onSubmit={handleSubmit}>

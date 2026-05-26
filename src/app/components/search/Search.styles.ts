@@ -9,9 +9,15 @@ export const SearchContainer = styled.div`
 
 export const SearchTitle = styled.h1`
   color: ${theme.colors.onBackground};
-  margin-bottom: ${theme.spacing.xl};
+  margin-bottom: ${theme.spacing.sm};
   font-size: ${theme.typography.headlineSmall.fontSize};
   font-weight: 400;
+`;
+
+export const SearchSubtitle = styled.p`
+  color: ${theme.colors.onSurfaceVariant};
+  margin: 0 0 ${theme.spacing.xl} 0;
+  font-size: ${theme.typography.bodyMedium.fontSize};
 `;
 
 // M3 Elevated Card – filter section

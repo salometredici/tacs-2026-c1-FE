@@ -50,10 +50,10 @@ export default function MakeProposalModal({ userId, card, publicationId, maxRequ
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    getUserCollection(userId).then(col => {
-      setCollection(col);
-      setLoading(false);
-    });
+    getUserCollection(userId)
+      .then(col => setCollection(col))
+      .catch(() => setError('No se pudo cargar tu colección. Intentá de nuevo.'))
+      .finally(() => setLoading(false));
   }, [userId]);
 
   const toggleFigurita = (cardId: string) => {

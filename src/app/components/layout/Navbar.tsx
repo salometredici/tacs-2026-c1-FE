@@ -100,7 +100,7 @@ export default function Navbar({ onProfileClick, onLogout }: NavbarProps) {
                 ) : (
                   notifications.map(n => (
                     <NotificationItem key={n.id} $read={n.read}>
-                      {n.message}
+                      {n.message ?? 'Notificación'}
                     </NotificationItem>
                   ))
                 )}
