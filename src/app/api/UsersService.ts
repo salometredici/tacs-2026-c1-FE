@@ -2,9 +2,8 @@ import axios from 'axios';
 import { API_CONFIG } from '../config/apiConfig';
 import { User } from '../interfaces/auth/User';
 import { CollectionCard } from '../interfaces/cards/CollectionCard';
-import { Publication } from '../interfaces/publications/Publication';
-import { getMockedSuggestions } from '../../mocks/suggestionsMock';
 import { MissingCard } from '../interfaces/cards/MissingCard';
+import { SuggestionResult } from '../interfaces/suggestions/SuggestionResult';
 
 const BASE_URL = API_CONFIG.users.base;
 
@@ -41,6 +40,7 @@ export const removeMissingCard = async (userId: string, cardId: string): Promise
   await axios.delete(`${BASE_URL}/${userId}/missing-cards/${cardId}`);
 };
 
-export const getUserSuggestions = async (userId: string): Promise<Publication[]> => {
-  return getMockedSuggestions(userId);
+export const getUserSuggestions = async (userId: string): Promise<SuggestionResult[]> => {
+  const response = await axios.get<SuggestionResult[]>(`${BASE_URL}/${userId}/suggestions`);
+  return response.data;
 };

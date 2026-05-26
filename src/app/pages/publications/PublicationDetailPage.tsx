@@ -10,20 +10,24 @@ import { useFetch } from '../../hooks/useFetch';
 import MakeProposalModal from '../../components/proposals/MakeProposalModal';
 import ConfirmDialog from '../../components/feedback/ConfirmDialog';
 import {
-  PageContainer, Header, BackButton, Title,
-  PublicationCard, TopRow, CardInfo, CardTitle, CardMeta, StatusBadge,
+  PageContainer, Header, Title,
+  PublicationCard, TopRow, CardInfo, CardTitle, CardMeta,
   CountSection, CountLabel, CountValue, ProgressTrack, ProgressFill,
   PublisherRow, PublisherAvatar,
   Actions, PrimaryButton, DangerOutlineButton,
   SectionTitle, ProposalList, ProposalCard, ProposalInfo, ProposalTitleRow, ProposalTitle, ProposalDetail,
-  VerticalDivider, ProposalStatusBadge, ActionButtons, AcceptButton, RejectButton,
-  EmptyMessage,
+  VerticalDivider, ActionButtons, AcceptButton, RejectButton,
 } from './PublicationDetailPage.styles';
+import EmptyState from '../../components/common/EmptyState';
+import StatusBadge from '../../components/common/StatusBadge';
+import BackButton from '../../components/common/BackButton';
 
 const PUB_STATUS_LABEL = { ACTIVA: 'Activa', FINALIZADA: 'Finalizada', CANCELADA: 'Cancelada' } as const;
+const PUB_TONE = { ACTIVA: 'success', FINALIZADA: 'neutral', CANCELADA: 'error' } as const;
 const PROPOSAL_STATUS_LABEL: Record<ProposalStatus, string> = {
   PENDIENTE: 'Pendiente', ACEPTADA: 'Aceptada', RECHAZADA: 'Rechazada', CANCELADA: 'Cancelada'
 };
+const PROPOSAL_TONE = { PENDIENTE: 'warning', ACEPTADA: 'success', RECHAZADA: 'error', CANCELADA: 'error' } as const;
 
 export default function PublicationDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -50,9 +54,7 @@ export default function PublicationDetailPage() {
     return (
       <PageContainer>
         <Header>
-          <BackButton onClick={() => navigate(-1)} aria-label="Volver">
-            <span className="material-symbols-outlined">arrow_back</span>
-          </BackButton>
+          <BackButton onClick={() => navigate(-1)} />
           <Title>Cargando publicación...</Title>
         </Header>
       </PageContainer>
@@ -63,12 +65,10 @@ export default function PublicationDetailPage() {
     return (
       <PageContainer>
         <Header>
-          <BackButton onClick={() => navigate(-1)} aria-label="Volver">
-            <span className="material-symbols-outlined">arrow_back</span>
-          </BackButton>
+          <BackButton onClick={() => navigate(-1)} />
           <Title>Publicación no encontrada</Title>
         </Header>
-        <EmptyMessage>La publicación no existe o fue eliminada.</EmptyMessage>
+        <EmptyState>La publicación no existe o fue eliminada.</EmptyState>
       </PageContainer>
     );
   }
@@ -146,9 +146,7 @@ export default function PublicationDetailPage() {
   return (
     <PageContainer>
       <Header>
-        <BackButton onClick={() => navigate(-1)} aria-label="Volver">
-          <span className="material-symbols-outlined">arrow_back</span>
-        </BackButton>
+        <BackButton onClick={() => navigate(-1)} />
         <Title>Detalle de publicación</Title>
       </Header>
 
@@ -162,7 +160,7 @@ export default function PublicationDetailPage() {
                 .join(' · ')}
             </CardMeta>
           </CardInfo>
-          <StatusBadge $status={publication.status}>
+          <StatusBadge tone={PUB_TONE[publication.status]} size="md">
             {PUB_STATUS_LABEL[publication.status]}
           </StatusBadge>
         </TopRow>
@@ -208,7 +206,7 @@ export default function PublicationDetailPage() {
             {pendingProposals.length > 0 && ` · ${pendingProposals.length} pendiente${pendingProposals.length !== 1 ? 's' : ''}`})
           </SectionTitle>
           {proposals.length === 0 ? (
-            <EmptyMessage>Aún no hay propuestas sobre esta publicación.</EmptyMessage>
+            <EmptyState>Aún no hay propuestas sobre esta publicación.</EmptyState>
           ) : (
             <ProposalList>
               {proposals.map(p => {
@@ -219,9 +217,9 @@ export default function PublicationDetailPage() {
                     <ProposalInfo>
                       <ProposalTitleRow>
                         <ProposalTitle>De {p.bidder.name}</ProposalTitle>
-                        <ProposalStatusBadge $status={p.status}>
+                        <StatusBadge tone={PROPOSAL_TONE[p.status]}>
                           {PROPOSAL_STATUS_LABEL[p.status]}
-                        </ProposalStatusBadge>
+                        </StatusBadge>
                       </ProposalTitleRow>
                       <ProposalDetail>
                         Ofrece <strong>{offeredCount}</strong> figurita{offeredCount !== 1 ? 's' : ''}

@@ -13,14 +13,18 @@ import {
   AuctionsHeader,
   AuctionsTitle,
   AuctionsGrid,
-  LoadingMessage,
-  EmptyMessage,
   SectionActionButton,
 } from '../../components/auctions/Auctions.styles';
+import EmptyState from '../../components/common/EmptyState';
 import {
-  TabNav, TabBtn, MyBidCard, StatusBadge,
+  TabNav, TabBtn, MyBidCard,
   MyBidHeader, MyBidTitle, MyBidMeta, MyBidSubMeta, StrongInline, CancelBidButton,
 } from './AuctionsPage.styles';
+import StatusBadge, { StatusTone } from '../../components/common/StatusBadge';
+
+const BID_TONE: Record<string, StatusTone> = {
+  ACTIVA: 'info', GANADORA: 'success', SUPERADA: 'warning', RECHAZADA: 'error', CANCELADA: 'error',
+};
 
 type Tab = 'active' | 'my-auctions' | 'my-bids';
 
@@ -89,14 +93,14 @@ export default function AuctionsPage() {
       </TabNav>
 
       {loading ? (
-        <LoadingMessage>Cargando...</LoadingMessage>
+        <EmptyState>Cargando...</EmptyState>
       ) : loadError ? (
-        <EmptyMessage>Ocurrió un error al cargar las subastas. Intentá de nuevo más tarde.</EmptyMessage>
+        <EmptyState>Ocurrió un error al cargar las subastas. Intentá de nuevo más tarde.</EmptyState>
       ) : (
         <>
           {activeTab === 'active' && (
             activeAuctions.length === 0 ? (
-              <EmptyMessage>No hay subastas activas en este momento</EmptyMessage>
+              <EmptyState>No hay subastas activas en este momento</EmptyState>
             ) : (
               <AuctionsGrid>
                 {activeAuctions.map(s => (
@@ -113,7 +117,7 @@ export default function AuctionsPage() {
 
           {activeTab === 'my-auctions' && (
             myAuctions.length === 0 ? (
-              <EmptyMessage>No tenés subastas publicadas</EmptyMessage>
+              <EmptyState>No tenés subastas publicadas</EmptyState>
             ) : (
               <AuctionsGrid>
                 {myAuctions.map(s => (
@@ -125,7 +129,7 @@ export default function AuctionsPage() {
 
           {activeTab === 'my-bids' && (
             myBids.length === 0 ? (
-              <EmptyMessage>No realizaste ofertas en subastas</EmptyMessage>
+              <EmptyState>No realizaste ofertas en subastas</EmptyState>
             ) : (
               <AuctionsGrid>
                 {myBids.map(o => {
@@ -140,7 +144,7 @@ export default function AuctionsPage() {
                             <MyBidSubMeta>{subtitle}</MyBidSubMeta>
                           )}
                         </div>
-                        <StatusBadge $status={o.bidStatus}>{o.bidStatus}</StatusBadge>
+                        <StatusBadge tone={BID_TONE[o.bidStatus] ?? 'neutral'}>{o.bidStatus}</StatusBadge>
                       </MyBidHeader>
                       <MyBidMeta>
                         Subasta de: <StrongInline>{o.publisher.name}</StrongInline>

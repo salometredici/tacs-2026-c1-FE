@@ -8,10 +8,10 @@ import {
   CardImage,
   TabButtons,
   TabButton,
-  EmptyMessage,
   CollectionHeader,
 } from './Collection.styles';
 import { SectionActionButton } from '../auctions/Auctions.styles';
+import EmptyState from '../common/EmptyState';
 
 interface CollectionProps {
   userId: string;
@@ -38,7 +38,7 @@ export default function Collection({ userId: userId }: CollectionProps) {
     }
   };
 
-  if (loading) return <p>Cargando colección...</p>;
+  if (loading) return <EmptyState>Cargando colección...</EmptyState>;
 
   // Filtra entries con quantity 0 — pueden quedar residuales en el BE tras un trade
   // (cuando todas las copias se transfirieron). Conceptualmente la figurita ya no está
@@ -89,10 +89,10 @@ export default function Collection({ userId: userId }: CollectionProps) {
       </CollectionContainer>
 
       {tab === 'todas' && owned.length === 0 && (
-        <EmptyMessage>No tenés figuritas en tu colección.</EmptyMessage>
+        <EmptyState>No tenés figuritas en tu colección.</EmptyState>
       )}
       {tab === 'repetidas' && repetidas.length === 0 && (
-        <EmptyMessage>No tenés figuritas repetidas.</EmptyMessage>
+        <EmptyState>No tenés figuritas repetidas.</EmptyState>
       )}
 
       {showAddModal && (

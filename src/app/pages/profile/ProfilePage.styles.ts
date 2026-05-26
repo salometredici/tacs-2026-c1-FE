@@ -1,7 +1,5 @@
 import styled from 'styled-components';
 import { theme } from '../../styles/theme';
-import { ProposalStatus } from '../../interfaces/proposals/ProposalStatus';
-import { PublicationStatus } from '../../interfaces/publications/publicationTypes';
 
 export const ProfileContainer = styled.div`
   max-width: 1200px;
@@ -104,21 +102,6 @@ export const TabButton = styled.button<{ $active: boolean }>`
   }
 `;
 
-export const SectionHeader = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: ${theme.spacing.md};
-  gap: ${theme.spacing.md};
-`;
-
-export const SectionTitle = styled.h3`
-  margin: 0;
-  font-size: ${theme.typography.titleSmall.fontSize};
-  font-weight: ${theme.typography.titleSmall.fontWeight};
-  color: ${theme.colors.onSurface};
-`;
-
 // M3 Text Button
 export const SeeAllLink = styled.button`
   background: none;
@@ -150,26 +133,6 @@ export const RowList = styled.div`
   display: flex;
   flex-direction: column;
   gap: ${theme.spacing.sm};
-`;
-
-// M3 Badge – proposal status indicator (más compacto que un Assist Chip)
-export const StatusBadge = styled.span<{ $status: ProposalStatus }>`
-  display: inline-flex;
-  align-items: center;
-  padding: 2px 10px;
-  border-radius: ${theme.shape.small};
-  font-size: ${theme.typography.labelSmall.fontSize};
-  font-weight: ${theme.typography.labelSmall.fontWeight};
-  letter-spacing: 0.04em;
-  white-space: nowrap;
-  background: ${({ $status }) =>
-    $status === 'PENDIENTE' ? theme.colors.tertiaryContainer :
-    $status === 'ACEPTADA'  ? theme.colors.successContainer :
-                               theme.colors.errorContainer};
-  color: ${({ $status }) =>
-    $status === 'PENDIENTE' ? theme.colors.onTertiaryContainer :
-    $status === 'ACEPTADA'  ? theme.colors.success :
-                               theme.colors.onErrorContainer};
 `;
 
 export const Divider = styled.hr`
@@ -257,25 +220,6 @@ export const OutlinedListItem = styled.div`
   }
 `;
 
-// M3 Badge – status indicator genérico (estado de subasta, feedback de intercambio, etc.)
-export const StatusIndicator = styled.span<{ $active: boolean }>`
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 2px 10px;
-  border-radius: ${theme.shape.small};
-  font-size: ${theme.typography.labelSmall.fontSize};
-  font-weight: ${theme.typography.labelSmall.fontWeight};
-  letter-spacing: 0.04em;
-  white-space: nowrap;
-  background: ${({ $active }) => $active ? theme.colors.successContainer : theme.colors.surfaceContainerHighest};
-  color: ${({ $active }) => $active ? theme.colors.success : theme.colors.onSurfaceVariant};
-
-  & .material-symbols-outlined {
-    font-size: 14px;
-  }
-`;
-
 // M3 Outlined Button (compact) – marca una figurita faltante como conseguida
 export const MarkAsAcquiredButton = styled.button`
   display: inline-flex;
@@ -315,22 +259,3 @@ export const MarkAsAcquiredButton = styled.button`
   }
 `;
 
-// M3 Badge – publication status indicator (más compacto que un Assist Chip)
-export const PublicationStatusBadge = styled.span<{ $status: PublicationStatus }>`
-  display: inline-flex;
-  align-items: center;
-  padding: 2px 10px;
-  border-radius: ${theme.shape.small};
-  font-size: ${theme.typography.labelSmall.fontSize};
-  font-weight: ${theme.typography.labelSmall.fontWeight};
-  letter-spacing: 0.04em;
-  white-space: nowrap;
-  background: ${({ $status }) =>
-    $status === 'ACTIVA'      ? theme.colors.successContainer :
-    $status === 'FINALIZADA'  ? theme.colors.surfaceContainerHighest :
-                                 theme.colors.errorContainer};
-  color: ${({ $status }) =>
-    $status === 'ACTIVA'      ? theme.colors.success :
-    $status === 'FINALIZADA'  ? theme.colors.onSurfaceVariant :
-                                 theme.colors.onErrorContainer};
-`;

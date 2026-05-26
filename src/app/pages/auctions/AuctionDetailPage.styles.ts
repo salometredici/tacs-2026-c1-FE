@@ -31,27 +31,6 @@ export const TopGrid = styled.div`
   & > div { margin-bottom: 0; }
 `;
 
-// M3 Text Button con leading icon
-export const BackButton = styled.button`
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: ${theme.colors.primary};
-  padding: ${theme.spacing.xs} ${theme.spacing.sm};
-  margin-bottom: ${theme.spacing.lg};
-  display: inline-flex;
-  align-items: center;
-  gap: ${theme.spacing.xs};
-  border-radius: ${theme.shape.full};
-  font-size: ${theme.typography.labelLarge.fontSize};
-  font-weight: ${theme.typography.labelLarge.fontWeight};
-  transition: background-color 0.15s;
-
-  & .material-symbols-outlined { font-size: 20px; }
-
-  &:hover { background: rgba(75, 45, 127, ${theme.state.hover}); }
-`;
-
 export const Card = styled.div`
   background: ${theme.colors.surfaceContainerLow};
   border-radius: ${theme.shape.medium};
@@ -102,21 +81,6 @@ export const CategoryBadge = styled.span<{ $category: string }>`
   color: ${({ $category }) =>
     $category === 'LEGENDARIO' ? '#e65100' :
     $category === 'EPICO' ? '#1565c0' : '#555'};
-`;
-
-export const StatusBadge = styled.span<{ $status: string }>`
-  padding: 4px 14px;
-  border-radius: 999px;
-  font-size: 0.85rem;
-  font-weight: 700;
-  background: ${({ $status }) =>
-    $status === 'ACTIVA' ? '#e8f5e9' :
-    $status === 'FINALIZADA' ? '#e3f2fd' :
-    $status === 'DESIERTA' ? '#f5f5f5' : '#fce4ec'};
-  color: ${({ $status }) =>
-    $status === 'ACTIVA' ? '#2e7d32' :
-    $status === 'FINALIZADA' ? '#1565c0' :
-    $status === 'DESIERTA' ? '#555' : '#b71c1c'};
 `;
 
 export const SectionTitle = styled.h3`
@@ -260,21 +224,6 @@ export const RejectOfferButton = styled.button`
   &:disabled { opacity: ${theme.state.disabled}; cursor: not-allowed; }
 `;
 
-
-export const OfferStatusBadge = styled.span<{ $status: string }>`
-  padding: 2px 10px;
-  border-radius: 999px;
-  font-size: 0.75rem;
-  font-weight: 700;
-  background: ${({ $status }) =>
-    $status === 'GANADORA' ? '#e8f5e9' :
-    $status === 'ACTIVA' ? '#e3f2fd' :
-    $status === 'SUPERADA' ? '#fff3e0' : '#f5f5f5'};
-  color: ${({ $status }) =>
-    $status === 'GANADORA' ? '#2e7d32' :
-    $status === 'ACTIVA' ? '#1565c0' :
-    $status === 'SUPERADA' ? '#e65100' : '#555'};
-`;
 
 export const ConfirmOverlay = styled.div`
   position: fixed;

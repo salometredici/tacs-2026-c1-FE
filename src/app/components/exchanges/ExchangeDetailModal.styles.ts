@@ -201,6 +201,44 @@ export const FeedbackPending = styled.p`
   font-style: italic;
 `;
 
+// Estrella interactiva del picker — hereda layout de FeedbackStars pero permite clic individual
+export const InteractiveStar = styled.span`
+  cursor: pointer;
+  user-select: none;
+  & .material-symbols-outlined { font-size: 24px; }
+`;
+
+export const FeedbackTextarea = styled.textarea`
+  width: 100%;
+  padding: ${theme.spacing.sm};
+  border: 1px solid ${theme.colors.outlineVariant};
+  border-radius: ${theme.shape.small};
+  background: ${theme.colors.surface};
+  color: ${theme.colors.onSurface};
+  font-family: inherit;
+  font-size: ${theme.typography.bodyMedium.fontSize};
+  resize: vertical;
+  &:focus { outline: 2px solid ${theme.colors.primary}; outline-offset: -1px; }
+`;
+
+export const FeedbackFormActions = styled.div`
+  display: flex;
+  gap: ${theme.spacing.sm};
+  justify-content: flex-end;
+`;
+
+export const SecondaryButton = styled.button`
+  padding: 10px ${theme.spacing.lg};
+  background: transparent;
+  border: 1px solid ${theme.colors.outline};
+  border-radius: ${theme.shape.full};
+  color: ${theme.colors.primary};
+  font-size: ${theme.typography.labelLarge.fontSize};
+  font-weight: ${theme.typography.labelLarge.fontWeight};
+  cursor: pointer;
+  &:disabled { opacity: 0.4; cursor: not-allowed; }
+`;
+
 export const Footer = styled.div`
   display: flex;
   justify-content: flex-end;

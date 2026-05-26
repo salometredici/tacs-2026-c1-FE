@@ -113,10 +113,3 @@ export const TabButton = styled.button<{ active: boolean }>`
 
   &:hover { border-color: ${theme.colors.primary}; &::after { opacity: ${theme.state.hover}; } }
 `;
-
-export const EmptyMessage = styled.p`
-  text-align: center;
-  color: ${theme.colors.onSurfaceVariant};
-  font-size: ${theme.typography.bodyLarge.fontSize};
-  padding: ${theme.spacing.xl};
-`;

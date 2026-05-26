@@ -11,7 +11,6 @@ import { RULE_LABELS } from '../../interfaces/auctions/auctionRule/AuctionRule';
 import { formatCountdown } from '../../utils/utils';
 import {
   Page,
-  BackButton,
   PageTitle,
   TopGrid,
   Card,
@@ -19,7 +18,6 @@ import {
   CardNumber,
   CardInfo,
   CategoryBadge,
-  StatusBadge,
   SectionTitle,
   InfoRow,
   RuleItem,
@@ -32,7 +30,6 @@ import {
   OfferDate,
   ChooseWinnerButton,
   RejectOfferButton,
-  OfferStatusBadge,
   ConfirmOverlay,
   ConfirmModal,
   ConfirmTitle,
@@ -53,6 +50,15 @@ import {
   OfferActions,
   FinalizeErrorText,
 } from './AuctionDetailPage.styles';
+import StatusBadge, { StatusTone } from '../../components/common/StatusBadge';
+import BackButton from '../../components/common/BackButton';
+
+const AUCTION_TONE: Record<string, StatusTone> = {
+  ACTIVA: 'success', FINALIZADA: 'neutral', CANCELADA: 'error', DESIERTA: 'neutral',
+};
+const BID_TONE: Record<string, StatusTone> = {
+  ACTIVA: 'info', GANADORA: 'success', SUPERADA: 'warning', RECHAZADA: 'error', CANCELADA: 'error',
+};
 
 export default function AuctionDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -149,10 +155,7 @@ export default function AuctionDetailPage() {
   if (loading) return <Page><p>Cargando...</p></Page>;
   if (!auction) return (
     <Page>
-      <BackButton onClick={() => navigate('/auctions')}>
-        <span className="material-symbols-outlined" aria-hidden="true">arrow_back</span>
-        Volver
-      </BackButton>
+      <BackButton onClick={() => navigate('/auctions')} label="Volver" />
       <p>Subasta no encontrada.</p>
     </Page>
   );
@@ -161,10 +164,7 @@ export default function AuctionDetailPage() {
   const isActive = auction.status === 'ACTIVA';
   return (
     <Page>
-      <BackButton onClick={() => navigate('/auctions')}>
-        <span className="material-symbols-outlined" aria-hidden="true">arrow_back</span>
-        Volver a subastas
-      </BackButton>
+      <BackButton onClick={() => navigate('/auctions')} label="Volver a subastas" />
 
       <PageTitle>Subasta #{auction.id}</PageTitle>
 
@@ -177,7 +177,7 @@ export default function AuctionDetailPage() {
               <p>{auction.card.country} · {auction.card.team}</p>
               <BadgeRow>
                 <CategoryBadge $category={auction.card.category}>{auction.card.category}</CategoryBadge>
-                <StatusBadge $status={auction.status}>{auction.status}</StatusBadge>
+                <StatusBadge tone={AUCTION_TONE[auction.status] ?? 'neutral'} size="md">{auction.status}</StatusBadge>
               </BadgeRow>
             </CardInfo>
           </CardHeader>
@@ -253,7 +253,7 @@ export default function AuctionDetailPage() {
                           <span className="num">({o.bidder.rating.toFixed(1)})</span>
                         </OfferRating>
                       </div>
-                      <OfferStatusBadge $status={o.status}>{o.status}</OfferStatusBadge>
+                      <StatusBadge tone={BID_TONE[o.status] ?? 'neutral'}>{o.status}</StatusBadge>
                     </OfferHeader>
                     <OfferedCards>
                       <strong>{o.offeredCards.length} figurita(s):</strong>{' '}

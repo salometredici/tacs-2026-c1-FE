@@ -1,7 +1,5 @@
 import styled from 'styled-components';
 import { theme } from '../../styles/theme';
-import { PublicationStatus } from '../../interfaces/publications/publicationTypes';
-import { ProposalStatus } from '../../interfaces/proposals/ProposalStatus';
 
 export const PageContainer = styled.div`
   max-width: 900px;
@@ -16,33 +14,6 @@ export const Header = styled.div`
   align-items: center;
   gap: ${theme.spacing.md};
   margin-bottom: ${theme.spacing.lg};
-`;
-
-export const BackButton = styled.button`
-  width: 40px;
-  height: 40px;
-  border-radius: ${theme.shape.full};
-  border: none;
-  background: none;
-  color: ${theme.colors.onSurfaceVariant};
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.25rem;
-  position: relative;
-  overflow: hidden;
-
-  &::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: ${theme.colors.onSurface};
-    opacity: 0;
-    transition: opacity 0.15s;
-    border-radius: inherit;
-  }
-  &:hover::after { opacity: ${theme.state.hover}; }
 `;
 
 export const Title = styled.h1`
@@ -88,25 +59,6 @@ export const CardMeta = styled.p`
   margin: 0;
   font-size: ${theme.typography.bodyMedium.fontSize};
   color: ${theme.colors.onSurfaceVariant};
-`;
-
-export const StatusBadge = styled.span<{ $status: PublicationStatus }>`
-  display: inline-flex;
-  align-items: center;
-  padding: 4px 12px;
-  border-radius: ${theme.shape.small};
-  font-size: ${theme.typography.labelMedium.fontSize};
-  font-weight: ${theme.typography.labelMedium.fontWeight};
-  letter-spacing: 0.04em;
-  white-space: nowrap;
-  background: ${({ $status }) =>
-    $status === 'ACTIVA'      ? theme.colors.successContainer :
-    $status === 'FINALIZADA'  ? theme.colors.surfaceContainerHighest :
-                                 theme.colors.errorContainer};
-  color: ${({ $status }) =>
-    $status === 'ACTIVA'      ? theme.colors.success :
-    $status === 'FINALIZADA'  ? theme.colors.onSurfaceVariant :
-                                 theme.colors.onErrorContainer};
 `;
 
 export const CountSection = styled.div`
@@ -272,26 +224,6 @@ export const VerticalDivider = styled.div`
   }
 `;
 
-// M3 Assist Chip — más liviano que un button (peso visual menor)
-export const ProposalStatusBadge = styled.span<{ $status: ProposalStatus }>`
-  display: inline-flex;
-  align-items: center;
-  padding: 1px 8px;
-  border-radius: ${theme.shape.small};
-  font-size: ${theme.typography.labelSmall.fontSize};
-  font-weight: 400;
-  letter-spacing: 0.04em;
-  white-space: nowrap;
-  background: ${({ $status }) =>
-    $status === 'PENDIENTE' ? theme.colors.tertiaryContainer :
-    $status === 'ACEPTADA'  ? theme.colors.successContainer :
-                               theme.colors.errorContainer};
-  color: ${({ $status }) =>
-    $status === 'PENDIENTE' ? theme.colors.onTertiaryContainer :
-    $status === 'ACEPTADA'  ? theme.colors.success :
-                               theme.colors.onErrorContainer};
-`;
-
 // Botones apilados verticalmente — jerarquía clara: acciones primarias
 export const ActionButtons = styled.div`
   display: flex;
@@ -323,11 +255,4 @@ export const RejectButton = styled.button`
   font-weight: ${theme.typography.labelMedium.fontWeight};
   cursor: pointer;
   &:disabled { opacity: 0.5; cursor: not-allowed; }
-`;
-
-export const EmptyMessage = styled.p`
-  text-align: center;
-  color: ${theme.colors.onSurfaceVariant};
-  padding: ${theme.spacing.xl};
-  font-size: ${theme.typography.bodyLarge.fontSize};
 `;

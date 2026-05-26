@@ -84,18 +84,3 @@ export const CancelBidButton = styled.button`
   &:disabled { cursor: wait; }
 `;
 
-export const StatusBadge = styled.span<{ $status: string }>`
-  display: inline-block;
-  padding: 2px 10px;
-  border-radius: 999px;
-  font-size: 0.78rem;
-  font-weight: 700;
-  background: ${({ $status }) =>
-    $status === 'ACTIVA'   ? '#e3f2fd' :
-    $status === 'GANADORA' ? '#e8f5e9' :
-    $status === 'SUPERADA' ? '#fff3e0' : '#fce4ec'};
-  color: ${({ $status }) =>
-    $status === 'ACTIVA'   ? '#1565c0' :
-    $status === 'GANADORA' ? '#2e7d32' :
-    $status === 'SUPERADA' ? '#e65100' : '#b71c1c'};
-`;

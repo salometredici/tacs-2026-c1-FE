@@ -7,9 +7,11 @@ import { AuthedOutletContext } from '../../components/layout/UserRoute';
 import { useSnackbar } from '../../context/useSnackbar';
 import { AUCTION_DURATION_MIN, AUCTION_DURATION_MAX } from '../../constants/auctions';
 import { formatDuration } from '../../utils/utils';
+import BackButton from '../../components/common/BackButton';
+import RatingStars from '../../components/common/RatingStars';
 import {
-  PageContainer, Header, BackButton, Title, Card, Field, Label, Hint, Select,
-  StarsRow, StarButton, StarLabel, ErrorMsg, SubmitButton,
+  PageContainer, Header, Title, Card, Field, Label, Hint, Select,
+  StarsRow, ErrorMsg, SubmitButton,
   SelectableItem, SelectIndicator,
   NumericInputSmall, InputSuffix,
 } from './CreateAuctionPage.styles';
@@ -92,9 +94,7 @@ export default function CreateAuctionPage() {
   return (
     <PageContainer>
       <Header>
-        <BackButton onClick={() => navigate('/auctions')} aria-label="Volver a subastas">
-          <span className="material-symbols-outlined" aria-hidden="true">arrow_back</span>
-        </BackButton>
+        <BackButton onClick={() => navigate('/auctions')} variant="tonal" ariaLabel="Volver a subastas" />
         <Title>Nueva Subasta</Title>
       </Header>
 
@@ -189,22 +189,11 @@ export default function CreateAuctionPage() {
           {reputationEnabled && (
             <>
               <Hint>Solo podrán ofertar usuarios con este rating o superior</Hint>
-              <StarsRow>
-                {[1, 2, 3, 4, 5].map(star => (
-                  <StarButton
-                    key={star}
-                    type="button"
-                    $active={star <= minReputation}
-                    onClick={() => setMinReputation(star === minReputation ? star - 1 : star)}
-                    title={`${star} estrella${star !== 1 ? 's' : ''}`}
-                  >
-                    ★
-                  </StarButton>
-                ))}
-                <StarLabel>
-                  {minReputation === 0 ? 'Sin restricción' : `${minReputation} / 5`}
-                </StarLabel>
-              </StarsRow>
+              <RatingStars
+                value={minReputation}
+                onChange={setMinReputation}
+                label={minReputation === 0 ? 'Sin restricción' : `${minReputation} / 5`}
+              />
             </>
           )}
         </Field>

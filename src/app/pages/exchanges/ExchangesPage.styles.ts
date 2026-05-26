@@ -108,13 +108,6 @@ export const RatedLabel = styled.span`
   font-style: italic;
 `;
 
-export const EmptyMessage = styled.p`
-  text-align: center;
-  color: ${theme.colors.onSurfaceVariant};
-  padding: ${theme.spacing.xl};
-  font-size: ${theme.typography.bodyLarge.fontSize};
-`;
-
 // M3 Dialog overlay
 export const Overlay = styled.div`
   position: fixed;
@@ -144,23 +137,6 @@ export const ModalTitle = styled.h2`
   margin: 0;
   font-size: ${theme.typography.headlineSmall.fontSize};
   font-weight: 400;
-`;
-
-export const StarsRow = styled.div`
-  display: flex;
-  gap: 4px;
-`;
-
-export const StarButton = styled.button<{ $active: boolean }>`
-  background: none;
-  border: none;
-  font-size: 2.2rem;
-  cursor: pointer;
-  padding: 0;
-  line-height: 1;
-  color: ${({ $active }) => $active ? theme.colors.tertiary : theme.colors.outlineVariant};
-  transition: color 0.1s;
-  &:hover { color: ${theme.colors.tertiary}; }
 `;
 
 export const CommentInput = styled.textarea`
