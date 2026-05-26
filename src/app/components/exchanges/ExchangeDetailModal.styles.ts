@@ -204,6 +204,7 @@ export const FeedbackPending = styled.p`
 export const Footer = styled.div`
   display: flex;
   justify-content: flex-end;
+  gap: ${theme.spacing.sm};
 `;
 
 export const FooterButton = styled.button`

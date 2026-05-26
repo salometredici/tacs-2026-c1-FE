@@ -1,13 +1,14 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate, useParams, useOutletContext } from 'react-router-dom';
-import { Publication } from '../../interfaces/publications/Publication';
 import { Proposal } from '../../interfaces/proposals/Proposal';
 import { ProposalStatus } from '../../interfaces/proposals/ProposalStatus';
 import { getPublicationById, cancelPublication } from '../../api/PublicationsService';
 import { getProposalsByPublicationId, acceptProposal, rejectProposal } from '../../api/ProposalsService';
 import { AuthedOutletContext } from '../../components/layout/UserRoute';
 import { useSnackbar } from '../../context/useSnackbar';
+import { useFetch } from '../../hooks/useFetch';
 import MakeProposalModal from '../../components/proposals/MakeProposalModal';
+import ConfirmDialog from '../../components/feedback/ConfirmDialog';
 import {
   PageContainer, Header, BackButton, Title,
   PublicationCard, TopRow, CardInfo, CardTitle, CardMeta, StatusBadge,
@@ -30,26 +31,20 @@ export default function PublicationDetailPage() {
   const { currentUser } = useOutletContext<AuthedOutletContext>();
   const { showError, showSuccess } = useSnackbar();
 
-  const [publication, setPublication] = useState<Publication | null>(null);
-  const [proposals, setProposals] = useState<Proposal[]>([]);
-  const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [cancelling, setCancelling] = useState(false);
   const [showProposeModal, setShowProposeModal] = useState(false);
+  const [showCancelConfirm, setShowCancelConfirm] = useState(false);
 
-  useEffect(() => {
-    if (!id) return;
-    setLoading(true);
-    Promise.all([
-      getPublicationById(id, currentUser.id),
-      getProposalsByPublicationId(id),
-    ])
-      .then(([pub, props]) => {
-        setPublication(pub);
-        setProposals(props);
-      })
-      .finally(() => setLoading(false));
-  }, [id]);
+  const { data: publication, isLoading: loadingPub, setData: setPublication, refetch: refetchPub } = useFetch(
+    () => getPublicationById(id!, currentUser.id), [id],
+  );
+  const { data: proposalsData, isLoading: loadingProps, setData: setProposals, refetch: refetchProps } = useFetch(
+    () => getProposalsByPublicationId(id!), [id],
+  );
+  const proposals = proposalsData ?? [];
+  const loading = loadingPub || loadingProps;
+  const reload = () => { refetchPub(); refetchProps(); };
 
   if (loading) {
     return (
@@ -85,24 +80,14 @@ export default function PublicationDetailPage() {
     : 0;
   const pendingProposals = proposals.filter(p => p.status === 'PENDIENTE');
 
-  const reload = async () => {
-    if (!id) return;
-    const [pub, props] = await Promise.all([
-      getPublicationById(id, currentUser?.id),
-      getProposalsByPublicationId(id),
-    ]);
-    setPublication(pub);
-    setProposals(props);
-  };
-
   const handleCancel = async () => {
     if (!publication) return;
-    if (!confirm('¿Cancelar esta publicación? Las propuestas pendientes serán canceladas también.')) return;
+    setShowCancelConfirm(false);
     setCancelling(true);
     try {
       await cancelPublication(publication.id, currentUser.id);
       // Optimistic local update; el BE eventualmente lo refleja
-      setPublication({ ...publication, status: 'CANCELADA' });
+      setPublication(prev => prev ? { ...prev, status: 'CANCELADA' } : prev);
       setProposals(prev => prev.map(p =>
         p.status === 'PENDIENTE' ? { ...p, status: 'RECHAZADA' } : p
       ));
@@ -127,11 +112,11 @@ export default function PublicationDetailPage() {
       // y rechazar pendientes restantes.
       const newRemaining = Math.max(0, publication.remainingCount - proposal.requestedCount);
       const finalized = newRemaining === 0;
-      setPublication({
-        ...publication,
+      setPublication(prev => prev ? {
+        ...prev,
         remainingCount: newRemaining,
-        status: finalized ? 'FINALIZADA' : publication.status,
-      });
+        status: finalized ? 'FINALIZADA' : prev.status,
+      } : prev);
       setProposals(prev => prev.map(p => {
         if (p.id === proposal.id) return { ...p, status: 'ACEPTADA' };
         if (finalized && p.status === 'PENDIENTE') return { ...p, status: 'RECHAZADA' };
@@ -204,7 +189,7 @@ export default function PublicationDetailPage() {
 
         <Actions>
           {isOwner && isActive && (
-            <DangerOutlineButton onClick={handleCancel} disabled={cancelling}>
+            <DangerOutlineButton onClick={() => setShowCancelConfirm(true)} disabled={cancelling}>
               {cancelling ? 'Cancelando...' : 'Cancelar publicación'}
             </DangerOutlineButton>
           )}
@@ -286,6 +271,17 @@ export default function PublicationDetailPage() {
           onSuccess={() => { setShowProposeModal(false); reload(); }}
         />
       )}
+
+      <ConfirmDialog
+        open={showCancelConfirm}
+        title="¿Cancelar esta publicación?"
+        message="Las propuestas pendientes serán canceladas también."
+        confirmLabel="Sí, cancelar"
+        cancelLabel="Volver"
+        destructive
+        onConfirm={handleCancel}
+        onCancel={() => setShowCancelConfirm(false)}
+      />
     </PageContainer>
   );
 }

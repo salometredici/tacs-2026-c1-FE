@@ -1,6 +1,6 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { getCatalog } from '../../api/CardsService';
-import { Card } from '../../interfaces/cards/Card';
+import { useFetch } from '../../hooks/useFetch';
 import { Category } from '../../interfaces/Categoria';
 import {
   PageWrapper,
@@ -66,26 +66,17 @@ function buildPageRange(current: number, total: number): Array<number | '...'> {
 }
 
 export default function CatalogPage() {
-  const [allCards, setAllCards] = useState<Card[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { data: cards, isLoading, error } = useFetch(() => getCatalog(), []);
   const [currentPage, setCurrentPage] = useState(0);
   const [activeCategory, setActiveCategory] = useState<Category | 'TODAS'>('TODAS');
   const [query, setQuery] = useState('');
 
-  useEffect(() => {
-    getCatalog().then((cards: Card[]) => {
-      setAllCards(cards);
-      setLoading(false);
-    });
-  }, []);
-
-  const filtered = useMemo(
-    () =>
-      activeCategory === 'TODAS'
-        ? allCards
-        : allCards.filter((c) => c.category === activeCategory),
-    [allCards, activeCategory],
-  );
+  const filtered = useMemo(() => {
+    const list = cards ?? [];
+    return activeCategory === 'TODAS'
+      ? list
+      : list.filter(c => c.category === activeCategory);
+  }, [cards, activeCategory]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const safePage = Math.min(currentPage, totalPages - 1);
@@ -131,8 +122,10 @@ export default function CatalogPage() {
         ))}
       </FilterBar>
 
-      {loading ? (
+      {isLoading ? (
         <LoadingState>Cargando catálogo…</LoadingState>
+      ) : error ? (
+        <EmptyState>Ocurrió un error al cargar el catálogo. Intentá más tarde.</EmptyState>
       ) : filtered.length === 0 ? (
         <EmptyState>No hay figuritas en esta categoría.</EmptyState>
       ) : (

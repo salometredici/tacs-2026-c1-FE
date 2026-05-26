@@ -442,31 +442,3 @@ export const FinalizeErrorText = styled.p`
   margin-top: ${theme.spacing.sm};
 `;
 
-// Variante de ConfirmModal para edición (más ancha + scroll vertical)
-export const EditModalCard = styled.div`
-  background: ${theme.colors.surface};
-  border-radius: ${theme.borderRadius.md};
-  padding: ${theme.spacing.xl};
-  max-width: 520px;
-  max-height: 90vh;
-  overflow-y: auto;
-  width: 90%;
-  box-shadow: ${theme.shadows.lg};
-  display: flex;
-  flex-direction: column;
-  gap: ${theme.spacing.md};
-`;
-
-// Variante "primary" de ConfirmBtn (el default es danger). Usado en confirm de edit.
-export const PrimaryConfirmBtn = styled.button`
-  padding: ${theme.spacing.sm} ${theme.spacing.lg};
-  background: ${theme.colors.primary};
-  color: white;
-  border: none;
-  border-radius: ${theme.borderRadius.sm};
-  font-size: 0.95rem;
-  font-weight: 700;
-  cursor: pointer;
-  &:hover { opacity: 0.9; }
-  &:disabled { opacity: 0.6; cursor: not-allowed; }
-`;

@@ -1,10 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate, useOutletContext } from 'react-router-dom';
-import { Exchange } from '../../interfaces/exchanges/Exchange';
 import { getExchangesByUserId, submitFeedback } from '../../api/ExchangesService';
 import { AuthedOutletContext } from '../../components/layout/UserRoute';
 import { useSnackbar } from '../../context/useSnackbar';
+import { useFetch } from '../../hooks/useFetch';
 import { viewAs } from '../../utils/exchangeView';
+import { Exchange } from '../../interfaces/exchanges/Exchange';
 import {
   PageContainer, PageTitle, ExchangeList, ExchangeCard,
   ExchangeInfo, ExchangeTitle, ExchangeDetail, TypeBadge,
@@ -20,20 +21,15 @@ export default function ExchangesPage() {
   const { currentUser } = useOutletContext<AuthedOutletContext>();
   const { showError } = useSnackbar();
 
-  const [exchanges, setExchanges] = useState<Exchange[]>([]);
-  const [loading, setLoading] = useState(true);
-
   const [ratingTarget, setRatingTarget] = useState<Exchange | null>(null);
   const [stars, setStars] = useState(0);
   const [comment, setComment] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
-  useEffect(() => {
-    setLoading(true);
-    getExchangesByUserId(currentUser.id)
-      .then(setExchanges)
-      .finally(() => setLoading(false));
-  }, [currentUser.id]);
+  const { data: exchangesData, isLoading: loading, setData: setExchanges } = useFetch(
+    () => getExchangesByUserId(currentUser.id), [currentUser.id],
+  );
+  const exchanges = exchangesData ?? [];
 
   const openRatingModal = (exchange: Exchange) => {
     setRatingTarget(exchange);

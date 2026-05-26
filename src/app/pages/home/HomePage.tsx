@@ -1,10 +1,10 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useOutletContext } from 'react-router-dom';
 import { Publication } from '../../interfaces/publications/Publication';
-import { Card as CatalogCard } from '../../interfaces/cards/Card';
 import { getUserSuggestions } from '../../api/UsersService';
 import { AuthedOutletContext } from '../../components/layout/UserRoute';
 import { getCatalog } from '../../api/CardsService';
+import { useFetch } from '../../hooks/useFetch';
 import MakeProposalModal from '../../components/proposals/MakeProposalModal';
 import {
   HomeContainer,
@@ -39,27 +39,26 @@ export default function HomePage() {
   const navigate = useNavigate();
   const { currentUser } = useOutletContext<AuthedOutletContext>();
 
-  const [suggestions, setSuggestions] = useState<Publication[]>([]);
-  const [loading, setLoading] = useState(false);
+  const { data: suggestionsData, isLoading: loadingSuggestions } = useFetch(
+    () => getUserSuggestions(currentUser.id),
+    [currentUser.id],
+  );
+  const { data: catalogData } = useFetch(() => getCatalog(), []);
+  // Permite remover sugerencias del carousel optimistamente al hacer propuesta sin tocar la fuente del fetch
+  const [removedSuggestionIds, setRemovedSuggestionIds] = useState<Set<string>>(new Set());
   const [selected, setSelected] = useState<Publication | null>(null);
-  const [catalogPreview, setCatalogPreview] = useState<CatalogCard[]>([]);
+
+  const suggestions = useMemo(
+    () => (suggestionsData ?? []).filter(s => !removedSuggestionIds.has(s.id)),
+    [suggestionsData, removedSuggestionIds],
+  );
+  const catalogPreview = useMemo(() => (catalogData ?? []).slice(0, 12), [catalogData]);
 
   const carouselRef = useRef<HTMLDivElement>(null);
   const catalogCarouselRef = useRef<HTMLDivElement>(null);
   const isDragging = useRef(false);
   const dragStartX = useRef(0);
   const dragScrollLeft = useRef(0);
-
-  useEffect(() => {
-    setLoading(true);
-    getUserSuggestions(currentUser.id)
-      .then(data => setSuggestions(data))
-      .finally(() => setLoading(false));
-  }, [currentUser]);
-
-  useEffect(() => {
-    getCatalog().then(cards => setCatalogPreview(cards.slice(0, 12)));
-  }, []);
 
   useEffect(() => {
     if (suggestions.length === 0) return;
@@ -117,7 +116,7 @@ export default function HomePage() {
           <SectionTitle>Sugerencias para vos</SectionTitle>
         </SectionHeader>
 
-        {loading ? (
+        {loadingSuggestions ? (
           <EmptyMessage>Cargando sugerencias...</EmptyMessage>
         ) : suggestions.length === 0 ? (
           <EmptyMessage>No hay sugerencias disponibles por ahora.</EmptyMessage>
@@ -216,7 +215,7 @@ export default function HomePage() {
           maxRequestable={selected.remainingCount}
           onClose={() => setSelected(null)}
           onSuccess={() => {
-            setSuggestions(prev => prev.filter(s => s.id !== selected!.id));
+            setRemovedSuggestionIds(prev => new Set(prev).add(selected!.id));
             setSelected(null);
           }}
         />

@@ -3,6 +3,7 @@ import { API_CONFIG } from '../config/apiConfig';
 import { Auction } from '../interfaces/auctions/Auction';
 import { AuctionStatus } from '../interfaces/auctions/AuctionStatus';
 import { UserBid } from '../interfaces/auctions/bid/UserBid';
+import { BidStatus } from '../interfaces/auctions/bid/BidStatus';
 import { CreateAuctionRequest } from '../interfaces/auctions/CreateAuctionRequest';
 import { CreatedResponse } from '../interfaces/common/CreatedResponse';
 import { AuctionRule } from '../interfaces/auctions/auctionRule/AuctionRule';
@@ -46,11 +47,11 @@ const STATUS_BE_TO_FE: Record<string, AuctionStatus> = {
   CANCELLED: 'CANCELADA',
 };
 
-const OFFER_STATUS_BE_TO_FE: Record<string, 'ACTIVA' | 'SUPERADA' | 'GANADORA' | 'RECHAZADA'> = {
+const OFFER_STATUS_BE_TO_FE: Record<string, BidStatus> = {
   PENDING: 'ACTIVA',
   ACCEPTED: 'GANADORA',
   REJECTED: 'RECHAZADA',
-  CANCELLED: 'RECHAZADA',
+  CANCELLED: 'CANCELADA',
 };
 
 export const mapAuction = (dto: AuctionDto): Auction => {
@@ -208,11 +209,6 @@ export const getAuctionBidsByUserId = async (userId: string): Promise<UserBid[]>
     bidStatus: OFFER_STATUS_BE_TO_FE[b.offerStatus] ?? 'ACTIVA',
     bidDate: b.bidDate,
   }));
-};
-
-/** BE no expone update de subasta. Pendiente endpoint. */
-export const updateAuction = async (_auctionId: string, _data: { rules: AuctionRule[] }): Promise<void> => {
-  return;
 };
 
 export const placeBid = async (auctionId: string, _userId: string, cardIds: string[]): Promise<AuctionOfferDtoBE> => {

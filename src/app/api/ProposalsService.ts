@@ -24,12 +24,33 @@ const STATUS_FE_TO_BE: Record<ProposalStatus, string> = {
   CANCELADA: 'CANCELLED',
 };
 
+interface CardDtoBE {
+  number: number;
+  player: string;
+  country: string | null;
+  team: string | null;
+  description: string;
+  category: string;
+}
+
+interface UserDtoBE {
+  id: string;
+  name: string;
+  email: string;
+  rating: number | null;
+  exchangesAmount: number;
+  avatarId: string;
+  creationDate: string;
+}
+
 interface TradeProposalDto {
   id: string;
   publicationId: string;
   cardIds: string[];
+  // El BE devuelve la info completa de cada card en paralelo a cardIds (cards[i] corresponde a cardIds[i])
+  cards?: CardDtoBE[];
   requestedCount: number;
-  proposerUserId: string;
+  proposer?: UserDtoBE;
   status: string;
   creationDate: string;
 }
@@ -39,9 +60,29 @@ const stubCard = (id: string): Card => ({
   description: '—', country: null, team: null, category: 'COMUN',
 });
 
+const mapCardDtoBE = (id: string, dto: CardDtoBE): Card => ({
+  id,
+  number: dto.number,
+  type: 'JUGADOR' as CardType,
+  description: dto.description,
+  country: dto.country,
+  team: dto.team,
+  category: dto.category as Card['category'],
+});
+
 const stubUser = (id: string): User => ({
   id, name: '', email: '', rating: null,
   exchangesAmount: 0, avatarId: 'avatar_1', creationDate: '',
+});
+
+const mapUserDtoBE = (dto: UserDtoBE): User => ({
+  id: dto.id,
+  name: dto.name,
+  email: dto.email,
+  rating: dto.rating,
+  exchangesAmount: dto.exchangesAmount,
+  avatarId: dto.avatarId as User['avatarId'],
+  creationDate: dto.creationDate,
 });
 
 const stubPublication = (id: string): Publication => ({
@@ -52,9 +93,11 @@ const stubPublication = (id: string): Publication => ({
 const mapProposalDto = (dto: TradeProposalDto, pub: Publication | null): Proposal => ({
   id: dto.id,
   publication: pub ?? stubPublication(dto.publicationId),
-  offeredCards: dto.cardIds.map(stubCard),
+  offeredCards: dto.cards
+    ? dto.cards.map((c, i) => mapCardDtoBE(dto.cardIds[i] ?? '', c))
+    : dto.cardIds.map(stubCard),
   requestedCount: dto.requestedCount,
-  bidder: stubUser(dto.proposerUserId),
+  bidder: dto.proposer ? mapUserDtoBE(dto.proposer) : stubUser(''),
   status: STATUS_BE_TO_FE[dto.status] ?? 'PENDIENTE',
   creationDate: dto.creationDate,
 });

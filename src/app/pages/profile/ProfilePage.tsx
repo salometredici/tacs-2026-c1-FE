@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate, useOutletContext } from 'react-router-dom';
 import { User } from '../../interfaces/auth/User';
 import { MissingCard } from '../../interfaces/cards/MissingCard';
@@ -9,11 +9,13 @@ import { Publication } from '../../interfaces/publications/Publication';
 import { Exchange } from '../../interfaces/exchanges/Exchange';
 import { getUserMissingCards, addToUserCollection } from '../../api/UsersService';
 import { getAuctionsByUserId, getAuctionBidsByUserId } from '../../api/AuctionsService';
-import { getProposals } from '../../api/ProposalsService';
+import { getProposals, acceptProposal, rejectProposal } from '../../api/ProposalsService';
 import { getMyPublications } from '../../api/PublicationsService';
 import { getExchangesByUserId } from '../../api/ExchangesService';
 import { viewAs } from '../../utils/exchangeView';
 import { AuthedOutletContext } from '../../components/layout/UserRoute';
+import { useFetch } from '../../hooks/useFetch';
+import { useSnackbar } from '../../context/useSnackbar';
 import {
   ProfileContainer, ProfileHeader, ProfileAvatar, ProfileTitle, ProfileEmail, ProfileMeta, ProfileMetaStar,
   TabSection, TabNav, TabButton,
@@ -39,6 +41,7 @@ import { formatTimeAgo } from '../../utils/utils';
 
 const STATUS_LABEL = { PENDIENTE: 'Pendiente', ACEPTADA: 'Aceptada', RECHAZADA: 'Rechazada', CANCELADA: 'Cancelada' } as const;
 const PUBLICATION_STATUS_LABEL = { ACTIVA: 'Activa', FINALIZADA: 'Finalizada', CANCELADA: 'Cancelada' } as const;
+const AUCTION_STATUS_LABEL = { ACTIVA: 'Activa', FINALIZADA: 'Finalizada', CANCELADA: 'Cancelada' } as const;
 const ORIGIN_LABEL = { PROPUESTA: 'Propuesta', SUBASTA: 'Subasta' } as const;
 const PREVIEW = 3;
 
@@ -47,27 +50,20 @@ type Tab = 'collection' | 'faltantes' | 'publicaciones' | 'propuestas' | 'subast
 export default function ProfilePage() {
   const navigate = useNavigate();
   const { currentUser } = useOutletContext<AuthedOutletContext>();
+  const { showSuccess, showError } = useSnackbar();
   const user: User = currentUser;
 
   const [activeTab, setActiveTab] = useState<Tab>('collection');
-  const [faltantes, setFaltantes] = useState<MissingCard[]>([]);
-  const [recibidas, setRecibidas] = useState<Proposal[]>([]);
-  const [enviadas, setEnviadas] = useState<Proposal[]>([]);
-  const [publicaciones, setPublicaciones] = useState<Publication[]>([]);
-  const [misSubastas, setMisSubastas] = useState<Auction[]>([]);
-  const [misOfertas, setMisOfertas] = useState<UserBid[]>([]);
-  const [intercambios, setIntercambios] = useState<Exchange[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
   const [showAddMissingModal, setShowAddMissingModal] = useState(false);
   const [showPublishModal, setShowPublishModal] = useState(false);
   const [exchangeDetail, setExchangeDetail] = useState<Exchange | null>(null);
   const [proposalDetail, setProposalDetail] = useState<Proposal | null>(null);
 
-  useEffect(() => {
-    setLoading(true);
-    setError(false);
-    Promise.allSettled([
+  // Carga las 7 secciones en paralelo con allSettled. Si una sola falla, el resto igual se muestra.
+  // Si TODAS fallan, marcamos error global. `refetch` re-corre las 7 (lo invocan los modales de
+  // crear faltante / publicar figurita, y "Ya la conseguí")
+  const { data, isLoading, error, refetch } = useFetch(
+    () => Promise.allSettled([
       getUserMissingCards(user.id),
       getProposals(user.id),
       getProposals('', user.id),
@@ -75,39 +71,61 @@ export default function ProfilePage() {
       getAuctionsByUserId(user.id),
       getAuctionBidsByUserId(user.id),
       getExchangesByUserId(user.id),
-    ]).then(([falt, rec, env, pubs, sub, bids, exch]) => {
-      if (falt.status === 'fulfilled') setFaltantes(falt.value);
-      if (rec.status === 'fulfilled') setRecibidas(rec.value);
-      if (env.status === 'fulfilled') setEnviadas(env.value);
-      if (pubs.status === 'fulfilled') setPublicaciones(pubs.value);
-      if (sub.status === 'fulfilled') setMisSubastas(sub.value);
-      if (bids.status === 'fulfilled') setMisOfertas(bids.value);
-      if (exch.status === 'fulfilled') setIntercambios(exch.value);
-      const allFailed = [falt, rec, env, pubs, sub, bids, exch].every(r => r.status === 'rejected');
-      if (allFailed) setError(true);
-    }).finally(() => setLoading(false));
-  }, [user.id]);
-
-  const loadUserMissingCards = async () => {
-    getUserMissingCards(user.id).then(missing => setFaltantes(missing));
-  };
+    ]).then(results => {
+      const allFailed = results.every(r => r.status === 'rejected');
+      if (allFailed) throw new Error('all sections failed');
+      const valueOr = <U,>(r: PromiseSettledResult<U>, fallback: U): U =>
+        r.status === 'fulfilled' ? r.value : fallback;
+      return {
+        faltantes:     valueOr<MissingCard[]>(results[0] as PromiseSettledResult<MissingCard[]>, []),
+        recibidas:     valueOr<Proposal[]>(results[1] as PromiseSettledResult<Proposal[]>, []),
+        enviadas:      valueOr<Proposal[]>(results[2] as PromiseSettledResult<Proposal[]>, []),
+        publicaciones: valueOr<Publication[]>(results[3] as PromiseSettledResult<Publication[]>, []),
+        misSubastas:   valueOr<Auction[]>(results[4] as PromiseSettledResult<Auction[]>, []),
+        misOfertas:    valueOr<UserBid[]>(results[5] as PromiseSettledResult<UserBid[]>, []),
+        intercambios:  valueOr<Exchange[]>(results[6] as PromiseSettledResult<Exchange[]>, []),
+      };
+    }),
+    [user.id],
+  );
+  const faltantes     = data?.faltantes     ?? [];
+  const recibidas     = data?.recibidas     ?? [];
+  const enviadas      = data?.enviadas      ?? [];
+  const publicaciones = data?.publicaciones ?? [];
+  const misSubastas   = data?.misSubastas   ?? [];
+  const misOfertas    = data?.misOfertas    ?? [];
+  const intercambios  = data?.intercambios  ?? [];
 
   const handleRemoveMissingCard = async (cardId: string) => {
     // "Ya la conseguí" = agregar a colección. La entity del BE limpia missingCards
-    // automáticamente al hacer addToCollection (idempotente).
+    // automáticamente al hacer addToCollection (idempotente)
     try {
       await addToUserCollection(user.id, cardId);
-      await loadUserMissingCards();
+      refetch();
     } catch (err) {
       console.error('Error al agregar la figurita a la colección:', err);
     }
   };
 
-  const loadUserPublications = async () => {
-    getMyPublications(user.id).then(setPublicaciones);
+  const handleAcceptProposal = async (proposal: Proposal) => {
+    try {
+      await acceptProposal(proposal.id, user.id);
+      showSuccess('Propuesta aceptada');
+      refetch();
+    } catch {
+      showError('Error al aceptar la propuesta. Intentá nuevamente.');
+    }
   };
 
-  const isAuctionActive = (a: Auction) => new Date(a.endDate) > new Date();
+  const handleRejectProposal = async (proposal: Proposal) => {
+    try {
+      await rejectProposal(proposal.id, user.id);
+      showSuccess('Propuesta rechazada');
+      refetch();
+    } catch {
+      showError('Error al rechazar la propuesta. Intentá nuevamente.');
+    }
+  };
 
   return (
     <ProfileContainer>
@@ -136,23 +154,23 @@ export default function ProfilePage() {
             Mi Colección
           </TabButton>
           <TabButton $active={activeTab === 'faltantes'} onClick={() => setActiveTab('faltantes')}>
-            Faltantes {!loading && `(${faltantes.length})`}
+            Faltantes {!isLoading && `(${faltantes.length})`}
           </TabButton>
           <TabButton $active={activeTab === 'publicaciones'} onClick={() => setActiveTab('publicaciones')}>
-            Publicaciones {!loading && `(${publicaciones.length})`}
+            Publicaciones {!isLoading && `(${publicaciones.length})`}
           </TabButton>
           <TabButton $active={activeTab === 'propuestas'} onClick={() => setActiveTab('propuestas')}>
-            Propuestas {!loading && `(${recibidas.length + enviadas.length})`}
+            Propuestas {!isLoading && `(${recibidas.length + enviadas.length})`}
           </TabButton>
           <TabButton $active={activeTab === 'subastas'} onClick={() => setActiveTab('subastas')}>
-            Subastas {!loading && `(${misSubastas.length + misOfertas.length})`}
+            Subastas {!isLoading && `(${misSubastas.length + misOfertas.length})`}
           </TabButton>
           <TabButton $active={activeTab === 'intercambios'} onClick={() => setActiveTab('intercambios')}>
-            Intercambios {!loading && `(${intercambios.length})`}
+            Intercambios {!isLoading && `(${intercambios.length})`}
           </TabButton>
         </TabNav>
 
-        {loading ? (
+        {isLoading ? (
           <p>Cargando...</p>
         ) : error ? (
           <EmptyMessage>Error al cargar los datos.</EmptyMessage>
@@ -290,10 +308,14 @@ export default function ProfilePage() {
               <>
                 <SectionHeader>
                   <SectionTitle>Mis Subastas ({misSubastas.length})</SectionTitle>
-                  {misSubastas.length > PREVIEW && (
-                    <SeeAllLink onClick={() => navigate('/auctions')}>Ver todas →</SeeAllLink>
-                  )}
+                  <SectionActionButton onClick={() => navigate('/auctions/create')}>
+                    <span className="material-symbols-outlined" aria-hidden="true">gavel</span>
+                    Crear Subasta
+                  </SectionActionButton>
                 </SectionHeader>
+                {misSubastas.length > PREVIEW && (
+                  <SeeAllLink onClick={() => navigate('/auctions')}>Ver todas →</SeeAllLink>
+                )}
                 {misSubastas.length === 0 ? (
                   <EmptyMessage>No tenés subastas publicadas.</EmptyMessage>
                 ) : (
@@ -304,8 +326,8 @@ export default function ProfilePage() {
                           <strong>#{a.figurita.number} {a.figurita.description}</strong>
                           <span>Cierra {new Date(a.endDate).toLocaleString('es-AR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}</span>
                         </div>
-                        <StatusIndicator $active={isAuctionActive(a)}>
-                          {isAuctionActive(a) ? 'Activa' : 'Cerrada'}
+                        <StatusIndicator $active={a.status === 'ACTIVA'}>
+                          {AUCTION_STATUS_LABEL[a.status]}
                         </StatusIndicator>
                       </OutlinedListItem>
                     ))}
@@ -390,7 +412,7 @@ export default function ProfilePage() {
         <AddMissingCardsModal
           userId={user.id}
           onClose={() => setShowAddMissingModal(false)}
-          onSuccess={loadUserMissingCards}
+          onSuccess={refetch}
         />
       )}
 
@@ -398,7 +420,7 @@ export default function ProfilePage() {
         <PublishCardModal
           userId={user.id}
           onClose={() => setShowPublishModal(false)}
-          onSuccess={loadUserPublications}
+          onSuccess={refetch}
         />
       )}
 
@@ -406,6 +428,12 @@ export default function ProfilePage() {
         <ProposalDetailModal
           proposal={proposalDetail}
           onClose={() => setProposalDetail(null)}
+          onAccept={proposalDetail.publication.publisher.id === user.id
+            ? () => handleAcceptProposal(proposalDetail)
+            : undefined}
+          onReject={proposalDetail.publication.publisher.id === user.id
+            ? () => handleRejectProposal(proposalDetail)
+            : undefined}
         />
       )}
 
