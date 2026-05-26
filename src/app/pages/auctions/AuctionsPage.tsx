@@ -1,12 +1,13 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate, useOutletContext } from 'react-router-dom';
 import { Auction } from '../../interfaces/auctions/Auction';
-import { UserBid } from '../../interfaces/auctions/bid/UserBid';
 import { getActiveAuctions, getAuctionsByUserId, getAuctionBidsByUserId, cancelOffer } from '../../api/AuctionsService';
 import AuctionCard from '../../components/auctions/AuctionCard';
 import PlaceBidModal from '../../components/auctions/PlaceBidModal';
+import ConfirmDialog from '../../components/feedback/ConfirmDialog';
 import { AuthedOutletContext } from '../../components/layout/UserRoute';
 import { useSnackbar } from '../../context/useSnackbar';
+import { useFetch } from '../../hooks/useFetch';
 import {
   AuctionsContainer,
   AuctionsHeader,
@@ -28,18 +29,32 @@ export default function AuctionsPage() {
   const { currentUser } = useOutletContext<AuthedOutletContext>();
   const { showSuccess, showError } = useSnackbar();
   const [activeTab, setActiveTab] = useState<Tab>('active');
-
-  const [activeAuctions, setActiveAuctions] = useState<Auction[]>([]);
-  const [myAuctions, setMyAuctions] = useState<Auction[]>([]);
-  const [myBids, setMyBids] = useState<UserBid[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [loadError, setLoadError] = useState(false);
   const [selectedAuction, setSelectedAuction] = useState<Auction | null>(null);
   const [cancellingBidId, setCancellingBidId] = useState<string | null>(null);
+  const [pendingCancel, setPendingCancel] = useState<{ auctionId: string; bidId: string } | null>(null);
 
-  const handleCancelOffer = async (auctionId: string, bidId: string) => {
-    if (!window.confirm('¿Cancelar esta oferta?')) return;
+  const userId = currentUser.id;
+  const { data: activeData, isLoading: loadingActive, error: errorActive } = useFetch(
+    () => getActiveAuctions(), [],
+  );
+  const { data: myAuctionsData, isLoading: loadingMyAuctions, error: errorMyAuctions } = useFetch(
+    () => getAuctionsByUserId(userId), [userId],
+  );
+  const { data: myBidsData, isLoading: loadingMyBids, error: errorMyBids, setData: setMyBids } = useFetch(
+    () => getAuctionBidsByUserId(userId), [userId],
+  );
+
+  const activeAuctions = activeData ?? [];
+  const myAuctions = myAuctionsData ?? [];
+  const myBids = myBidsData ?? [];
+  const loading = loadingActive || loadingMyAuctions || loadingMyBids;
+  const loadError = errorActive !== null || errorMyAuctions !== null || errorMyBids !== null;
+
+  const confirmCancelOffer = async () => {
+    if (!pendingCancel) return;
+    const { auctionId, bidId } = pendingCancel;
     setCancellingBidId(bidId);
+    setPendingCancel(null);
     try {
       await cancelOffer(auctionId, bidId);
       setMyBids(prev => prev.filter(b => b.bidId !== bidId));
@@ -50,23 +65,6 @@ export default function AuctionsPage() {
       setCancellingBidId(null);
     }
   };
-
-  useEffect(() => {
-    setLoading(true);
-    const userId = currentUser?.id ?? '';
-    Promise.all([
-      getActiveAuctions(),
-      getAuctionsByUserId(userId),
-      getAuctionBidsByUserId(userId),
-    ])
-      .then(([a, my, bids]) => {
-        setActiveAuctions(a);
-        setMyAuctions(my);
-        setMyBids(bids);
-      })
-      .catch(() => setLoadError(true))
-      .finally(() => setLoading(false));
-  }, [currentUser?.id]);
 
   return (
     <AuctionsContainer>
@@ -157,7 +155,7 @@ export default function AuctionsPage() {
                       {canCancel && (
                         <CancelBidButton
                           type="button"
-                          onClick={(e) => { e.stopPropagation(); handleCancelOffer(o.auctionId, o.bidId); }}
+                          onClick={(e) => { e.stopPropagation(); setPendingCancel({ auctionId: o.auctionId, bidId: o.bidId }); }}
                           disabled={cancellingBidId === o.bidId}
                         >
                           {cancellingBidId === o.bidId ? 'Cancelando...' : 'Cancelar oferta'}
@@ -181,6 +179,16 @@ export default function AuctionsPage() {
           onSuccess={() => setSelectedAuction(null)}
         />
       )}
+
+      <ConfirmDialog
+        open={pendingCancel !== null}
+        title="¿Cancelar esta oferta?"
+        confirmLabel="Sí, cancelar"
+        cancelLabel="Volver"
+        destructive
+        onConfirm={confirmCancelOffer}
+        onCancel={() => setPendingCancel(null)}
+      />
     </AuctionsContainer>
   );
 }

@@ -1,9 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate, useOutletContext } from 'react-router-dom';
 import { Proposal } from '../../interfaces/proposals/Proposal';
 import { getProposals, acceptProposal, rejectProposal } from '../../api/ProposalsService';
 import { AuthedOutletContext } from '../../components/layout/UserRoute';
 import { useSnackbar } from '../../context/useSnackbar';
+import { useFetch } from '../../hooks/useFetch';
 import ProposalDetailModal from '../../components/proposals/ProposalDetailModal';
 import {
   PageContainer, Header, BackButton, Title,
@@ -27,38 +28,26 @@ export default function ProposalsPage() {
   const { showError, showSuccess } = useSnackbar();
 
   const [tab, setTab] = useState<'received' | 'sent'>('received');
-  const [received, setReceived] = useState<Proposal[]>([]);
-  const [sent, setSent] = useState<Proposal[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [loadError, setLoadError] = useState(false);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [detail, setDetail] = useState<Proposal | null>(null);
 
-  useEffect(() => {
-    const load = async () => {
-      try {
-        const [rec, env] = await Promise.all([
-          getProposals(currentUser.id),
-          getProposals('', currentUser.id),
-        ]);
-        setReceived(rec);
-        setSent(env);
-      } catch {
-        setLoadError(true);
-      } finally {
-        setLoading(false);
-      }
-    };
-    load();
-  }, [currentUser.id]);
+  const {
+    data: receivedData, isLoading: loadingReceived, error: errorReceived, setData: setReceived,
+  } = useFetch(() => getProposals(currentUser.id), [currentUser.id]);
+  const {
+    data: sentData, isLoading: loadingSent, error: errorSent,
+  } = useFetch(() => getProposals('', currentUser.id), [currentUser.id]);
+
+  const received = receivedData ?? [];
+  const sent = sentData ?? [];
+  const loading = loadingReceived || loadingSent;
+  const loadError = errorReceived !== null || errorSent !== null;
 
   const handleAccept = async (proposal: Proposal) => {
     setActionLoading(proposal.id);
     try {
       await acceptProposal(proposal.id, currentUser.id);
-      setReceived(prev =>
-        prev.map(p => p.id === proposal.id ? { ...p, status: 'ACEPTADA' } : p)
-      );
+      setReceived(prev => prev.map(p => p.id === proposal.id ? { ...p, status: 'ACEPTADA' } : p));
       showSuccess('Propuesta aceptada');
     } catch {
       showError('Error al aceptar la propuesta. Intentá nuevamente.');
@@ -71,9 +60,7 @@ export default function ProposalsPage() {
     setActionLoading(proposal.id);
     try {
       await rejectProposal(proposal.id, currentUser.id);
-      setReceived(prev =>
-        prev.map(p => p.id === proposal.id ? { ...p, status: 'RECHAZADA' } : p)
-      );
+      setReceived(prev => prev.map(p => p.id === proposal.id ? { ...p, status: 'RECHAZADA' } : p));
       showSuccess('Propuesta rechazada');
     } catch {
       showError('Error al rechazar la propuesta. Intentá nuevamente.');
@@ -162,7 +149,14 @@ export default function ProposalsPage() {
         </ProposalList>
       )}
 
-      {detail && <ProposalDetailModal proposal={detail} onClose={() => setDetail(null)} />}
+      {detail && (
+        <ProposalDetailModal
+          proposal={detail}
+          onClose={() => setDetail(null)}
+          onAccept={tab === 'received' ? () => handleAccept(detail) : undefined}
+          onReject={tab === 'received' ? () => handleReject(detail) : undefined}
+        />
+      )}
     </PageContainer>
   );
 }

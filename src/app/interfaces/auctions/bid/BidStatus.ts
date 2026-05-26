@@ -1,1 +1,1 @@
-export type BidStatus = 'ACTIVA' | 'SUPERADA' | 'GANADORA' | 'RECHAZADA';
+export type BidStatus = 'ACTIVA' | 'SUPERADA' | 'GANADORA' | 'RECHAZADA' | 'CANCELADA';

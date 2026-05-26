@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Proposal } from '../../interfaces/proposals/Proposal';
 import { ProposalStatus } from '../../interfaces/proposals/ProposalStatus';
@@ -8,6 +9,7 @@ import {
   Footer, FooterButton,
 } from '../exchanges/ExchangeDetailModal.styles';
 import { StatusBadge } from '../../pages/profile/ProfilePage.styles';
+import { AcceptButton, RejectButton } from '../../pages/proposals/ProposalsPage.styles';
 
 const STATUS_LABEL: Record<ProposalStatus, string> = {
   PENDIENTE: 'Pendiente',
@@ -19,6 +21,10 @@ const STATUS_LABEL: Record<ProposalStatus, string> = {
 interface Props {
   proposal: Proposal;
   onClose: () => void;
+  // Si vienen y la propuesta está PENDIENTE, se muestran botones Aceptar/Rechazar en el footer
+  // El caller maneja el error/success — el modal solo dispara las callbacks y cierra
+  onAccept?: () => Promise<void> | void;
+  onReject?: () => Promise<void> | void;
 }
 
 const formatDateTime = (iso?: string) => {
@@ -30,13 +36,27 @@ const formatDateTime = (iso?: string) => {
   });
 };
 
-export default function ProposalDetailModal({ proposal, onClose }: Props) {
+export default function ProposalDetailModal({ proposal, onClose, onAccept, onReject }: Props) {
   const navigate = useNavigate();
   const pubCard = proposal.publication.card;
+  const [actionLoading, setActionLoading] = useState<'accept' | 'reject' | null>(null);
+  const showActions = proposal.status === 'PENDIENTE' && (onAccept || onReject);
 
   const goToPublication = () => {
     onClose();
     navigate(`/publications/${proposal.publication.id}`);
+  };
+
+  const handleAccept = async () => {
+    if (!onAccept) return;
+    setActionLoading('accept');
+    try { await onAccept(); } finally { setActionLoading(null); onClose(); }
+  };
+
+  const handleReject = async () => {
+    if (!onReject) return;
+    setActionLoading('reject');
+    try { await onReject(); } finally { setActionLoading(null); onClose(); }
   };
 
   return (
@@ -89,7 +109,17 @@ export default function ProposalDetailModal({ proposal, onClose }: Props) {
         </TwoColumns>
 
         <Footer>
-          <FooterButton type="button" onClick={onClose}>Cerrar</FooterButton>
+          {showActions && onReject && (
+            <RejectButton type="button" onClick={handleReject} disabled={actionLoading !== null}>
+              {actionLoading === 'reject' ? 'Rechazando...' : 'Rechazar'}
+            </RejectButton>
+          )}
+          {showActions && onAccept && (
+            <AcceptButton type="button" onClick={handleAccept} disabled={actionLoading !== null}>
+              {actionLoading === 'accept' ? 'Aceptando...' : 'Aceptar'}
+            </AcceptButton>
+          )}
+          <FooterButton type="button" onClick={onClose} disabled={actionLoading !== null}>Cerrar</FooterButton>
         </Footer>
       </Modal>
     </Overlay>

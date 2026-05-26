@@ -1,11 +1,12 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useParams, useNavigate, useOutletContext } from 'react-router-dom';
-import { Auction } from '../../interfaces/auctions/Auction';
 import { Bid } from '../../interfaces/auctions/bid/Bid';
-import { getAuctionById, acceptOffer, rejectOffer, cancelAuction } from '../../api/AuctionsService';
+import { getAuctionById, acceptOffer, rejectOffer, cancelAuction, cancelOffer } from '../../api/AuctionsService';
 import PlaceBidModal from '../../components/auctions/PlaceBidModal';
+import ConfirmDialog from '../../components/feedback/ConfirmDialog';
 import { AuthedOutletContext } from '../../components/layout/UserRoute';
 import { useSnackbar } from '../../context/useSnackbar';
+import { useFetch } from '../../hooks/useFetch';
 import { RULE_LABELS } from '../../interfaces/auctions/auctionRule/AuctionRule';
 import { formatCountdown } from '../../utils/utils';
 import {
@@ -59,8 +60,6 @@ export default function AuctionDetailPage() {
   const { currentUser } = useOutletContext<AuthedOutletContext>();
   const { showSuccess } = useSnackbar();
 
-  const [auction, setAuction] = useState<Auction | null>(null);
-  const [loading, setLoading] = useState(true);
   const [showBidModal, setShowBidModal] = useState(false);
   const [finalizing, setFinalizing] = useState(false);
   const [finalizeError, setFinalizeError] = useState<string | null>(null);
@@ -68,14 +67,20 @@ export default function AuctionDetailPage() {
   const [confirmCancel, setConfirmCancel] = useState(false);
   const [cancelling, setCancelling] = useState(false);
   const [rejectingBidId, setRejectingBidId] = useState<string | null>(null);
+  const [pendingCancelOwnBid, setPendingCancelOwnBid] = useState<string | null>(null);
+  const [cancellingOwnBid, setCancellingOwnBid] = useState(false);
+
+  const { data: auction, isLoading: loading, setData: setAuction } = useFetch(
+    () => getAuctionById(id!), [id],
+  );
+  // Tras cada mutación, re-fetcheamos el auction completo y lo aplicamos con setData
+  // (en vez de refetch()) para evitar el flicker del isLoading transitorio
+  const refreshAuction = async () => {
+    const updated = await getAuctionById(id!);
+    if (updated) setAuction(() => updated);
+  };
 
   const isOwner = auction !== null && currentUser?.id === auction.publisherId.id;
-
-  useEffect(() => {
-    getAuctionById(id!)
-      .then(setAuction)
-      .finally(() => setLoading(false));
-  }, [id]);
 
   const handleConfirmCancel = async () => {
     if (!auction) return;
@@ -83,8 +88,7 @@ export default function AuctionDetailPage() {
     try {
       await cancelAuction(auction.id);
       setConfirmCancel(false);
-      const updated = await getAuctionById(auction.id);
-      setAuction(updated);
+      await refreshAuction();
       showSuccess('Subasta cancelada');
     } catch {
       setFinalizeError('Error al cancelar la subasta. Intentá de nuevo.');
@@ -101,8 +105,7 @@ export default function AuctionDetailPage() {
     try {
       await acceptOffer(auction.id, pendingBid.bidId);
       setPendingBid(null);
-      const updated = await getAuctionById(auction.id);
-      setAuction(updated);
+      await refreshAuction();
       showSuccess('Oferta aceptada — Subasta finalizada');
     } catch {
       setFinalizeError('Error al finalizar la subasta. Intentá de nuevo.');
@@ -112,14 +115,29 @@ export default function AuctionDetailPage() {
     }
   };
 
+  const handleConfirmCancelOwnBid = async () => {
+    if (!auction || !pendingCancelOwnBid) return;
+    const bidId = pendingCancelOwnBid;
+    setPendingCancelOwnBid(null);
+    setCancellingOwnBid(true);
+    try {
+      await cancelOffer(auction.id, bidId);
+      await refreshAuction();
+      showSuccess('Oferta cancelada');
+    } catch {
+      setFinalizeError('Error al cancelar la oferta. Intentá de nuevo.');
+    } finally {
+      setCancellingOwnBid(false);
+    }
+  };
+
   const handleRejectOffer = async (bidId: string) => {
     if (!auction) return;
     setRejectingBidId(bidId);
     setFinalizeError(null);
     try {
       await rejectOffer(auction.id, bidId);
-      const updated = await getAuctionById(auction.id);
-      setAuction(updated);
+      await refreshAuction();
       showSuccess('Oferta rechazada');
     } catch {
       setFinalizeError('Error al rechazar la oferta. Intentá de nuevo.');
@@ -258,6 +276,16 @@ export default function AuctionDetailPage() {
                         </RejectOfferButton>
                       </OfferActions>
                     )}
+                    {!isOwner && o.bidder.userId === currentUser.id && isActive && o.status === 'ACTIVA' && (
+                      <OfferActions>
+                        <RejectOfferButton
+                          onClick={() => setPendingCancelOwnBid(o.bidId)}
+                          disabled={cancellingOwnBid}
+                        >
+                          {cancellingOwnBid ? 'Cancelando...' : 'Cancelar oferta'}
+                        </RejectOfferButton>
+                      </OfferActions>
+                    )}
                   </OfertaCard>
                 ))}
             </OfertasGrid>
@@ -344,6 +372,17 @@ export default function AuctionDetailPage() {
           onSuccess={() => setShowBidModal(false)}
         />
       )}
+
+      <ConfirmDialog
+        open={pendingCancelOwnBid !== null}
+        title="¿Cancelar tu oferta?"
+        message="Las figuritas ofrecidas vuelven a estar disponibles en tu colección."
+        confirmLabel="Sí, cancelar"
+        cancelLabel="Volver"
+        destructive
+        onConfirm={handleConfirmCancelOwnBid}
+        onCancel={() => setPendingCancelOwnBid(null)}
+      />
     </Page>
   );
 }
