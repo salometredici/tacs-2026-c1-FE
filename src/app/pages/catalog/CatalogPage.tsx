@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { getCatalog } from '../../api/CardsService';
 import { useFetch } from '../../hooks/useFetch';
-import { Category } from '../../interfaces/Categoria';
+import { Category } from '../../interfaces/Category';
 import {
   PageWrapper,
   PageHeader,

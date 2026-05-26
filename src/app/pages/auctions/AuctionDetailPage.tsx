@@ -15,24 +15,24 @@ import {
   PageTitle,
   TopGrid,
   Card,
-  FiguritaHeader,
-  FiguritaNumero,
-  FiguritaInfo,
-  CategoriaBadge,
-  EstadoBadge,
+  CardHeader,
+  CardNumber,
+  CardInfo,
+  CategoryBadge,
+  StatusBadge,
   SectionTitle,
   InfoRow,
-  ReglaItem,
-  OfertasGrid,
-  OfertaCard,
-  OfertaHeader,
-  OfertaBidder,
-  OfertaRating,
-  OfertaFiguritas,
-  OfertaDate,
+  RuleItem,
+  OffersGrid,
+  OfferCard,
+  OfferHeader,
+  OfferBidder,
+  OfferRating,
+  OfferedCards,
+  OfferDate,
   ChooseWinnerButton,
   RejectOfferButton,
-  OfertaEstadoBadge,
+  OfferStatusBadge,
   ConfirmOverlay,
   ConfirmModal,
   ConfirmTitle,
@@ -170,17 +170,17 @@ export default function AuctionDetailPage() {
 
       <TopGrid>
         <Card>
-          <FiguritaHeader>
-            <FiguritaNumero>#{auction.figurita.number}</FiguritaNumero>
-            <FiguritaInfo>
-              <h2>{auction.figurita.description}</h2>
-              <p>{auction.figurita.country} · {auction.figurita.team}</p>
+          <CardHeader>
+            <CardNumber>#{auction.card.number}</CardNumber>
+            <CardInfo>
+              <h2>{auction.card.description}</h2>
+              <p>{auction.card.country} · {auction.card.team}</p>
               <BadgeRow>
-                <CategoriaBadge $cat={auction.figurita.category}>{auction.figurita.category}</CategoriaBadge>
-                <EstadoBadge $estado={auction.status}>{auction.status}</EstadoBadge>
+                <CategoryBadge $category={auction.card.category}>{auction.card.category}</CategoryBadge>
+                <StatusBadge $status={auction.status}>{auction.status}</StatusBadge>
               </BadgeRow>
-            </FiguritaInfo>
-          </FiguritaHeader>
+            </CardInfo>
+          </CardHeader>
 
           <InfoRow>
             <span className="label">Publicante</span>
@@ -213,9 +213,9 @@ export default function AuctionDetailPage() {
             <HintText>Sin restricciones — cualquiera puede ofertar.</HintText>
           ) : (
             auction.rules.map(r => (
-              <ReglaItem key={r.type}>
+              <RuleItem key={r.type}>
                 <strong>{RULE_LABELS[r.type] ?? r.type}:</strong> {r.value}
-              </ReglaItem>
+              </RuleItem>
             ))
           )}
           {isActive && !isOwner && (
@@ -239,27 +239,27 @@ export default function AuctionDetailPage() {
           </EmptyBidsText>
         ) : (
           <>
-            <OfertasGrid>
+            <OffersGrid>
               {auction.bids
                 .slice()
                 .sort((a, b) => (b.bidId === auction.lastBidId ? 1 : 0) - (a.bidId === auction.lastBidId ? 1 : 0))
                 .map((o: Bid) => (
-                  <OfertaCard key={o.bidId} $estado={o.status}>
-                    <OfertaHeader>
+                  <OfferCard key={o.bidId} $status={o.status}>
+                    <OfferHeader>
                       <div>
-                        <OfertaBidder>{o.bidder.name}</OfertaBidder>
-                        <OfertaRating>
+                        <OfferBidder>{o.bidder.name}</OfferBidder>
+                        <OfferRating>
                           {'★'.repeat(Math.round(o.bidder.rating))}
                           <span className="num">({o.bidder.rating.toFixed(1)})</span>
-                        </OfertaRating>
+                        </OfferRating>
                       </div>
-                      <OfertaEstadoBadge $estado={o.status}>{o.status}</OfertaEstadoBadge>
-                    </OfertaHeader>
-                    <OfertaFiguritas>
-                      <strong>{o.offeredFiguritas.length} figurita(s):</strong>{' '}
-                      {o.offeredFiguritas.map(f => `#${f.number} ${f.description}`).join(', ')}
-                    </OfertaFiguritas>
-                    <OfertaDate>{new Date(o.bidDate).toLocaleString('es-AR')}</OfertaDate>
+                      <OfferStatusBadge $status={o.status}>{o.status}</OfferStatusBadge>
+                    </OfferHeader>
+                    <OfferedCards>
+                      <strong>{o.offeredCards.length} figurita(s):</strong>{' '}
+                      {o.offeredCards.map(f => `#${f.number} ${f.description}`).join(', ')}
+                    </OfferedCards>
+                    <OfferDate>{new Date(o.bidDate).toLocaleString('es-AR')}</OfferDate>
                     {isOwner && isActive && o.status === 'ACTIVA' && (
                       <OfferActions>
                         <ChooseWinnerButton
@@ -286,9 +286,9 @@ export default function AuctionDetailPage() {
                         </RejectOfferButton>
                       </OfferActions>
                     )}
-                  </OfertaCard>
+                  </OfferCard>
                 ))}
-            </OfertasGrid>
+            </OffersGrid>
             {finalizeError && (
               <FinalizeErrorText>{finalizeError}</FinalizeErrorText>
             )}
@@ -306,7 +306,7 @@ export default function AuctionDetailPage() {
             <ExchangeSummary>
               <div>
                 <div className="label">Subasta</div>
-                <div className="value">#{auction.figurita.number} {auction.figurita.description}</div>
+                <div className="value">#{auction.card.number} {auction.card.description}</div>
               </div>
               <div>
                 <div className="label">Ofertas que se descartarán</div>
@@ -336,12 +336,12 @@ export default function AuctionDetailPage() {
             <ExchangeSummary>
               <div>
                 <div className="label">Vos entregás</div>
-                <div className="value">#{auction.figurita.number} {auction.figurita.description}</div>
+                <div className="value">#{auction.card.number} {auction.card.description}</div>
               </div>
               <div>
                 <div className="label">Recibís de {pendingBid.bidder.name}</div>
                 <div className="value">
-                  {pendingBid.offeredFiguritas.map(f => `#${f.number} ${f.description}`).join(', ')}
+                  {pendingBid.offeredCards.map(f => `#${f.number} ${f.description}`).join(', ')}
                 </div>
               </div>
               <div>
@@ -366,7 +366,7 @@ export default function AuctionDetailPage() {
       {showBidModal && currentUser && (
         <PlaceBidModal
           userId={currentUser.id}
-          card={auction.figurita}
+          card={auction.card}
           auctionId={auction.id}
           onClose={() => setShowBidModal(false)}
           onSuccess={() => setShowBidModal(false)}

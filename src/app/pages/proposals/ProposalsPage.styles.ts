@@ -146,7 +146,7 @@ export const CardRight = styled.div`
 `;
 
 // M3 Assist Chip – proposal status
-export const StatusBadge = styled.span<{ $estado: ProposalStatus }>`
+export const StatusBadge = styled.span<{ $status: ProposalStatus }>`
   display: inline-flex;
   align-items: center;
   padding: 2px 10px;
@@ -155,13 +155,13 @@ export const StatusBadge = styled.span<{ $estado: ProposalStatus }>`
   font-weight: ${theme.typography.labelSmall.fontWeight};
   letter-spacing: 0.04em;
   white-space: nowrap;
-  background: ${({ $estado }) =>
-    $estado === 'PENDIENTE' ? theme.colors.tertiaryContainer :
-    $estado === 'ACEPTADA'  ? theme.colors.successContainer :
+  background: ${({ $status }) =>
+    $status === 'PENDIENTE' ? theme.colors.tertiaryContainer :
+    $status === 'ACEPTADA'  ? theme.colors.successContainer :
                                theme.colors.errorContainer};
-  color: ${({ $estado }) =>
-    $estado === 'PENDIENTE' ? theme.colors.onTertiaryContainer :
-    $estado === 'ACEPTADA'  ? theme.colors.success :
+  color: ${({ $status }) =>
+    $status === 'PENDIENTE' ? theme.colors.onTertiaryContainer :
+    $status === 'ACEPTADA'  ? theme.colors.success :
                                theme.colors.onErrorContainer};
 `;
 

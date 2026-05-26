@@ -6,7 +6,7 @@ import { mockUsers } from './usersMock';
 export const mockAuctions: Auction[] = [
   {
     id: '1',
-    figurita: mockFiguritas[0], // Messi
+    card: mockFiguritas[0], // Messi
     publisherId: mockUsers[0],   // Pepe (69e54c037de7f7e868da90f4)
     status: 'ACTIVA',
     creationDate: '2026-04-25T10:00:00',
@@ -19,7 +19,7 @@ export const mockAuctions: Auction[] = [
       {
         bidId: 'o-1',
         bidder: { userId: 'user_2', name: 'Mónica Argento', rating: 4.8, avatarId: 'avatar_2' },
-        offeredFiguritas: [mockFiguritas[2], mockFiguritas[4]],
+        offeredCards: [mockFiguritas[2], mockFiguritas[4]],
         status: 'ACTIVA',
         bidDate: '2026-04-15T10:00:00',
       },
@@ -28,7 +28,7 @@ export const mockAuctions: Auction[] = [
   },
   {
     id: '2',
-    figurita: mockFiguritas[1], // Cristiano Ronaldo
+    card: mockFiguritas[1], // Cristiano Ronaldo
     publisherId: mockUsers[1],   // Mónica (user_2)
     status: 'ACTIVA',
     creationDate: '2026-04-22T09:00:00',
@@ -41,14 +41,14 @@ export const mockAuctions: Auction[] = [
       {
         bidId: 'o-2',
         bidder: { userId: 'user_3', name: 'Homero Simpson', rating: 5.0, avatarId: 'avatar_3' },
-        offeredFiguritas: [mockFiguritas[5]],
+        offeredCards: [mockFiguritas[5]],
         status: 'ACTIVA',
         bidDate: '2026-04-16T14:30:00',
       },
       {
         bidId: 'o-3',
         bidder: { userId: '69e54c037de7f7e868da90f4', name: 'Pepe Argento', rating: 4.5, avatarId: 'avatar_2' },
-        offeredFiguritas: [mockFiguritas[2], mockFiguritas[3]],
+        offeredCards: [mockFiguritas[2], mockFiguritas[3]],
         status: 'ACTIVA',
         bidDate: '2026-04-17T09:15:00',
       },
@@ -57,7 +57,7 @@ export const mockAuctions: Auction[] = [
   },
   {
     id: '3',
-    figurita: mockFiguritas[3], // Mbappé
+    card: mockFiguritas[3], // Mbappé
     publisherId: mockUsers[2],   // Homero (user_3)
     status: 'ACTIVA',
     creationDate: '2026-04-26T12:00:00',
@@ -67,7 +67,7 @@ export const mockAuctions: Auction[] = [
       {
         bidId: 'o-4',
         bidder: { userId: '69e54c037de7f7e868da90f4', name: 'Pepe Argento', rating: 4.5, avatarId: 'avatar_2' },
-        offeredFiguritas: [mockFiguritas[0]],
+        offeredCards: [mockFiguritas[0]],
         status: 'SUPERADA',
         bidDate: '2026-04-14T20:00:00',
       },
@@ -97,12 +97,12 @@ export const getMockedUserBids = (userId: string): UserBid[] => {
     if (oferta) {
       result.push({
         auctionId: subasta.id,
-        figurita: subasta.figurita,
+        card: subasta.card,
         publisher: subasta.publisherId,
         auctionStatus: subasta.status,
         closingDate: subasta.endDate,
         bidId: oferta.bidId,
-        offeredFiguritas: oferta.offeredFiguritas,
+        offeredCards: oferta.offeredCards,
         bidStatus: oferta.status,
         bidDate: oferta.bidDate,
       });

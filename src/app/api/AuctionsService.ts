@@ -81,7 +81,7 @@ export const mapAuction = (dto: AuctionDto): Auction => {
       rating: 0,
       avatarId: 'avatar_1',
     },
-    offeredFiguritas: o.offeredItems.flatMap(it =>
+    offeredCards: o.offeredItems.flatMap(it =>
       Array(it.amount).fill({
         id: it.cardId,
         number: it.cardNumber,
@@ -97,7 +97,7 @@ export const mapAuction = (dto: AuctionDto): Auction => {
   }));
   return {
     id: dto.id,
-    figurita: card,
+    card,
     publisherId: publisher,
     status: STATUS_BE_TO_FE[dto.status] ?? 'ACTIVA',
     creationDate: '',
@@ -178,7 +178,7 @@ export const getAuctionBidsByUserId = async (userId: string): Promise<UserBid[]>
   const res = await axios.get<UserBidDtoBE[]>(`${BASE}/offers`, { params: { userId } });
   return res.data.map(b => ({
     auctionId: b.auctionId,
-    figurita: {
+    card: {
       id: '',
       number: b.cardNumber,
       type: 'JUGADOR' as CardType,
@@ -197,7 +197,7 @@ export const getAuctionBidsByUserId = async (userId: string): Promise<UserBid[]>
     auctionStatus: STATUS_BE_TO_FE[b.auctionStatus] ?? 'ACTIVA',
     closingDate: b.closeDate,
     bidId: b.offerId,
-    offeredFiguritas: b.offeredItems.flatMap(it =>
+    offeredCards: b.offeredItems.flatMap(it =>
       Array(it.amount).fill({
         id: it.cardId ?? '',
         number: it.cardNumber ?? 0,

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Card } from '../../interfaces/cards/Card';
-import { Category } from '../../interfaces/Categoria';
+import { Category } from '../../interfaces/Category';
 import { getCatalog } from '../../api/CardsService';
 import { addToUserCollection } from '../../api/UsersService';
 import {

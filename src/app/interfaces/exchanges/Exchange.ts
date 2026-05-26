@@ -15,8 +15,8 @@ export interface Exchange {
   origin: ExchangeOrigin;
   userA: UserSnapshot;
   userB: UserSnapshot;
-  figuritasDeA: CardSnapshot[];
-  figuritasDeB: CardSnapshot[];
+  cardsFromA: CardSnapshot[] | null;
+  cardsFromB: CardSnapshot[] | null;
   status: ExchangeStatus;
   createdAt: string;
   feedbackFromA?: Feedback | null;

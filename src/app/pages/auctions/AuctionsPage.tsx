@@ -129,13 +129,13 @@ export default function AuctionsPage() {
             ) : (
               <AuctionsGrid>
                 {myBids.map(o => {
-                  const subtitle = [o.figurita.country, o.figurita.team].filter(Boolean).join(' · ');
+                  const subtitle = [o.card.country, o.card.team].filter(Boolean).join(' · ');
                   const canCancel = o.bidStatus === 'ACTIVA' && o.auctionStatus === 'ACTIVA';
                   return (
                     <MyBidCard key={o.bidId} onClick={() => navigate(`/auctions/${o.auctionId}`)}>
                       <MyBidHeader>
                         <div>
-                          <MyBidTitle>#{o.figurita.number} {o.figurita.description}</MyBidTitle>
+                          <MyBidTitle>#{o.card.number} {o.card.description}</MyBidTitle>
                           {subtitle && (
                             <MyBidSubMeta>{subtitle}</MyBidSubMeta>
                           )}
@@ -146,7 +146,7 @@ export default function AuctionsPage() {
                         Subasta de: <StrongInline>{o.publisher.name}</StrongInline>
                       </MyBidMeta>
                       <MyBidMeta>
-                        Ofrecí: <StrongInline>{o.offeredFiguritas.length} figurita(s)</StrongInline>
+                        Ofrecí: <StrongInline>{o.offeredCards.length} figurita(s)</StrongInline>
                         {' · '}{new Date(o.bidDate).toLocaleDateString('es-AR')}
                       </MyBidMeta>
                       <MyBidMeta>
@@ -173,7 +173,7 @@ export default function AuctionsPage() {
       {selectedAuction && currentUser && (
         <PlaceBidModal
           userId={currentUser.id}
-          card={selectedAuction.figurita}
+          card={selectedAuction.card}
           auctionId={selectedAuction.id}
           onClose={() => setSelectedAuction(null)}
           onSuccess={() => setSelectedAuction(null)}

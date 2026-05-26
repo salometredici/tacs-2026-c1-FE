@@ -1,4 +1,4 @@
-import { Category } from '../Categoria';
+import { Category } from '../Category';
 import { CardType } from '../CardType';
 
 export interface Card {

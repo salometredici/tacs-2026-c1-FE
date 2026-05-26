@@ -62,7 +62,7 @@ export const CardList = styled.div`
   scrollbar-color: ${theme.colors.outlineVariant} transparent;
 `;
 
-export const FiguritaItem = styled.div`
+export const CardItem = styled.div`
   display: flex;
   align-items: center;
   padding: ${theme.spacing.sm} ${theme.spacing.md};

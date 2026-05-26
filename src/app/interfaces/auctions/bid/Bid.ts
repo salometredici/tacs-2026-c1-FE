@@ -9,7 +9,7 @@ export interface Bid {
     rating: number;
     avatarId: string;
   };
-  offeredFiguritas: Card[];
+  offeredCards: Card[];
   status: BidStatus;
   bidDate: string;
 }

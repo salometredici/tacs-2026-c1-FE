@@ -13,7 +13,7 @@ import {
   SearchInput,
   SectionLabel,
   CardList,
-  FiguritaItem,
+  CardItem,
   CardNum,
   CardDescription,
   CardQuantityLabel,
@@ -160,12 +160,12 @@ export default function MakeProposalModal({ userId, card, publicationId, maxRequ
                 {available.length === 0 ? (
                   <EmptyItem>No hay figuritas disponibles</EmptyItem>
                 ) : available.map(fc => (
-                  <FiguritaItem key={fc.cardId}>
+                  <CardItem key={fc.cardId}>
                     <CardNum>#{fc.number}</CardNum>
                     <CardDescription>{fc.description}</CardDescription>
                     <CardQuantityLabel>{availableOf(fc)} disp. / {fc.quantity} tot.</CardQuantityLabel>
                     <AddButton onClick={() => toggleFigurita(fc.cardId)}>Agregar</AddButton>
-                  </FiguritaItem>
+                  </CardItem>
                 ))}
               </CardList>
             </div>
@@ -179,7 +179,7 @@ export default function MakeProposalModal({ userId, card, publicationId, maxRequ
                 {offered.length === 0 ? (
                   <EmptyItem>Ninguna seleccionada aún</EmptyItem>
                 ) : offered.map(fc => (
-                  <FiguritaItem key={fc.cardId}>
+                  <CardItem key={fc.cardId}>
                     <CardNum>#{fc.number}</CardNum>
                     <CardDescription>{fc.description}</CardDescription>
                     <QtyRow>
@@ -191,7 +191,7 @@ export default function MakeProposalModal({ userId, card, publicationId, maxRequ
                       >+</QtyButton>
                     </QtyRow>
                     <RemoveButton onClick={() => toggleFigurita(fc.cardId)}>Quitar</RemoveButton>
-                  </FiguritaItem>
+                  </CardItem>
                 ))}
               </CardList>
             </div>

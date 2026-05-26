@@ -123,7 +123,7 @@ export const ResultsGrid = styled.div`
 `;
 
 // M3 Elevated Card
-export const FiguritaCard = styled.div`
+export const SearchResultCard = styled.div`
   background: ${theme.colors.surfaceContainerLow};
   border-radius: ${theme.shape.medium};
   padding: ${theme.spacing.lg};
@@ -133,14 +133,14 @@ export const FiguritaCard = styled.div`
   &:hover { box-shadow: ${theme.elevation[2]}; }
 `;
 
-export const FiguritaNumber = styled.h3`
+export const CardNumber = styled.h3`
   margin: 0 0 ${theme.spacing.sm} 0;
   color: ${theme.colors.primary};
   font-size: ${theme.typography.headlineSmall.fontSize};
   font-weight: 500;
 `;
 
-export const FiguritaInfo = styled.p`
+export const CardInfo = styled.p`
   margin: ${theme.spacing.xs} 0;
   color: ${theme.colors.onSurfaceVariant};
   font-size: ${theme.typography.bodyMedium.fontSize};
