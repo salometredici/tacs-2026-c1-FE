@@ -225,34 +225,6 @@ export const RejectOfferButton = styled.button`
 `;
 
 
-export const ConfirmOverlay = styled.div`
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-`;
-
-export const ConfirmModal = styled.div`
-  background: ${theme.colors.surface};
-  border-radius: ${theme.borderRadius.md};
-  padding: ${theme.spacing.xl};
-  max-width: 480px;
-  width: 90%;
-  box-shadow: ${theme.shadows.lg};
-  display: flex;
-  flex-direction: column;
-  gap: ${theme.spacing.md};
-`;
-
-export const ConfirmTitle = styled.h3`
-  margin: 0;
-  font-size: 1.2rem;
-  color: ${theme.colors.text};
-`;
-
 export const WarningBox = styled.div`
   background: #fff3e0;
   border-left: 4px solid ${theme.colors.secondary};
@@ -272,36 +244,6 @@ export const ExchangeSummary = styled.div`
   gap: ${theme.spacing.xs};
   .label { color: ${theme.colors.textSecondary}; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.04em; }
   .value { font-weight: 600; color: ${theme.colors.text}; }
-`;
-
-export const ConfirmFooter = styled.div`
-  display: flex;
-  justify-content: flex-end;
-  gap: ${theme.spacing.md};
-`;
-
-export const CancelBtn = styled.button`
-  padding: ${theme.spacing.sm} ${theme.spacing.lg};
-  background: none;
-  border: 1px solid ${theme.colors.border};
-  border-radius: ${theme.borderRadius.sm};
-  font-size: 0.95rem;
-  cursor: pointer;
-  color: ${theme.colors.textSecondary};
-  &:hover { background: ${theme.colors.background}; }
-`;
-
-export const ConfirmBtn = styled.button`
-  padding: ${theme.spacing.sm} ${theme.spacing.lg};
-  background: ${theme.colors.danger};
-  color: white;
-  border: none;
-  border-radius: ${theme.borderRadius.sm};
-  font-size: 0.95rem;
-  font-weight: 700;
-  cursor: pointer;
-  &:hover { background: #b71c1c; }
-  &:disabled { opacity: 0.6; cursor: not-allowed; }
 `;
 
 export const BidButton = styled.button`
