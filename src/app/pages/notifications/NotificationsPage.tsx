@@ -15,7 +15,7 @@ import {
   NotificationList, NotificationCard,
   NotificationInfo, NotificationMessage, NotificationType,
   CardRight, MarkReadButton, NavigateButton,
-  Pagination, PageButton, PageInfo,
+  PaginationRow, PaginationIconButton, PageNumberButton, PageEllipsis,
 } from './NotificationsPage.styles';
 
 const TYPE_LABELS: Record<string, string> = {
@@ -47,6 +47,22 @@ function getNavigateLabel(n: Notification): string {
   if (n.type.startsWith('AUCTION_') || n.type === 'WANTED_CARD_AVAILABLE_IN_AUCTION') return 'Ir a subasta';
   if (n.type === 'WANTED_CARD_AVAILABLE_IN_PUBLICATION') return 'Ir a publicación';
   return '';
+}
+
+function buildPageRange(current: number, total: number): Array<number | '...'> {
+  if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
+
+  const pages: Array<number | '...'> = [1];
+
+  if (current <= 3) {
+    pages.push(2, 3, 4, '...', total);
+  } else if (current >= total - 3) {
+    pages.push('...', total - 3, total - 2, total - 1, total);
+  } else {
+    pages.push('...', current - 1, current, current + 1, '...', total);
+  }
+
+  return pages;
 }
 
 export default function NotificationsPage() {
@@ -146,15 +162,40 @@ export default function NotificationsPage() {
           </NotificationList>
 
           {totalPages > 1 && (
-            <Pagination>
-              <PageButton disabled={page <= 1} onClick={() => setPage(p => p - 1)}>
-                Anterior
-              </PageButton>
-              <PageInfo>Página {page}</PageInfo>
-              <PageButton disabled={page >= totalPages} onClick={() => setPage(p => p + 1)}>
-                Siguiente
-              </PageButton>
-            </Pagination>
+            <PaginationRow>
+              <PaginationIconButton
+                disabled={page <= 1}
+                onClick={() => setPage(1)}
+                aria-label="Primera página"
+              >
+                <span className="material-symbols-outlined" aria-hidden="true">skip_previous</span>
+              </PaginationIconButton>
+
+              {buildPageRange(page, totalPages).map((item, idx) =>
+                item === '...' ? (
+                  <PageEllipsis key={`ellipsis-${idx}`}>…</PageEllipsis>
+                ) : (
+                  <PageNumberButton
+                    key={item}
+                    $current={item === page}
+                    data-current={item === page}
+                    onClick={() => setPage(item)}
+                    aria-label={`Ir a página ${item}`}
+                    aria-current={item === page ? 'page' : undefined}
+                  >
+                    {item}
+                  </PageNumberButton>
+                ),
+              )}
+
+              <PaginationIconButton
+                disabled={page >= totalPages}
+                onClick={() => setPage(totalPages)}
+                aria-label="Última página"
+              >
+                <span className="material-symbols-outlined" aria-hidden="true">skip_next</span>
+              </PaginationIconButton>
+            </PaginationRow>
           )}
         </>
       )}

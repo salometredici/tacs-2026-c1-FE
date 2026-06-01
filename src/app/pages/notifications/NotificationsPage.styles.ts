@@ -164,26 +164,29 @@ export const NavigateButton = styled.button`
   & .material-symbols-outlined { font-size: 1rem; }
 `;
 
-// Pagination
-export const Pagination = styled.div`
+// ─── M3 Pagination ────────────────────────────────────────────────────────────
+
+export const PaginationRow = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: ${theme.spacing.md};
+  gap: ${theme.spacing.xs};
   margin-top: ${theme.spacing.xl};
 `;
 
-// M3 Outlined Button
-export const PageButton = styled.button`
-  padding: 8px 20px;
-  background: none;
-  color: ${theme.colors.primary};
-  border: 1px solid ${theme.colors.outline};
+export const PaginationIconButton = styled.button<{ disabled?: boolean }>`
+  width: 40px;
+  height: 40px;
+  border: none;
   border-radius: ${theme.shape.full};
-  font-size: ${theme.typography.labelLarge.fontSize};
-  font-weight: ${theme.typography.labelLarge.fontWeight};
-  letter-spacing: 0.04em;
-  cursor: pointer;
+  background: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: ${({ disabled }) => (disabled ? 'default' : 'pointer')};
+  color: ${({ disabled }) =>
+    disabled ? theme.colors.onSurface : theme.colors.onSurfaceVariant};
+  opacity: ${({ disabled }) => (disabled ? 0.38 : 1)};
   transition: background-color 0.15s;
   position: relative;
   overflow: hidden;
@@ -192,17 +195,53 @@ export const PageButton = styled.button`
     content: '';
     position: absolute;
     inset: 0;
-    background: ${theme.colors.primary};
+    background: currentColor;
     opacity: 0;
     transition: opacity 0.15s;
     border-radius: inherit;
   }
 
-  &:hover::after { opacity: ${theme.state.hover}; }
-  &:disabled { opacity: 0.38; pointer-events: none; }
+  &:not(:disabled):hover::after { opacity: ${theme.state.hover}; }
+  &:not(:disabled):active::after { opacity: ${theme.state.pressed}; }
 `;
 
-export const PageInfo = styled.span`
-  font-size: ${theme.typography.bodyMedium.fontSize};
+export const PageNumberButton = styled.button<{ $current: boolean }>`
+  min-width: 40px;
+  height: 40px;
+  padding: 0 4px;
+  border: none;
+  border-radius: ${theme.shape.full};
+  font-size: ${theme.typography.labelLarge.fontSize};
+  font-weight: ${({ $current }) => ($current ? 700 : 400)};
+  cursor: ${({ $current }) => ($current ? 'default' : 'pointer')};
+  background: ${({ $current }) =>
+    $current ? theme.colors.primary : 'none'};
+  color: ${({ $current }) =>
+    $current ? theme.colors.onPrimary : theme.colors.onSurfaceVariant};
+  transition: background-color 0.15s;
+  position: relative;
+  overflow: hidden;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: currentColor;
+    opacity: 0;
+    transition: opacity 0.15s;
+    border-radius: inherit;
+  }
+
+  &:not([data-current='true']):hover::after { opacity: ${theme.state.hover}; }
+`;
+
+export const PageEllipsis = styled.span`
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: ${theme.typography.bodyLarge.fontSize};
   color: ${theme.colors.onSurfaceVariant};
+  user-select: none;
 `;
