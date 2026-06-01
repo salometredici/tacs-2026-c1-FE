@@ -8,18 +8,13 @@ import { useSnackbar } from '../../context/useSnackbar';
 import { AUCTION_DURATION_MIN, AUCTION_DURATION_MAX } from '../../constants/auctions';
 import { formatDuration } from '../../utils/utils';
 import BackButton from '../../components/common/BackButton';
-import RatingStars from '../../components/common/RatingStars';
 import {
-  PageContainer, Header, Title, Card, Field, Label, Hint, Select,
+  PageContainer, Header, Title, Card, Field, Label, Hint,
   StarsRow, ErrorMsg, SubmitButton,
-  SelectableItem, SelectIndicator,
   NumericInputSmall, InputSuffix,
 } from './CreateAuctionPage.styles';
-import {
-  SearchInput, CardList, CardNum, CardDescription, CardQuantityLabel, EmptyItem,
-} from '../../components/proposals/MakeProposalModal.styles';
-
-// ─── Componente ─────────────────────────────────────────────────────────────
+import CardSelector from './create/CardSelector';
+import AuctionRulesFields, { Category } from './create/AuctionRulesFields';
 
 export default function CreateAuctionPage() {
   const navigate = useNavigate();
@@ -28,7 +23,6 @@ export default function CreateAuctionPage() {
 
   const [collection, setCollection] = useState<CollectionCard[]>([]);
   const [loadingCollection, setLoadingCollection] = useState(true);
-  const [searchQuery, setSearchQuery] = useState('');
 
   const [cardId, setCardId] = useState<string | ''>('');
   const [durationHours, setDurationHours] = useState<number>(24);
@@ -38,7 +32,7 @@ export default function CreateAuctionPage() {
   const [exchangesEnabled, setExchangesEnabled] = useState(false);
   const [minCardCount, setMinCardCount] = useState<number>(1);
   const [cardCountEnabled, setCardCountEnabled] = useState(false);
-  const [minCategory, setMinCategory] = useState<'COMUN' | 'EPICO' | 'LEGENDARIO'>('EPICO');
+  const [minCategory, setMinCategory] = useState<Category>('EPICO');
   const [categoryEnabled, setCategoryEnabled] = useState(false);
 
   const [submitting, setSubmitting] = useState(false);
@@ -90,7 +84,6 @@ export default function CreateAuctionPage() {
     }
   };
 
-
   return (
     <PageContainer>
       <Header>
@@ -99,62 +92,13 @@ export default function CreateAuctionPage() {
       </Header>
 
       <Card as="form" onSubmit={handleSubmit}>
-        {/* Figurita */}
-        <Field>
-          <Label>Figurita a subastar</Label>
-          {loadingCollection ? (
-            <Hint>Cargando colección...</Hint>
-          ) : collection.length === 0 ? (
-            <Hint>No tenés figuritas en tu colección</Hint>
-          ) : (
-            <>
-              <SearchInput
-                placeholder="Buscar por descripción o número..."
-                value={searchQuery}
-                onChange={e => setSearchQuery(e.target.value)}
-              />
-              <CardList>
-                {collection
-                  .filter(fc => fc.quantity - fc.compromisedCount > 0)
-                  .filter(fc =>
-                    fc.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                    String(fc.number).includes(searchQuery)
-                  )
-                  .map(fc => {
-                    const isSelected = cardId === fc.cardId;
-                    const available = fc.quantity - fc.compromisedCount;
-                    return (
-                      <SelectableItem
-                        key={fc.cardId}
-                        $selected={isSelected}
-                        onClick={() => setCardId(fc.cardId)}
-                      >
-                        <SelectIndicator $selected={isSelected}>
-                          <span className="material-symbols-outlined" aria-hidden="true">
-                            {isSelected ? 'radio_button_checked' : 'radio_button_unchecked'}
-                          </span>
-                        </SelectIndicator>
-                        <CardNum>#{fc.number}</CardNum>
-                        <CardDescription>{fc.description}</CardDescription>
-                        <CardQuantityLabel>{available} disp. / {fc.quantity} tot.</CardQuantityLabel>
-                      </SelectableItem>
-                    );
-                  })
-                }
-                {collection.filter(fc =>
-                  fc.quantity - fc.compromisedCount > 0 && (
-                    fc.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                    String(fc.number).includes(searchQuery)
-                  )
-                ).length === 0 && (
-                  <EmptyItem>No tenés figuritas con disponibilidad</EmptyItem>
-                )}
-              </CardList>
-            </>
-          )}
-        </Field>
+        <CardSelector
+          collection={collection}
+          loading={loadingCollection}
+          value={cardId}
+          onChange={setCardId}
+        />
 
-        {/* Duración */}
         <Field>
           <Label htmlFor="duracion-input">
             Duración&nbsp;
@@ -176,103 +120,27 @@ export default function CreateAuctionPage() {
           </StarsRow>
         </Field>
 
-        {/* Reputación mínima */}
-        <Field>
-          <Label>
-            <input
-              type="checkbox"
-              checked={reputationEnabled}
-              onChange={e => setReputationEnabled(e.target.checked)}
-            />
-            Reputación mínima
-          </Label>
-          {reputationEnabled && (
-            <>
-              <Hint>Solo podrán ofertar usuarios con este rating o superior</Hint>
-              <RatingStars
-                value={minReputation}
-                onChange={setMinReputation}
-                label={minReputation === 0 ? 'Sin restricción' : `${minReputation} / 5`}
-              />
-            </>
-          )}
-        </Field>
+        <AuctionRulesFields
+          reputationEnabled={reputationEnabled}
+          setReputationEnabled={setReputationEnabled}
+          minReputation={minReputation}
+          setMinReputation={setMinReputation}
+          exchangesEnabled={exchangesEnabled}
+          setExchangesEnabled={setExchangesEnabled}
+          minExchanges={minExchanges}
+          setMinExchanges={setMinExchanges}
+          cardCountEnabled={cardCountEnabled}
+          setCardCountEnabled={setCardCountEnabled}
+          minCardCount={minCardCount}
+          setMinCardCount={setMinCardCount}
+          categoryEnabled={categoryEnabled}
+          setCategoryEnabled={setCategoryEnabled}
+          minCategory={minCategory}
+          setMinCategory={setMinCategory}
+        />
 
-        {/* Intercambios mínimos */}
-        <Field>
-          <Label>
-            <input
-              type="checkbox"
-              checked={exchangesEnabled}
-              onChange={e => setExchangesEnabled(e.target.checked)}
-            />
-            Intercambios mínimos
-          </Label>
-          {exchangesEnabled && (
-            <>
-              <Hint>El postor debe tener al menos N intercambios concretados</Hint>
-              <NumericInputSmall
-                type="number"
-                min={1}
-                value={minExchanges}
-                onChange={e => setMinExchanges(Math.max(1, Number(e.target.value)))}
-              />
-            </>
-          )}
-        </Field>
-
-        {/* Cantidad mínima de figuritas */}
-        <Field>
-          <Label>
-            <input
-              type="checkbox"
-              checked={cardCountEnabled}
-              onChange={e => setCardCountEnabled(e.target.checked)}
-            />
-            Cantidad mínima de figuritas en oferta
-          </Label>
-          {cardCountEnabled && (
-            <>
-              <Hint>La oferta debe incluir al menos N figuritas</Hint>
-              <NumericInputSmall
-                type="number"
-                min={1}
-                value={minCardCount}
-                onChange={e => setMinCardCount(Math.max(1, Number(e.target.value)))}
-              />
-            </>
-          )}
-        </Field>
-
-        {/* Categoría mínima */}
-        <Field>
-          <Label>
-            <input
-              type="checkbox"
-              checked={categoryEnabled}
-              onChange={e => setCategoryEnabled(e.target.checked)}
-            />
-            Categoría mínima de figuritas ofrecidas
-          </Label>
-          {categoryEnabled && (
-            <>
-              <Hint>Las figuritas ofrecidas deben ser de esta categoría o superior</Hint>
-              <Select
-                value={minCategory}
-                onChange={e => setMinCategory(e.target.value as 'COMUN' | 'EPICO' | 'LEGENDARIO')}
-              >
-                <option value="COMUN">COMÚN</option>
-                <option value="EPICO">ÉPICO</option>
-                <option value="LEGENDARIO">LEGENDARIO</option>
-              </Select>
-            </>
-          )}
-        </Field>
-
-        {/* Error */}
         {error && <ErrorMsg>{error}</ErrorMsg>}
 
-        {/* Submit */}
         <SubmitButton type="submit" disabled={submitting || cardId === ''}>
           {submitting ? 'Creando...' : 'Crear Subasta'}
         </SubmitButton>
