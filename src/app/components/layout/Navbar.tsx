@@ -2,6 +2,8 @@ import { useState, useRef, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useNotificationsContext } from '../../context/useNotificationsContext';
 import { useUserContext } from '../../context/useUserContext';
+import { Notification } from '../../interfaces/Notification';
+import NotificationDetail from '../notifications/NotificationDetail';
 import {
   NavbarContainer,
   BrandSection,
@@ -16,6 +18,7 @@ import {
   NotificationsDropdown,
   NotificationItem,
   EmptyNotification,
+  ViewAllLink,
 } from './Navbar.styles';
 
 interface NavbarProps {
@@ -42,8 +45,9 @@ const IconBell = () => (
 
 export default function Navbar({ onProfileClick, onLogout }: NavbarProps) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [selectedNotification, setSelectedNotification] = useState<Notification | null>(null);
   const { currentUser } = useUserContext();
-  const { notifications, unreadCount, markAllAsRead } = useNotificationsContext();
+  const { notifications, unreadCount, hasMoreUnread, refetch } = useNotificationsContext();
   const bellRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   const location = useLocation();
@@ -59,11 +63,17 @@ export default function Navbar({ onProfileClick, onLogout }: NavbarProps) {
   }, []);
 
   const handleBellClick = () => {
-    if (!dropdownOpen) markAllAsRead();
+    if (!dropdownOpen) refetch();
     setDropdownOpen(prev => !prev);
   };
 
+  const handleViewAll = () => {
+    setDropdownOpen(false);
+    navigate('/notifications');
+  };
+
   return (
+    <>
     <NavbarContainer>
       <BrandSection>
         <BrandIcon onClick={() => navigate('/')} aria-label="Inicio">
@@ -91,7 +101,7 @@ export default function Navbar({ onProfileClick, onLogout }: NavbarProps) {
           <BellWrapper ref={bellRef}>
             <NavButton title="Notificaciones" onClick={handleBellClick}>
               <IconBell />
-              {unreadCount > 0 && <Badge>{unreadCount}</Badge>}
+              {unreadCount > 0 && <Badge>{hasMoreUnread ? '5+' : unreadCount}</Badge>}
             </NavButton>
             {dropdownOpen && (
               <NotificationsDropdown>
@@ -99,11 +109,18 @@ export default function Navbar({ onProfileClick, onLogout }: NavbarProps) {
                   <EmptyNotification>Sin notificaciones nuevas.</EmptyNotification>
                 ) : (
                   notifications.map(n => (
-                    <NotificationItem key={n.id} $read={n.read}>
+                    <NotificationItem key={n.id} $read={n.read} onClick={() => {
+                      setDropdownOpen(false);
+                      setSelectedNotification(n);
+                    }}>
                       {n.message ?? 'Notificación'}
                     </NotificationItem>
                   ))
                 )}
+                <ViewAllLink onClick={handleViewAll}>
+                  <span className="material-symbols-outlined" aria-hidden="true">notifications</span>
+                  Ver todas las notificaciones
+                </ViewAllLink>
               </NotificationsDropdown>
             )}
           </BellWrapper>
@@ -117,5 +134,13 @@ export default function Navbar({ onProfileClick, onLogout }: NavbarProps) {
         </NavButton>
       </ActionsSection>
     </NavbarContainer>
+
+    {selectedNotification && (
+      <NotificationDetail
+        notification={selectedNotification}
+        onClose={() => setSelectedNotification(null)}
+      />
+    )}
+    </>
   );
 }
