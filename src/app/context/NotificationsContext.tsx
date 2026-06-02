@@ -1,8 +1,9 @@
-import { FC, ReactNode, createContext } from 'react';
+import { FC, ReactNode, createContext, useState, useEffect, useCallback } from 'react';
+import axios from 'axios';
 import { Notification } from '../interfaces/Notification';
-import { getNotifications, markAllAsRead as apiMarkAllAsRead, PaginatedResponse } from '../api/NotificationsService';
+import { PaginatedResponse } from '../api/NotificationsService';
+import { API_CONFIG } from '../config/apiConfig';
 import { useUserContext } from './useUserContext';
-import { useFetch } from '../hooks/useFetch';
 
 interface NotificationsContextType {
   notifications: Notification[];
@@ -14,25 +15,48 @@ interface NotificationsContextType {
 
 export const NotificationsContext = createContext<NotificationsContextType | null>(null);
 
+const PAGE_SIZE = 5;
+
 export const NotificationsProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const { currentUser } = useUserContext();
-  const userId = currentUser?.id;
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [hasMoreUnread, setHasMoreUnread] = useState(false);
+  const [reloadKey, setReloadKey] = useState(0);
 
-  const fetchNotifications = async (): Promise<PaginatedResponse<Notification>> => {
-    if (!userId) return { data: [], currentPage: 1, totalPages: 1 };
-    return getNotifications(userId, 1, 5, 'UNREAD');
-  };
+  const refetch = useCallback(() => {
+    setReloadKey(k => k + 1);
+  }, []);
 
-  const { data, refetch } = useFetch(fetchNotifications, [userId]);
+  useEffect(() => {
+    if (!currentUser) {
+      setNotifications([]);
+      setHasMoreUnread(false);
+      return;
+    }
+    axios.get<PaginatedResponse<Notification>>(
+      API_CONFIG.users.notifications(currentUser.id),
+      { params: { page: 1, per_page: PAGE_SIZE, status: 'UNREAD' } },
+    )
+      .then(res => {
+        setNotifications(res.data.data ?? []);
+        setHasMoreUnread((res.data.totalPages ?? 1) > 1);
+      })
+      .catch(() => {
+        setNotifications([]);
+        setHasMoreUnread(false);
+      });
+  }, [currentUser?.id, reloadKey]);
 
-  const notifications = data?.data ?? [];
-  const hasMoreUnread = (data?.totalPages ?? 1) > 1;
-  const unreadCount = hasMoreUnread ? 5 : notifications.filter(n => !n.read).length;
+  const unreadCount = notifications.filter(n => !n.read).length;
 
-  const markAllAsRead = () => {
-    if (!userId) return;
-    apiMarkAllAsRead(userId).then(() => refetch()).catch(() => {});
-  };
+  // Optimistic local update: marca todas como leídas in-memory y dispara el PUT en paralelo.
+  // Si el BE falla, el siguiente refetch corrige; trade-off aceptable por UX.
+  const markAllAsRead = useCallback(() => {
+    if (!currentUser) return;
+    axios.put(API_CONFIG.users.notificationsRead(currentUser.id)).catch(() => {});
+    setNotifications(prev => prev.map(n => ({ ...n, read: true })));
+    setHasMoreUnread(false);
+  }, [currentUser?.id]);
 
   return (
     <NotificationsContext.Provider value={{ notifications, unreadCount, hasMoreUnread, refetch, markAllAsRead }}>

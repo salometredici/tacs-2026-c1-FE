@@ -6,13 +6,14 @@ import { Feedback } from '../../interfaces/exchanges/Feedback';
 import { viewAs } from '../../utils/exchangeView';
 import { submitFeedback } from '../../api/ExchangesService';
 import { useSnackbar } from '../../context/useSnackbar';
+import RatingStars from '../common/RatingStars';
 import {
   Overlay, Modal, ModalHeader, ModalTitle, ModalSubtitle, CloseButton,
   OriginBadge, HeaderActions, TwoColumns, Column, ColumnLabel,
   PartyRow, PartyAvatar,
   CardItem, CardMeta,
   FeedbackBlock, FeedbackHeader, FeedbackStars, FeedbackComment, FeedbackPending,
-  InteractiveStar, FeedbackTextarea, FeedbackFormActions, SecondaryButton,
+  FeedbackTextarea, FeedbackFormActions, SecondaryButton,
   Footer, FooterButton,
 } from './ExchangeDetailModal.styles';
 
@@ -99,18 +100,7 @@ export default function ExchangeDetailModal({ exchange, currentUserId, onClose }
       return (
         <FeedbackBlock>
           <FeedbackHeader><span>Calificá a {v.other.name}</span></FeedbackHeader>
-          <FeedbackStars aria-label={`${selectedScore} de 5 estrellas seleccionadas`}>
-            {Array.from({ length: 5 }, (_, i) => (
-              <InteractiveStar
-                key={i}
-                className="material-symbols-outlined"
-                onClick={() => setSelectedScore(i + 1)}
-                aria-hidden="true"
-              >
-                {i < selectedScore ? 'star' : 'star_border'}
-              </InteractiveStar>
-            ))}
-          </FeedbackStars>
+          <RatingStars value={selectedScore} onChange={setSelectedScore} />
           <FeedbackTextarea
             placeholder="Comentario (opcional)"
             value={comment}

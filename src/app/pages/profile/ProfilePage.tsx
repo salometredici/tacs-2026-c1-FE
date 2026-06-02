@@ -7,7 +7,7 @@ import { Auction } from '../../interfaces/auctions/Auction';
 import { UserBid } from '../../interfaces/auctions/bid/UserBid';
 import { Publication } from '../../interfaces/publications/Publication';
 import { Exchange } from '../../interfaces/exchanges/Exchange';
-import { getUserMissingCards } from '../../api/UsersService';
+import { getUserMissingCards, getById } from '../../api/UsersService';
 import { getAuctionsByUserId, getAuctionBidsByUserId } from '../../api/AuctionsService';
 import { getProposals, acceptProposal, rejectProposal } from '../../api/ProposalsService';
 import { getMyPublications } from '../../api/PublicationsService';
@@ -37,7 +37,8 @@ export default function ProfilePage() {
   const { currentUser } = useOutletContext<AuthedOutletContext>();
   const { showSuccess, showError } = useSnackbar();
   const { id: pathUserId } = useParams<{ id: string }>();
-  const user: User = currentUser;
+  const { data: freshUser } = useFetch(() => getById(currentUser.id), [currentUser.id]);
+  const user: User = freshUser ?? currentUser;
 
   const [activeTab, setActiveTab] = useState<Tab>('collection');
   const [showAddMissingModal, setShowAddMissingModal] = useState(false);
