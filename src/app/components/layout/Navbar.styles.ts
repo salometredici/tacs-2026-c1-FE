@@ -207,3 +207,36 @@ export const EmptyNotification = styled.div`
   color: ${theme.colors.onSurfaceVariant};
   font-size: ${theme.typography.bodyMedium.fontSize};
 `;
+
+// M3 Text Button — link a la página de notificaciones
+export const ViewAllLink = styled.button`
+  width: 100%;
+  padding: ${theme.spacing.md};
+  background: none;
+  border: none;
+  border-top: 1px solid ${theme.colors.outlineVariant};
+  color: ${theme.colors.primary};
+  font-size: ${theme.typography.labelLarge.fontSize};
+  font-weight: ${theme.typography.labelLarge.fontWeight};
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  transition: background-color 0.15s;
+  position: relative;
+  overflow: hidden;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: ${theme.colors.primary};
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+
+  &:hover::after { opacity: ${theme.state.hover}; }
+
+  & .material-symbols-outlined { font-size: 1rem; }
+`;

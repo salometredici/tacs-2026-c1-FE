@@ -10,6 +10,7 @@ import AuctionDetailPage from '../pages/auctions/AuctionDetailPage'
 import ProfilePage from '../pages/profile/ProfilePage'
 import ProposalsPage from '../pages/proposals/ProposalsPage'
 import ExchangesPage from '../pages/exchanges/ExchangesPage'
+import NotificationsPage from '../pages/notifications/NotificationsPage'
 import PublicationDetailPage from '../pages/publications/PublicationDetailPage'
 import AdminLayout from '../components/admin/AdminLayout'
 import AdminRoute from '../components/admin/AdminRoute'
@@ -32,6 +33,7 @@ export default function AppRouter() {
             <Route path="/profile/:id" element={<ProfilePage />} />
             <Route path="/proposals" element={<ProposalsPage />} />
             <Route path="/exchanges" element={<ExchangesPage />} />
+            <Route path="/notifications" element={<NotificationsPage />} />
             <Route path="/publications/:id" element={<PublicationDetailPage />} />
           </Route>
         </Route>

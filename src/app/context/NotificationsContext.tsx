@@ -1,28 +1,41 @@
-import { FC, ReactNode, createContext, useState } from 'react';
+import { FC, ReactNode, createContext } from 'react';
 import { Notification } from '../interfaces/Notification';
-import { getMockedNotifications } from '../../mocks/notificationsMock';
+import { getNotifications, markAllAsRead as apiMarkAllAsRead, PaginatedResponse } from '../api/NotificationsService';
+import { useUserContext } from './useUserContext';
+import { useFetch } from '../hooks/useFetch';
 
 interface NotificationsContextType {
   notifications: Notification[];
   unreadCount: number;
+  hasMoreUnread: boolean;
+  refetch: () => void;
   markAllAsRead: () => void;
-  // enabled: boolean — reservado para el toggle de ProfilePage (US11 futuro)
-  // setEnabled: (v: boolean) => void;
 }
 
 export const NotificationsContext = createContext<NotificationsContextType | null>(null);
 
 export const NotificationsProvider: FC<{ children: ReactNode }> = ({ children }) => {
-  const [notifications, setNotifications] = useState<Notification[]>(getMockedNotifications());
+  const { currentUser } = useUserContext();
+  const userId = currentUser?.id;
 
-  const unreadCount = notifications.filter(n => !n.read).length;
+  const fetchNotifications = async (): Promise<PaginatedResponse<Notification>> => {
+    if (!userId) return { data: [], currentPage: 1, totalPages: 1 };
+    return getNotifications(userId, 1, 5, 'UNREAD');
+  };
+
+  const { data, refetch } = useFetch(fetchNotifications, [userId]);
+
+  const notifications = data?.data ?? [];
+  const hasMoreUnread = (data?.totalPages ?? 1) > 1;
+  const unreadCount = hasMoreUnread ? 5 : notifications.filter(n => !n.read).length;
 
   const markAllAsRead = () => {
-    setNotifications(prev => prev.map(n => ({ ...n, read: true })));
+    if (!userId) return;
+    apiMarkAllAsRead(userId).then(() => refetch()).catch(() => {});
   };
 
   return (
-    <NotificationsContext.Provider value={{ notifications, unreadCount, markAllAsRead }}>
+    <NotificationsContext.Provider value={{ notifications, unreadCount, hasMoreUnread, refetch, markAllAsRead }}>
       {children}
     </NotificationsContext.Provider>
   );
