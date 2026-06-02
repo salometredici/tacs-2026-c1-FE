@@ -229,7 +229,7 @@ export const CarouselArrow = styled.button<{ $side: 'left' | 'right' }>`
   & .material-symbols-outlined { font-size: 20px; }
 `;
 
-export const SuggestionsCarousel = styled.div`
+export const CarouselTrack = styled.div`
   display: flex;
   flex: 1;
   gap: ${theme.spacing.md};
