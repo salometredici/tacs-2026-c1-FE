@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useOutletContext } from 'react-router-dom';
+import { Navigate, useOutletContext, useParams } from 'react-router-dom';
 import { User } from '../../interfaces/auth/User';
 import { MissingCard } from '../../interfaces/cards/MissingCard';
 import { Proposal } from '../../interfaces/proposals/Proposal';
@@ -36,6 +36,7 @@ type Tab = 'collection' | 'missing' | 'publications' | 'propuestas' | 'subastas'
 export default function ProfilePage() {
   const { currentUser } = useOutletContext<AuthedOutletContext>();
   const { showSuccess, showError } = useSnackbar();
+  const { id: pathUserId } = useParams<{ id: string }>();
   const user: User = currentUser;
 
   const [activeTab, setActiveTab] = useState<Tab>('collection');
@@ -100,6 +101,13 @@ export default function ProfilePage() {
       showError('Error al rechazar la propuesta. Intentá nuevamente.');
     }
   };
+
+  // Si la URL apunta al perfil de otro user (ej. /profile/<otroId> tipeado a mano),
+  // redirigimos al propio. El BE igual rechazaría 403 al pedir recursos ajenos via
+  // @RequiresOwnerOrAdmin, pero la URL "engañosa" + datos del JWT confunde al usuario
+  if (pathUserId && pathUserId !== user.id) {
+    return <Navigate to={`/profile/${user.id}`} replace />;
+  }
 
   return (
     <ProfileContainer>

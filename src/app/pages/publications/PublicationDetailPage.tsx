@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, useParams, useOutletContext } from 'react-router-dom';
 import { Proposal } from '../../interfaces/proposals/Proposal';
-import { ProposalStatus } from '../../interfaces/proposals/ProposalStatus';
 import { getPublicationById, cancelPublication } from '../../api/PublicationsService';
 import { getProposalsByPublicationId, acceptProposal, rejectProposal } from '../../api/ProposalsService';
 import { AuthedOutletContext } from '../../components/layout/UserRoute';
@@ -9,25 +8,11 @@ import { useSnackbar } from '../../context/useSnackbar';
 import { useFetch } from '../../hooks/useFetch';
 import MakeProposalModal from '../../components/proposals/MakeProposalModal';
 import ConfirmDialog from '../../components/feedback/ConfirmDialog';
-import {
-  PageContainer, Header, Title,
-  PublicationCard, TopRow, CardInfo, CardTitle, CardMeta,
-  CountSection, CountLabel, CountValue, ProgressTrack, ProgressFill,
-  PublisherRow, PublisherAvatar,
-  Actions, PrimaryButton, DangerOutlineButton,
-  SectionTitle, ProposalList, ProposalCard, ProposalInfo, ProposalTitleRow, ProposalTitle, ProposalDetail,
-  VerticalDivider, ActionButtons, AcceptButton, RejectButton,
-} from './PublicationDetailPage.styles';
 import EmptyState from '../../components/common/EmptyState';
-import StatusBadge from '../../components/common/StatusBadge';
 import BackButton from '../../components/common/BackButton';
-
-const PUB_STATUS_LABEL = { ACTIVA: 'Activa', FINALIZADA: 'Finalizada', CANCELADA: 'Cancelada' } as const;
-const PUB_TONE = { ACTIVA: 'success', FINALIZADA: 'neutral', CANCELADA: 'error' } as const;
-const PROPOSAL_STATUS_LABEL: Record<ProposalStatus, string> = {
-  PENDIENTE: 'Pendiente', ACEPTADA: 'Aceptada', RECHAZADA: 'Rechazada', CANCELADA: 'Cancelada'
-};
-const PROPOSAL_TONE = { PENDIENTE: 'warning', ACEPTADA: 'success', RECHAZADA: 'error', CANCELADA: 'error' } as const;
+import { PageContainer, Header, Title } from './PublicationDetailPage.styles';
+import PublicationSummaryCard from './detail/PublicationSummaryCard';
+import ProposalsList from './detail/ProposalsList';
 
 export default function PublicationDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -75,10 +60,6 @@ export default function PublicationDetailPage() {
 
   const isOwner = publication.publisher.id === currentUser.id;
   const isActive = publication.status === 'ACTIVA';
-  const consumedPct = publication.initialCount > 0
-    ? ((publication.initialCount - publication.remainingCount) / publication.initialCount) * 100
-    : 0;
-  const pendingProposals = proposals.filter(p => p.status === 'PENDIENTE');
 
   const handleCancel = async () => {
     if (!publication) return;
@@ -150,113 +131,24 @@ export default function PublicationDetailPage() {
         <Title>Detalle de publicación</Title>
       </Header>
 
-      <PublicationCard>
-        <TopRow>
-          <CardInfo>
-            <CardTitle>#{publication.card.number} · {publication.card.description}</CardTitle>
-            <CardMeta>
-              {[publication.card.country, publication.card.team, publication.card.category]
-                .filter(Boolean)
-                .join(' · ')}
-            </CardMeta>
-          </CardInfo>
-          <StatusBadge tone={PUB_TONE[publication.status]} size="md">
-            {PUB_STATUS_LABEL[publication.status]}
-          </StatusBadge>
-        </TopRow>
-
-        <CountSection>
-          <CountLabel>
-            Quedan <CountValue>{publication.remainingCount}</CountValue> de{' '}
-            <CountValue>{publication.initialCount}</CountValue> disponibles
-          </CountLabel>
-          <ProgressTrack>
-            <ProgressFill $pct={consumedPct} />
-          </ProgressTrack>
-        </CountSection>
-
-        {!isOwner && (
-          <PublisherRow>
-            <PublisherAvatar src="/assets/user-svgrepo-com.svg" alt={publication.publisher.name} />
-            Publicado por <strong>{publication.publisher.name}</strong>
-            {publication.publisher.rating !== null && (
-              <span>· ★ {publication.publisher.rating.toFixed(1)}</span>
-            )}
-          </PublisherRow>
-        )}
-
-        <Actions>
-          {isOwner && isActive && (
-            <DangerOutlineButton onClick={() => setShowCancelConfirm(true)} disabled={cancelling}>
-              {cancelling ? 'Cancelando...' : 'Cancelar publicación'}
-            </DangerOutlineButton>
-          )}
-          {!isOwner && isActive && publication.remainingCount > 0 && (
-            <PrimaryButton onClick={() => setShowProposeModal(true)}>
-              Hacer propuesta
-            </PrimaryButton>
-          )}
-        </Actions>
-      </PublicationCard>
+      <PublicationSummaryCard
+        publication={publication}
+        isOwner={isOwner}
+        isActive={isActive}
+        cancelling={cancelling}
+        onCancelClick={() => setShowCancelConfirm(true)}
+        onProposeClick={() => setShowProposeModal(true)}
+      />
 
       {isOwner && (
-        <section>
-          <SectionTitle>
-            Propuestas recibidas ({proposals.length}
-            {pendingProposals.length > 0 && ` · ${pendingProposals.length} pendiente${pendingProposals.length !== 1 ? 's' : ''}`})
-          </SectionTitle>
-          {proposals.length === 0 ? (
-            <EmptyState>Aún no hay propuestas sobre esta publicación.</EmptyState>
-          ) : (
-            <ProposalList>
-              {proposals.map(p => {
-                const offeredCount = p.offeredCards.length;
-                const showActions = isActive && p.status === 'PENDIENTE';
-                return (
-                  <ProposalCard key={p.id}>
-                    <ProposalInfo>
-                      <ProposalTitleRow>
-                        <ProposalTitle>De {p.bidder.name}</ProposalTitle>
-                        <StatusBadge tone={PROPOSAL_TONE[p.status]}>
-                          {PROPOSAL_STATUS_LABEL[p.status]}
-                        </StatusBadge>
-                      </ProposalTitleRow>
-                      <ProposalDetail>
-                        Ofrece <strong>{offeredCount}</strong> figurita{offeredCount !== 1 ? 's' : ''}
-                        {' a cambio de '}
-                        <strong>{p.requestedCount}</strong> de #{publication.card.number} {publication.card.description}
-                      </ProposalDetail>
-                      {offeredCount > 0 && (
-                        <ProposalDetail>
-                          Ofrecidas: {p.offeredCards.map(c => `#${c.number} ${c.description}`).join(', ')}
-                        </ProposalDetail>
-                      )}
-                    </ProposalInfo>
-                    {showActions && (
-                      <>
-                        <VerticalDivider />
-                        <ActionButtons>
-                          <AcceptButton
-                            disabled={actionLoading === p.id}
-                            onClick={() => handleAccept(p)}
-                          >
-                            Aceptar
-                          </AcceptButton>
-                          <RejectButton
-                            disabled={actionLoading === p.id}
-                            onClick={() => handleReject(p)}
-                          >
-                            Rechazar
-                          </RejectButton>
-                        </ActionButtons>
-                      </>
-                    )}
-                  </ProposalCard>
-                );
-              })}
-            </ProposalList>
-          )}
-        </section>
+        <ProposalsList
+          proposals={proposals}
+          publication={publication}
+          isActive={isActive}
+          actionLoading={actionLoading}
+          onAccept={handleAccept}
+          onReject={handleReject}
+        />
       )}
 
       {showProposeModal && (
