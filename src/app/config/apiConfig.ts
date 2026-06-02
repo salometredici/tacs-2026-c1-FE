@@ -17,7 +17,7 @@ export const API_CONFIG = {
     collectionCard: (id: string, cardId: string) => `${API}/users/${id}/collection/${cardId}`,
     missingCards: (id: string) => `${API}/users/${id}/missing-cards`,
     missingCard: (id: string, cardId: string) => `${API}/users/${id}/missing-cards/${cardId}`,
-    notifications: (id: string) => `${API}/users/${id}/notifications`,
+    notifications: (id: string) => `${API}/users/${id}/notifications?status=UNREAD&per_page=50&page=0`,
     notificationsRead: (id: string) => `${API}/users/${id}/notifications/read`,
   },
 
