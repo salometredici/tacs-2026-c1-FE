@@ -73,10 +73,19 @@ export default function CatalogPage() {
 
   const filtered = useMemo(() => {
     const list = cards ?? [];
-    return activeCategory === 'TODAS'
+    const byCategory = activeCategory === 'TODAS'
       ? list
       : list.filter(c => c.category === activeCategory);
-  }, [cards, activeCategory]);
+    const q = query.trim().toLowerCase();
+    if (!q) return byCategory;
+    return byCategory.filter(c =>
+      c.id.toLowerCase().includes(q)
+      || c.description.toLowerCase().includes(q)
+      || String(c.number).includes(q)
+      || (c.country?.toLowerCase().includes(q) ?? false)
+      || (c.team?.toLowerCase().includes(q) ?? false)
+    );
+  }, [cards, activeCategory, query]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const safePage = Math.min(currentPage, totalPages - 1);
@@ -99,7 +108,7 @@ export default function CatalogPage() {
       <PageHeader>
         <PageTitle>Catálogo de Figuritas</PageTitle>
         <PageSubtitle>
-          Explorá las 500 figuritas del Mundial y filtrá por categoría
+          Explorá las figuritas del Mundial y filtrá por categoría
         </PageSubtitle>
       </PageHeader>
 
@@ -143,7 +152,7 @@ export default function CatalogPage() {
                 <CardThumbnail $category={card.category}>
                   <span className="material-symbols-outlined" aria-hidden="true">sports_soccer</span>
                 </CardThumbnail>
-                <CardNumber>#{card.number}</CardNumber>
+                <CardNumber>{card.id}</CardNumber>
                 <CardDescription>{card.description}</CardDescription>
                 {(card.country || card.team) && (
                   <CardMeta>

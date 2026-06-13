@@ -35,7 +35,7 @@ export default function AuctionCardComponent({ auction, onBid, hideBidButton = f
   return (
     <AuctionCard onClick={() => navigate(`/auctions/${auction.id}`)}>
       <CardInfo>
-        <CardNumber>#{auction.card.number}</CardNumber>
+        <CardNumber>{auction.card.id}</CardNumber>
         <CardDetails>
           <p>
             <strong>{auction.card.description}</strong>

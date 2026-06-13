@@ -21,7 +21,7 @@ export default function CatalogPreviewSection({ catalogPreview, onViewAll }: Pro
         <SectionTitle>Catálogo de Figuritas</SectionTitle>
       </SectionHeader>
       <CatalogSectionSubtitle>
-        Explorá las 500 figuritas del Mundial y filtrá por categoría
+        Explorá las figuritas del Mundial y filtrá por categoría
       </CatalogSectionSubtitle>
       <HorizontalCarousel autoScroll={false}>
         {catalogPreview.map(card => (
@@ -29,7 +29,7 @@ export default function CatalogPreviewSection({ catalogPreview, onViewAll }: Pro
             <CatalogPreviewThumbnail $category={card.category}>
               <span className="material-symbols-outlined" aria-hidden="true">sports_soccer</span>
             </CatalogPreviewThumbnail>
-            <CardNumber>#{card.number}</CardNumber>
+            <CardNumber>{card.id}</CardNumber>
             <CardPlayer>{card.description}</CardPlayer>
           </SuggestionCard>
         ))}

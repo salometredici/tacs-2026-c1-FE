@@ -1,14 +1,12 @@
 import { Bid } from '../../../interfaces/auctions/bid/Bid';
-import StatusBadge, { StatusTone } from '../../../components/common/StatusBadge';
+import StatusBadge from '../../../components/common/StatusBadge';
+import { BID_STATUS_TONE as BID_TONE } from '../../../interfaces/auctions/bid/BidStatus';
 import {
   Card, SectionTitle, EmptyBidsText, OffersGrid, OfferCard, OfferHeader,
   OfferBidder, OfferRating, OfferedCards, OfferDate, OfferActions,
   ChooseWinnerButton, RejectOfferButton, FinalizeErrorText,
 } from '../AuctionDetailPage.styles';
 
-const BID_TONE: Record<string, StatusTone> = {
-  ACTIVA: 'info', GANADORA: 'success', SUPERADA: 'warning', RECHAZADA: 'error', CANCELADA: 'error',
-};
 
 interface Props {
   bids: Bid[];

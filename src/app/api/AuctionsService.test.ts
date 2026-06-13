@@ -3,6 +3,7 @@ import { mapAuction, AuctionDto } from './AuctionsService';
 
 const BASE_DTO: AuctionDto = {
   id: 'auction-1',
+  cardId: 'ARG10',
   cardNumber: 10,
   cardDescription: 'Lionel Messi',
   cardCountry: 'Argentina',
@@ -109,7 +110,7 @@ describe('mapAuction — conditions mapping', () => {
 
 describe('mapAuction — bidder rating and avatarId fallback', () => {
   const OFFER_BASE = {
-    offerId: 'offer-1',
+    id: 'offer-1',
     auctionId: 'auction-1',
     bidderUserId: 'user-99',
     bidderUserName: 'Postor Test',

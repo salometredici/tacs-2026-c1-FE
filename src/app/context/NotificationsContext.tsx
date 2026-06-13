@@ -1,7 +1,7 @@
 import { FC, ReactNode, createContext, useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { Notification } from '../interfaces/Notification';
-import { PaginatedResponse } from '../api/NotificationsService';
+import { PaginatedResponse, markAsRead as markAsReadApi } from '../api/NotificationsService';
 import { API_CONFIG } from '../config/apiConfig';
 import { useUserContext } from './useUserContext';
 
@@ -10,6 +10,7 @@ interface NotificationsContextType {
   unreadCount: number;
   hasMoreUnread: boolean;
   refetch: () => void;
+  markAsRead: (id: string) => void;
   markAllAsRead: () => void;
 }
 
@@ -49,6 +50,14 @@ export const NotificationsProvider: FC<{ children: ReactNode }> = ({ children })
 
   const unreadCount = notifications.filter(n => !n.read).length;
 
+  // Optimistic local update: marca una notificación como leída in-memory y dispara el PUT.
+  // El badge del navbar refleja el cambio al instante; si el BE falla, el próximo refetch corrige.
+  const markAsRead = useCallback((id: string) => {
+    if (!currentUser) return;
+    markAsReadApi(currentUser.id, id).catch(() => {});
+    setNotifications(prev => prev.map(n => n.id === id ? { ...n, read: true } : n));
+  }, [currentUser?.id]);
+
   // Optimistic local update: marca todas como leídas in-memory y dispara el PUT en paralelo.
   // Si el BE falla, el siguiente refetch corrige; trade-off aceptable por UX.
   const markAllAsRead = useCallback(() => {
@@ -59,7 +68,7 @@ export const NotificationsProvider: FC<{ children: ReactNode }> = ({ children })
   }, [currentUser?.id]);
 
   return (
-    <NotificationsContext.Provider value={{ notifications, unreadCount, hasMoreUnread, refetch, markAllAsRead }}>
+    <NotificationsContext.Provider value={{ notifications, unreadCount, hasMoreUnread, refetch, markAsRead, markAllAsRead }}>
       {children}
     </NotificationsContext.Provider>
   );

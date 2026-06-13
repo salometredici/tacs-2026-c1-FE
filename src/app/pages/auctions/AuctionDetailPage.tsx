@@ -171,7 +171,7 @@ export default function AuctionDetailPage() {
           card={auction.card}
           auctionId={auction.id}
           onClose={() => setShowBidModal(false)}
-          onSuccess={() => setShowBidModal(false)}
+          onSuccess={() => { setShowBidModal(false); refreshAuction(); }}
         />
       )}
 

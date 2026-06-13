@@ -4,9 +4,7 @@ import SectionHeader from '../../../components/common/SectionHeader';
 import StatusBadge from '../../../components/common/StatusBadge';
 import EmptyState from '../../../components/common/EmptyState';
 import { RowList, OutlinedListItem, SeeAllLink, Divider } from '../ProfilePage.styles';
-
-const STATUS_LABEL = { PENDIENTE: 'Pendiente', ACEPTADA: 'Aceptada', RECHAZADA: 'Rechazada', CANCELADA: 'Cancelada' } as const;
-const STATUS_TONE = { PENDIENTE: 'warning', ACEPTADA: 'success', RECHAZADA: 'error', CANCELADA: 'error' } as const;
+import { PROPOSAL_STATUS_LABEL as STATUS_LABEL, PROPOSAL_STATUS_TONE as STATUS_TONE } from '../../../interfaces/proposals/ProposalStatus';
 const PREVIEW = 3;
 
 interface Props {
@@ -33,7 +31,7 @@ export default function ProposalsTab({ received, sent, onSelect }: Props) {
           {received.slice(0, PREVIEW).map(p => (
             <OutlinedListItem key={p.id} onClick={() => onSelect(p)}>
               <div>
-                <strong>Por {p.requestedCount}× #{p.publication.card.number} {p.publication.card.description}</strong>
+                <strong>Por {p.requestedCount} de <b>{p.publication.card.id}</b> - {p.publication.card.description}</strong>
                 <span>De {p.bidder.name} · Te ofrece {p.offeredCards.length} figurita{p.offeredCards.length === 1 ? '' : 's'}</span>
               </div>
               <StatusBadge tone={STATUS_TONE[p.status]}>{STATUS_LABEL[p.status]}</StatusBadge>
@@ -58,7 +56,7 @@ export default function ProposalsTab({ received, sent, onSelect }: Props) {
           {sent.slice(0, PREVIEW).map(p => (
             <OutlinedListItem key={p.id} onClick={() => onSelect(p)}>
               <div>
-                <strong>Por {p.requestedCount}× #{p.publication.card.number} {p.publication.card.description}</strong>
+                <strong>Por {p.requestedCount} de <b>{p.publication.card.id}</b> - {p.publication.card.description}</strong>
                 <span>A {p.publication.publisher.name} · Ofrecés {p.offeredCards.length} figurita{p.offeredCards.length === 1 ? '' : 's'}</span>
               </div>
               <StatusBadge tone={STATUS_TONE[p.status]}>{STATUS_LABEL[p.status]}</StatusBadge>

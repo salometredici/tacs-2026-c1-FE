@@ -16,7 +16,7 @@ const BASE = API_CONFIG.auctions.base;
 interface Paginated<T> { data: T[]; currentPage: number; totalPages: number }
 
 export interface AuctionOfferDtoBE {
-  offerId: string;
+  id: string;
   auctionId: string;
   bidderUserId: string;
   bidderUserName: string;
@@ -35,6 +35,7 @@ export interface AuctionConditionBE {
 
 export interface AuctionDto {
   id: string;
+  cardId: string;
   cardNumber: number;
   cardDescription: string;
   cardCountry: string | null;
@@ -65,7 +66,7 @@ const OFFER_STATUS_BE_TO_FE: Record<string, BidStatus> = {
 
 export const mapAuction = (dto: AuctionDto): Auction => {
   const card: Card = {
-    id: '',
+    id: dto.cardId,
     number: dto.cardNumber,
     type: 'JUGADOR' as CardType,
     description: dto.cardDescription,
@@ -83,7 +84,7 @@ export const mapAuction = (dto: AuctionDto): Auction => {
     creationDate: '',
   };
   const bids = (dto.offers ?? []).map(o => ({
-    bidId: o.offerId,
+    bidId: o.id,
     bidder: {
       userId: o.bidderUserId,
       name: o.bidderUserName,

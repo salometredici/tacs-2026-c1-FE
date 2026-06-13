@@ -1,16 +1,11 @@
 import { Proposal } from '../../../interfaces/proposals/Proposal';
-import { ProposalStatus } from '../../../interfaces/proposals/ProposalStatus';
+import { PROPOSAL_STATUS_LABEL, PROPOSAL_STATUS_TONE as PROPOSAL_TONE } from '../../../interfaces/proposals/ProposalStatus';
 import { Publication } from '../../../interfaces/publications/Publication';
 import StatusBadge from '../../../components/common/StatusBadge';
 import {
   ProposalCard, ProposalInfo, ProposalTitleRow, ProposalTitle, ProposalDetail,
   VerticalDivider, ActionButtons, AcceptButton, RejectButton,
 } from '../PublicationDetailPage.styles';
-
-const PROPOSAL_STATUS_LABEL: Record<ProposalStatus, string> = {
-  PENDIENTE: 'Pendiente', ACEPTADA: 'Aceptada', RECHAZADA: 'Rechazada', CANCELADA: 'Cancelada',
-};
-const PROPOSAL_TONE = { PENDIENTE: 'warning', ACEPTADA: 'success', RECHAZADA: 'error', CANCELADA: 'error' } as const;
 
 interface Props {
   proposal: Proposal;

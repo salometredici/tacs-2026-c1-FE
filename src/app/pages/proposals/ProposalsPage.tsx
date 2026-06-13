@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, useOutletContext } from 'react-router-dom';
 import { Proposal } from '../../interfaces/proposals/Proposal';
-import { getProposals, acceptProposal, rejectProposal } from '../../api/ProposalsService';
+import { getProposals, acceptProposal, rejectProposal, cancelProposal } from '../../api/ProposalsService';
 import { AuthedOutletContext } from '../../components/layout/UserRoute';
 import { useSnackbar } from '../../context/useSnackbar';
 import { useFetch } from '../../hooks/useFetch';
@@ -16,15 +16,7 @@ import {
 import EmptyState from '../../components/common/EmptyState';
 import StatusBadge from '../../components/common/StatusBadge';
 import BackButton from '../../components/common/BackButton';
-import { ProposalStatus } from '../../interfaces/proposals/ProposalStatus';
-
-const STATUS_LABEL: Record<ProposalStatus, string> = {
-  PENDIENTE: 'Pendiente',
-  ACEPTADA:  'Aceptada',
-  RECHAZADA: 'Rechazada',
-  CANCELADA: 'Cancelada'
-};
-const STATUS_TONE = { PENDIENTE: 'warning', ACEPTADA: 'success', RECHAZADA: 'error', CANCELADA: 'error' } as const;
+import { PROPOSAL_STATUS_LABEL as STATUS_LABEL, PROPOSAL_STATUS_TONE as STATUS_TONE } from '../../interfaces/proposals/ProposalStatus';
 
 export default function ProposalsPage() {
   const navigate = useNavigate();
@@ -39,7 +31,7 @@ export default function ProposalsPage() {
     data: receivedData, isLoading: loadingReceived, error: errorReceived, setData: setReceived,
   } = useFetch(() => getProposals(currentUser.id), [currentUser.id]);
   const {
-    data: sentData, isLoading: loadingSent, error: errorSent,
+    data: sentData, isLoading: loadingSent, error: errorSent, setData: setSent,
   } = useFetch(() => getProposals('', currentUser.id), [currentUser.id]);
 
   const received = receivedData ?? [];
@@ -68,6 +60,19 @@ export default function ProposalsPage() {
       showSuccess('Propuesta rechazada');
     } catch {
       showError('Error al rechazar la propuesta. Intentá nuevamente.');
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+  const handleCancel = async (proposal: Proposal) => {
+    setActionLoading(proposal.id);
+    try {
+      await cancelProposal(proposal.id, currentUser.id);
+      setSent(prev => prev.map(p => p.id === proposal.id ? { ...p, status: 'CANCELADA' } : p));
+      showSuccess('Propuesta cancelada');
+    } catch {
+      showError('Error al cancelar la propuesta. Intentá nuevamente.');
     } finally {
       setActionLoading(null);
     }
@@ -103,7 +108,7 @@ export default function ProposalsPage() {
             <ProposalCard key={p.id} onClick={() => setDetail(p)}>
               <ProposalInfo>
                 <ProposalTitle>
-                  #{p.publication.card.number} · {p.publication.card.description}
+                  {p.publication.card.id} · {p.publication.card.description}
                 </ProposalTitle>
                 <ProposalDetail>
                   {tab === 'received'
@@ -113,11 +118,11 @@ export default function ProposalsPage() {
                 <ProposalDetail>
                   Ofrece <strong>{p.offeredCards.length}</strong> figurita{p.offeredCards.length !== 1 ? 's' : ''}
                   {' a cambio de '}
-                  <strong>{p.requestedCount}</strong> de #{p.publication.card.number}
+                  <strong>{p.requestedCount}</strong> de {p.publication.card.id}
                 </ProposalDetail>
                 {p.offeredCards.length > 0 && (
                   <ProposalDetail>
-                    Ofrecidas: {p.offeredCards.map(f => `#${f.number} ${f.description}`).join(', ')}
+                    Ofrecidas: {p.offeredCards.map(f => `${f.id} ${f.description}`).join(', ')}
                   </ProposalDetail>
                 )}
                 <ViewPublicationLink onClick={e => { e.stopPropagation(); navigate(`/publications/${p.publication.id}`); }}>
@@ -145,6 +150,17 @@ export default function ProposalsPage() {
                     </RejectButton>
                   </ActionButtons>
                 )}
+
+                {tab === 'sent' && p.status === 'PENDIENTE' && (
+                  <ActionButtons>
+                    <RejectButton
+                      disabled={actionLoading === p.id}
+                      onClick={e => { e.stopPropagation(); handleCancel(p); }}
+                    >
+                      Cancelar
+                    </RejectButton>
+                  </ActionButtons>
+                )}
               </CardRight>
             </ProposalCard>
           ))}
@@ -157,6 +173,7 @@ export default function ProposalsPage() {
           onClose={() => setDetail(null)}
           onAccept={tab === 'received' ? () => handleAccept(detail) : undefined}
           onReject={tab === 'received' ? () => handleReject(detail) : undefined}
+          onCancel={tab === 'sent' ? () => handleCancel(detail) : undefined}
         />
       )}
     </PageContainer>

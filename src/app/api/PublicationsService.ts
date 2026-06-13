@@ -20,7 +20,8 @@ const STATUS_FE_TO_BE: Record<PublicationStatus, string> = {
 };
 
 export interface TradePublicationDto {
-  publicationId: string;
+  id: string;
+  cardId: string;
   initialCount: number;
   remainingCount: number;
   cardNumber: number;
@@ -36,9 +37,9 @@ export interface TradePublicationDto {
 interface Paginated<T> { data: T[]; currentPage: number; totalPages: number }
 
 export const mapPublication = (dto: TradePublicationDto): Publication => ({
-  id: dto.publicationId,
+  id: dto.id,
   card: {
-    id: '',
+    id: dto.cardId,
     number: dto.cardNumber,
     type: 'JUGADOR' as CardType,
     description: dto.cardDescription,
