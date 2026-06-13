@@ -42,7 +42,7 @@ export default function SuggestionsSection({ suggestions, loading, onItemClick }
               <CategoryBadge $category={s.cardCategory}>
                 {s.cardCategory}
               </CategoryBadge>
-              <CardNumber>#{s.cardNumber}</CardNumber>
+              <CardNumber>{s.cardId}</CardNumber>
               <CardPlayer>{s.cardDescription}</CardPlayer>
               <CardMeta>{s.cardCountry}</CardMeta>
               <CardOwner>

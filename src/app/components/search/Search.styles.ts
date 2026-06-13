@@ -111,6 +111,7 @@ export const ResultsHeader = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-top: ${theme.spacing.xl};
   margin-bottom: ${theme.spacing.lg};
   padding-bottom: ${theme.spacing.md};
   border-bottom: 1px solid ${theme.colors.outlineVariant};
@@ -129,12 +130,13 @@ export const ResultsGrid = styled.div`
 `;
 
 // M3 Elevated Card
-export const SearchResultCard = styled.div`
+export const SearchResultCard = styled.div<{ $clickable?: boolean }>`
   background: ${theme.colors.surfaceContainerLow};
   border-radius: ${theme.shape.medium};
   padding: ${theme.spacing.lg};
   box-shadow: ${theme.elevation[1]};
   transition: box-shadow 0.2s;
+  ${({ $clickable }) => $clickable && 'cursor: pointer;'}
 
   &:hover { box-shadow: ${theme.elevation[2]}; }
 `;

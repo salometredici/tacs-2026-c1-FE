@@ -39,7 +39,7 @@ export default function ExchangesTab({ userId, exchanges, onSelect }: Props) {
               <OutlinedListItem key={ex.id} onClick={() => onSelect(ex)}>
                 <div>
                   {headlineCard
-                    ? <strong>#{headlineCard.number} {headlineCard.description}{extraText}</strong>
+                    ? <strong>{headlineCard.cardId} {headlineCard.description}{extraText}</strong>
                     : <strong>Intercambio</strong>
                   }
                   <span>

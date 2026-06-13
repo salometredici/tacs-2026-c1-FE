@@ -126,7 +126,7 @@ export const CardItem = styled.div`
   transition: box-shadow 0.2s;
   display: flex;
   flex-direction: column;
-  gap: ${theme.spacing.xs};
+  gap: ${theme.spacing.sm};
 
   &:hover {
     box-shadow: ${theme.elevation[2]};
@@ -141,7 +141,6 @@ export const CardThumbnail = styled.div<{ $category: string }>`
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: ${theme.spacing.sm};
   background: ${({ $category }) => {
     if ($category === 'LEGENDARIO') return theme.colors.tertiaryContainer;
     if ($category === 'EPICO') return theme.colors.primaryContainer;
@@ -185,7 +184,6 @@ export const CategoryBadge = styled.span<{ $category: string }>`
   font-weight: ${theme.typography.labelMedium.fontWeight};
   letter-spacing: 0.04em;
   align-self: flex-start;
-  margin-top: auto;
 
   background: ${({ $category }) => {
     if ($category === 'LEGENDARIO') return theme.colors.tertiaryContainer;

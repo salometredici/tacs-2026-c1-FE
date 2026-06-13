@@ -69,9 +69,9 @@ export default function Collection({ userId: userId }: CollectionProps) {
             <CardImage $category={fc.category}>
               <span className="material-symbols-outlined" aria-hidden="true">sports_soccer</span>
             </CardImage>
-            <h4>#{fc.number}</h4>
+            <h4>{fc.cardId}</h4>
             <p><strong>{fc.description}</strong></p>
-            <p>{fc.country} - {fc.team}</p>
+            <p>{[fc.country, fc.team].filter(Boolean).join(' · ')}</p>
             <p>{fc.category}</p>
             <p>Cantidad: {fc.quantity}</p>
           </CardItem>
@@ -82,7 +82,7 @@ export default function Collection({ userId: userId }: CollectionProps) {
             <CardImage $category={fc.category}>
               <span className="material-symbols-outlined" aria-hidden="true">sports_soccer</span>
             </CardImage>
-            <h4>#{fc.number} · x{fc.quantity}</h4>
+            <h4>{fc.cardId} · x{fc.quantity}</h4>
             <p><strong>{fc.description}</strong></p>
           </CardItem>
         ))}

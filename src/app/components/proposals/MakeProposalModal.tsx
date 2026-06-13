@@ -82,6 +82,7 @@ export default function MakeProposalModal({ userId, card, publicationId, maxRequ
     .filter(fc => !(fc.cardId in selected))
     .filter(fc =>
       fc.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      fc.cardId.toLowerCase().includes(searchQuery.toLowerCase()) ||
       String(fc.number).includes(searchQuery)
     );
 
@@ -102,7 +103,7 @@ export default function MakeProposalModal({ userId, card, publicationId, maxRequ
         ([id, qty]) => Array(qty).fill(id)
       );
       await makeProposal(publicationId, userId, cardIds, requestedCount);
-      showSuccess(`Propuesta enviada por la figurita #${card.number}`);
+      showSuccess(`Propuesta enviada por la figurita ${card.id}`);
       onSuccess();
       onClose();
     } catch (err: any) {
@@ -122,7 +123,7 @@ export default function MakeProposalModal({ userId, card, publicationId, maxRequ
         </ModalHeader>
 
         <InfoText>
-          Querés: <strong>#{card.number} {card.description}</strong>
+          Querés: <strong>{card.id} {card.description}</strong>
           {card.country && ` (${card.country})`}
         </InfoText>
 
@@ -149,7 +150,7 @@ export default function MakeProposalModal({ userId, card, publicationId, maxRequ
         ) : (
           <>
             <SearchInput
-              placeholder="Buscar por nombre o número..."
+              placeholder="Buscar por id, nombre o número..."
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
             />
@@ -161,7 +162,7 @@ export default function MakeProposalModal({ userId, card, publicationId, maxRequ
                   <EmptyItem>No hay figuritas disponibles</EmptyItem>
                 ) : available.map(fc => (
                   <CardItem key={fc.cardId}>
-                    <CardNum>#{fc.number}</CardNum>
+                    <CardNum>{fc.cardId}</CardNum>
                     <CardDescription>{fc.description}</CardDescription>
                     <CardQuantityLabel>{availableOf(fc)} disp. / {fc.quantity} tot.</CardQuantityLabel>
                     <AddButton onClick={() => toggleFigurita(fc.cardId)}>Agregar</AddButton>
@@ -180,7 +181,7 @@ export default function MakeProposalModal({ userId, card, publicationId, maxRequ
                   <EmptyItem>Ninguna seleccionada aún</EmptyItem>
                 ) : offered.map(fc => (
                   <CardItem key={fc.cardId}>
-                    <CardNum>#{fc.number}</CardNum>
+                    <CardNum>{fc.cardId}</CardNum>
                     <CardDescription>{fc.description}</CardDescription>
                     <QtyRow>
                       <QtyButton onClick={() => updateQuantity(fc.cardId, -1)}>−</QtyButton>

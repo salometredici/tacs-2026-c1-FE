@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Proposal } from '../../interfaces/proposals/Proposal';
-import { ProposalStatus } from '../../interfaces/proposals/ProposalStatus';
+import { PROPOSAL_STATUS_LABEL as STATUS_LABEL, PROPOSAL_STATUS_TONE as STATUS_TONE } from '../../interfaces/proposals/ProposalStatus';
 import {
   Overlay, Modal, ModalHeader, ModalTitle, ModalSubtitle, CloseButton,
   OriginBadge, HeaderActions, TwoColumns, Column, ColumnLabel,
@@ -11,14 +11,6 @@ import {
 import StatusBadge from '../common/StatusBadge';
 import { AcceptButton, RejectButton } from '../../pages/proposals/ProposalsPage.styles';
 
-const STATUS_LABEL: Record<ProposalStatus, string> = {
-  PENDIENTE: 'Pendiente',
-  ACEPTADA: 'Aceptada',
-  RECHAZADA: 'Rechazada',
-  CANCELADA: 'Cancelada',
-};
-const STATUS_TONE = { PENDIENTE: 'warning', ACEPTADA: 'success', RECHAZADA: 'error', CANCELADA: 'error' } as const;
-
 interface Props {
   proposal: Proposal;
   onClose: () => void;
@@ -26,6 +18,8 @@ interface Props {
   // El caller maneja el error/success — el modal solo dispara las callbacks y cierra
   onAccept?: () => Promise<void> | void;
   onReject?: () => Promise<void> | void;
+  // Si viene y la propuesta está PENDIENTE, se muestra "Cancelar propuesta" (para el proponente)
+  onCancel?: () => Promise<void> | void;
 }
 
 const formatDateTime = (iso?: string) => {
@@ -37,11 +31,12 @@ const formatDateTime = (iso?: string) => {
   });
 };
 
-export default function ProposalDetailModal({ proposal, onClose, onAccept, onReject }: Props) {
+export default function ProposalDetailModal({ proposal, onClose, onAccept, onReject, onCancel }: Props) {
   const navigate = useNavigate();
   const pubCard = proposal.publication.card;
-  const [actionLoading, setActionLoading] = useState<'accept' | 'reject' | null>(null);
+  const [actionLoading, setActionLoading] = useState<'accept' | 'reject' | 'cancel' | null>(null);
   const showActions = proposal.status === 'PENDIENTE' && (onAccept || onReject);
+  const showCancel = proposal.status === 'PENDIENTE' && !!onCancel;
 
   const goToPublication = () => {
     onClose();
@@ -58,6 +53,12 @@ export default function ProposalDetailModal({ proposal, onClose, onAccept, onRej
     if (!onReject) return;
     setActionLoading('reject');
     try { await onReject(); } finally { setActionLoading(null); onClose(); }
+  };
+
+  const handleCancel = async () => {
+    if (!onCancel) return;
+    setActionLoading('cancel');
+    try { await onCancel(); } finally { setActionLoading(null); onClose(); }
   };
 
   return (
@@ -85,7 +86,7 @@ export default function ProposalDetailModal({ proposal, onClose, onAccept, onRej
           <Column>
             <ColumnLabel>Pidió</ColumnLabel>
             <CardItem>
-              <span><strong>{proposal.requestedCount}</strong> × #{pubCard.number} {pubCard.description}</span>
+              <span>{proposal.requestedCount} × <strong>{pubCard.id}</strong> · {pubCard.description}</span>
               <CardMeta>
                 {[pubCard.country, pubCard.team, pubCard.category].filter(Boolean).join(' · ')}
               </CardMeta>
@@ -97,7 +98,7 @@ export default function ProposalDetailModal({ proposal, onClose, onAccept, onRej
               ? <CardMeta>Sin figuritas</CardMeta>
               : proposal.offeredCards.map((c, i) => (
                   <CardItem key={`${c.id}-${i}`}>
-                    <span><strong>#{c.number || '?'}</strong> · {c.description || '(sin detalle)'}</span>
+                    <span>1 × <strong>{c.id || '?'}</strong> · {c.description || '(sin detalle)'}</span>
                     {(c.country || c.team || c.category) && (
                       <CardMeta>
                         {[c.country, c.team, c.category].filter(Boolean).join(' · ')}
@@ -110,6 +111,11 @@ export default function ProposalDetailModal({ proposal, onClose, onAccept, onRej
         </TwoColumns>
 
         <Footer>
+          {showCancel && (
+            <RejectButton type="button" onClick={handleCancel} disabled={actionLoading !== null}>
+              {actionLoading === 'cancel' ? 'Cancelando...' : 'Cancelar propuesta'}
+            </RejectButton>
+          )}
           {showActions && onReject && (
             <RejectButton type="button" onClick={handleReject} disabled={actionLoading !== null}>
               {actionLoading === 'reject' ? 'Rechazando...' : 'Rechazar'}

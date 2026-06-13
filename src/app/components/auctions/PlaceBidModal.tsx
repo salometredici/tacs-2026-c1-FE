@@ -77,6 +77,7 @@ export default function PlaceBidModal({ userId, card, auctionId, onClose, onSucc
     .filter(fc => !(fc.cardId in selected))
     .filter(fc =>
       fc.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      fc.cardId.toLowerCase().includes(searchQuery.toLowerCase()) ||
       String(fc.number).includes(searchQuery)
     );
 
@@ -93,7 +94,7 @@ export default function PlaceBidModal({ userId, card, auctionId, onClose, onSucc
       // Expandimos por qty (se agrupa en el service al armar items).
       const cardIds = Object.entries(selected).flatMap(([id, qty]) => Array(qty).fill(id));
       await placeBid(auctionId, userId, cardIds);
-      showSuccess(`Oferta enviada en la subasta de la figurita #${card.number}`);
+      showSuccess(`Oferta enviada en la subasta de la figurita ${card.id}`);
       onSuccess();
       onClose();
     } catch (err: any) {
@@ -115,7 +116,7 @@ export default function PlaceBidModal({ userId, card, auctionId, onClose, onSucc
         </ModalHeader>
 
         <InfoText>
-          Querés: <strong>#{card.number} {card.description}</strong>
+          Querés: <strong>{card.id} {card.description}</strong>
           {card.country && ` (${card.country})`}
         </InfoText>
 
@@ -126,7 +127,7 @@ export default function PlaceBidModal({ userId, card, auctionId, onClose, onSucc
         ) : (
           <>
             <SearchInput
-              placeholder="Buscar por descripción o número..."
+              placeholder="Buscar por id, descripción o número..."
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
             />
@@ -138,7 +139,7 @@ export default function PlaceBidModal({ userId, card, auctionId, onClose, onSucc
                   <EmptyItem>No hay figuritas disponibles</EmptyItem>
                 ) : available.map(fc => (
                   <CardItem key={fc.cardId}>
-                    <CardNum>#{fc.number}</CardNum>
+                    <CardNum>{fc.cardId}</CardNum>
                     <CardDescription>{fc.description}</CardDescription>
                     <CardQuantityLabel>{availableOf(fc)} disp. / {fc.quantity} tot.</CardQuantityLabel>
                     <AddButton onClick={() => toggleCard(fc.cardId)}>Agregar</AddButton>
@@ -157,7 +158,7 @@ export default function PlaceBidModal({ userId, card, auctionId, onClose, onSucc
                   <EmptyItem>Ninguna seleccionada aún</EmptyItem>
                 ) : offered.map(fc => (
                   <CardItem key={fc.cardId}>
-                    <CardNum>#{fc.number}</CardNum>
+                    <CardNum>{fc.cardId}</CardNum>
                     <CardDescription>{fc.description}</CardDescription>
                     <QtyRow>
                       <QtyButton onClick={() => updateQuantity(fc.cardId, -1)}>−</QtyButton>

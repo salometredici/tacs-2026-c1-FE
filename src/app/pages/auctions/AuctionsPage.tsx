@@ -20,11 +20,9 @@ import {
   TabNav, TabBtn, MyBidCard,
   MyBidHeader, MyBidTitle, MyBidMeta, MyBidSubMeta, StrongInline, CancelBidButton,
 } from './AuctionsPage.styles';
-import StatusBadge, { StatusTone } from '../../components/common/StatusBadge';
+import StatusBadge from '../../components/common/StatusBadge';
+import { BID_STATUS_TONE as BID_TONE } from '../../interfaces/auctions/bid/BidStatus';
 
-const BID_TONE: Record<string, StatusTone> = {
-  ACTIVA: 'info', GANADORA: 'success', SUPERADA: 'warning', RECHAZADA: 'error', CANCELADA: 'error',
-};
 
 type Tab = 'active' | 'my-auctions' | 'my-bids';
 
@@ -38,13 +36,13 @@ export default function AuctionsPage() {
   const [pendingCancel, setPendingCancel] = useState<{ auctionId: string; bidId: string } | null>(null);
 
   const userId = currentUser.id;
-  const { data: activeData, isLoading: loadingActive, error: errorActive } = useFetch(
+  const { data: activeData, isLoading: loadingActive, error: errorActive, refetch: refetchActive } = useFetch(
     () => getActiveAuctions(), [],
   );
   const { data: myAuctionsData, isLoading: loadingMyAuctions, error: errorMyAuctions } = useFetch(
     () => getAuctionsByUserId(userId), [userId],
   );
-  const { data: myBidsData, isLoading: loadingMyBids, error: errorMyBids, setData: setMyBids } = useFetch(
+  const { data: myBidsData, isLoading: loadingMyBids, error: errorMyBids, setData: setMyBids, refetch: refetchMyBids } = useFetch(
     () => getAuctionBidsByUserId(userId), [userId],
   );
 
@@ -180,7 +178,7 @@ export default function AuctionsPage() {
           card={selectedAuction.card}
           auctionId={selectedAuction.id}
           onClose={() => setSelectedAuction(null)}
-          onSuccess={() => setSelectedAuction(null)}
+          onSuccess={() => { setSelectedAuction(null); refetchActive(); refetchMyBids(); }}
         />
       )}
 

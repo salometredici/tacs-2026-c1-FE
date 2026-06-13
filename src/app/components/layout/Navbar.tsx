@@ -47,7 +47,7 @@ export default function Navbar({ onProfileClick, onLogout }: NavbarProps) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [selectedNotification, setSelectedNotification] = useState<Notification | null>(null);
   const { currentUser } = useUserContext();
-  const { notifications, unreadCount, hasMoreUnread, refetch } = useNotificationsContext();
+  const { notifications, unreadCount, hasMoreUnread, refetch, markAsRead } = useNotificationsContext();
   const bellRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   const location = useLocation();
@@ -112,6 +112,7 @@ export default function Navbar({ onProfileClick, onLogout }: NavbarProps) {
                     <NotificationItem key={n.id} $read={n.read} onClick={() => {
                       setDropdownOpen(false);
                       setSelectedNotification(n);
+                      if (!n.read) markAsRead(n.id);
                     }}>
                       {n.message ?? 'Notificación'}
                     </NotificationItem>

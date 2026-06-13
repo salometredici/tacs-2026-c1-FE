@@ -197,7 +197,10 @@ export const NotificationItem = styled.div<{ $read: boolean }>`
   border-bottom: 1px solid ${theme.colors.outlineVariant};
   background: ${({ $read }) =>
     $read ? 'transparent' : theme.colors.secondaryContainer};
+  cursor: pointer;
+  transition: filter 0.15s;
 
+  &:hover { filter: brightness(0.96); }
   &:last-child { border-bottom: none; }
 `;
 

@@ -5,9 +5,8 @@ import StatusBadge from '../../../components/common/StatusBadge';
 import EmptyState from '../../../components/common/EmptyState';
 import { SectionActionButton } from '../../../components/auctions/Auctions.styles';
 import { RowList, OutlinedListItem } from '../ProfilePage.styles';
+import { PUBLICATION_STATUS_LABEL as STATUS_LABEL, PUBLICATION_STATUS_TONE as STATUS_TONE } from '../../../interfaces/publications/publicationTypes';
 
-const STATUS_LABEL = { ACTIVA: 'Activa', FINALIZADA: 'Finalizada', CANCELADA: 'Cancelada' } as const;
-const STATUS_TONE = { ACTIVA: 'success', FINALIZADA: 'neutral', CANCELADA: 'error' } as const;
 
 interface Props {
   publications: Publication[];
@@ -35,7 +34,7 @@ export default function PublicationsTab({ publications, onPublish }: Props) {
           {publications.map(pub => (
             <OutlinedListItem key={pub.id} onClick={() => navigate(`/publications/${pub.id}`)}>
               <div>
-                <strong>#{pub.card.number} {pub.card.description}</strong>
+                <strong>{pub.card.id} {pub.card.description}</strong>
                 <span>Quedan {pub.remainingCount} de {pub.initialCount}</span>
               </div>
               <StatusBadge tone={STATUS_TONE[pub.status]}>

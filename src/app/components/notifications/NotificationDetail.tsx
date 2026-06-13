@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { theme } from '../../styles/theme';
 import { Notification } from '../../interfaces/Notification';
-import StatusBadge from '../common/StatusBadge';
 
 const TYPE_LABELS: Record<string, string> = {
   TRADE_PROPOSAL_RECEIVED: 'Propuesta de intercambio recibida',
@@ -73,10 +72,6 @@ export default function NotificationDetail({ notification, onClose }: Props) {
         <NotificationMessage>{n.message}</NotificationMessage>
 
         <TypeLabel>{TYPE_LABELS[n.type] ?? n.type}</TypeLabel>
-
-        <StatusBadge tone={n.read ? 'neutral' : 'info'}>
-          {n.read ? 'Leída' : 'No leída'}
-        </StatusBadge>
 
         {path && (
           <NavigateButton onClick={handleNavigate}>

@@ -6,9 +6,8 @@ import StatusBadge from '../../../components/common/StatusBadge';
 import EmptyState from '../../../components/common/EmptyState';
 import { SectionActionButton } from '../../../components/auctions/Auctions.styles';
 import { RowList, OutlinedListItem, SeeAllLink, Divider } from '../ProfilePage.styles';
+import { AUCTION_STATUS_LABEL as STATUS_LABEL, AUCTION_STATUS_TONE as STATUS_TONE } from '../../../interfaces/auctions/AuctionStatus';
 
-const STATUS_LABEL = { ACTIVA: 'Activa', FINALIZADA: 'Finalizada', CANCELADA: 'Cancelada' } as const;
-const STATUS_TONE = { ACTIVA: 'success', FINALIZADA: 'neutral', CANCELADA: 'error' } as const;
 const PREVIEW = 3;
 
 const fmtDate = (iso: string) =>
@@ -43,7 +42,7 @@ export default function AuctionsTab({ myAuctions, myOffers }: Props) {
           {myAuctions.slice(0, PREVIEW).map(a => (
             <OutlinedListItem key={a.id} onClick={() => navigate(`/auctions/${a.id}`)}>
               <div>
-                <strong>#{a.card.number} {a.card.description}</strong>
+                <strong>{a.card.id} {a.card.description}</strong>
                 <span>Cierra {fmtDate(a.endDate)}</span>
               </div>
               <StatusBadge tone={STATUS_TONE[a.status]}>{STATUS_LABEL[a.status]}</StatusBadge>
@@ -68,7 +67,7 @@ export default function AuctionsTab({ myAuctions, myOffers }: Props) {
           {myOffers.slice(0, PREVIEW).map(o => (
             <OutlinedListItem key={o.bidId} onClick={() => navigate(`/auctions/${o.auctionId}`)}>
               <div>
-                <strong>#{o.card.number} {o.card.description}</strong>
+                <strong>{o.card.id} {o.card.description}</strong>
                 <span>De {o.publisher.name} · Cierra {fmtDate(o.closingDate)}</span>
               </div>
               <StatusBadge tone={o.auctionStatus === 'ACTIVA' ? 'success' : 'neutral'}>

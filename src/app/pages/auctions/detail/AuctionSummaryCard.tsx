@@ -1,14 +1,12 @@
 import { Auction } from '../../../interfaces/auctions/Auction';
 import { formatCountdown } from '../../../utils/utils';
-import StatusBadge, { StatusTone } from '../../../components/common/StatusBadge';
+import StatusBadge from '../../../components/common/StatusBadge';
+import { AUCTION_STATUS_TONE as AUCTION_TONE } from '../../../interfaces/auctions/AuctionStatus';
 import {
   Card, CardHeader, CardNumber, CardInfo, CategoryBadge, BadgeRow,
   InfoRow, RatingDecimal, InfoRowRight, InfoCaption, Countdown,
 } from '../AuctionDetailPage.styles';
 
-const AUCTION_TONE: Record<string, StatusTone> = {
-  ACTIVA: 'success', FINALIZADA: 'neutral', CANCELADA: 'error', DESIERTA: 'neutral',
-};
 
 interface Props {
   auction: Auction;
@@ -19,10 +17,10 @@ export default function AuctionSummaryCard({ auction }: Props) {
   return (
     <Card>
       <CardHeader>
-        <CardNumber>#{auction.card.number}</CardNumber>
+        <CardNumber>{auction.card.id}</CardNumber>
         <CardInfo>
           <h2>{auction.card.description}</h2>
-          <p>{auction.card.country} · {auction.card.team}</p>
+          <p>{[auction.card.country, auction.card.team].filter(Boolean).join(' · ')}</p>
           <BadgeRow>
             <CategoryBadge $category={auction.card.category}>{auction.card.category}</CategoryBadge>
             <StatusBadge tone={AUCTION_TONE[auction.status] ?? 'neutral'} size="md">{auction.status}</StatusBadge>

@@ -90,8 +90,8 @@ export default function SearchResults({
           </ResultsHeader>
           <ResultsGrid>
             {pubs.data.map(pub => (
-              <SearchResultCard key={`pub-${pub.id}`}>
-                <CardNumber>#{pub.card.number}</CardNumber>
+              <SearchResultCard key={`pub-${pub.id}`} onClick={() => navigate(`/publications/${pub.id}`)} $clickable>
+                <CardNumber>{pub.card.id}</CardNumber>
                 <CardInfo><strong>{pub.card.description}</strong></CardInfo>
                 <CardInfo>
                   {[pub.card.country, pub.card.team].filter(Boolean).join(' - ')}
@@ -104,7 +104,7 @@ export default function SearchResults({
                   Quedan <strong>{pub.remainingCount}</strong> de {pub.initialCount}
                 </CardInfo>
                 {currentUser && pub.remainingCount > 0 && pub.publisher.id !== currentUser.id && (
-                  <ProposeButton onClick={() => setSelectedPub(pub)}>
+                  <ProposeButton onClick={(e) => { e.stopPropagation(); setSelectedPub(pub); }}>
                     Proponer intercambio
                   </ProposeButton>
                 )}
@@ -126,8 +126,8 @@ export default function SearchResults({
           </ResultsHeader>
           <ResultsGrid>
             {aucs.data.map(a => (
-              <SearchResultCard key={`auc-${a.id}`}>
-                <CardNumber>#{a.card.number}</CardNumber>
+              <SearchResultCard key={`auc-${a.id}`} onClick={() => navigate(`/auctions/${a.id}`)} $clickable>
+                <CardNumber>{a.card.id}</CardNumber>
                 <CardInfo><strong>{a.card.description}</strong></CardInfo>
                 <CardInfo>
                   {[a.card.country, a.card.team].filter(Boolean).join(' - ')}
@@ -143,12 +143,12 @@ export default function SearchResults({
                   })}
                 </CardInfo>
                 {currentUser && a.publisherId.id !== currentUser.id && a.status === 'ACTIVA' && (
-                  <ProposeButton onClick={() => setSelectedAuction(a)}>
+                  <ProposeButton onClick={(e) => { e.stopPropagation(); setSelectedAuction(a); }}>
                     Hacer oferta
                   </ProposeButton>
                 )}
                 {currentUser && a.publisherId.id === currentUser.id && (
-                  <ProposeButton onClick={() => navigate(`/auctions/${a.id}`)}>
+                  <ProposeButton onClick={(e) => { e.stopPropagation(); navigate(`/auctions/${a.id}`); }}>
                     Ver mi subasta
                   </ProposeButton>
                 )}

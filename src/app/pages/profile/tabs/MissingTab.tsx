@@ -52,9 +52,9 @@ export default function MissingTab({ userId, missing, onAdd, onRefetch }: Props)
               <CardImage $category={card.category}>
                 <span className="material-symbols-outlined" aria-hidden="true">sports_soccer</span>
               </CardImage>
-              <h4>#{card.number}</h4>
+              <h4>{card.cardId}</h4>
               <p><strong>{card.description}</strong></p>
-              <p>{card.country} - {card.team}</p>
+              <p>{[card.country, card.team].filter(Boolean).join(' · ')}</p>
               <p>{card.category}</p>
               {card.addedAt && (
                 <p>Buscás esta {formatTimeAgo(card.addedAt)}</p>

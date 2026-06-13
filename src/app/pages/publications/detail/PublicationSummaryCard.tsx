@@ -1,5 +1,6 @@
 import { Publication } from '../../../interfaces/publications/Publication';
 import StatusBadge from '../../../components/common/StatusBadge';
+import { PUBLICATION_STATUS_LABEL as PUB_STATUS_LABEL, PUBLICATION_STATUS_TONE as PUB_TONE } from '../../../interfaces/publications/publicationTypes';
 import {
   PublicationCard, TopRow, CardInfo, CardTitle, CardMeta,
   CountSection, CountLabel, CountValue, ProgressTrack, ProgressFill,
@@ -7,8 +8,6 @@ import {
   Actions, PrimaryButton, DangerOutlineButton,
 } from '../PublicationDetailPage.styles';
 
-const PUB_STATUS_LABEL = { ACTIVA: 'Activa', FINALIZADA: 'Finalizada', CANCELADA: 'Cancelada' } as const;
-const PUB_TONE = { ACTIVA: 'success', FINALIZADA: 'neutral', CANCELADA: 'error' } as const;
 
 interface Props {
   publication: Publication;
