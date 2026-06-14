@@ -2,13 +2,45 @@
 
 Frontend en React + TypeScript para la plataforma de intercambio de figuritas del Mundial 2026
 
-## Levantar el stack completo
+## Acceso al deploy (cloud)
 
-La forma sugerida es levantar todo desde el repo del backend, que ya orquesta los 5 servicios (mongo + mongo-init + mongo-seed + backend + frontend) con healthchecks y dependencias entre sí. Ver instrucciones en el [README del backend](https://github.com/Leo-de-Riv3r/tp1c2026)
+La aplicación está corriendo en cloud sobre **tier free** de los tres proveedores (Atlas M0 + Render free + Netlify free):
 
-Con esa opción no hace falta clonar este repo: el servicio `frontend` del compose pullea la imagen publicada en GHCR (correspondiente al tag de la Entrega actual)
+| Componente | URL |
+|---|---|
+| Frontend (Netlify) | https://tacs-2026.netlify.app |
+| Backend (Render)   | https://tacs-backend-2026.onrender.com |
 
-## Levantar con el compose local del frontend
+**Probar la app**: abrir https://tacs-2026.netlify.app en el browser. El BE solo acepta tráfico desde ese origen (CORS) — no se puede consumir la API directamente desde otro origen.
+
+### Cold start
+
+El BE de Render free se "duerme" tras **15 min sin tráfico**. El primer request post-idle tarda **~30 s** en responder. La pantalla de login carga rápido (es estático en Netlify), pero el click "Iniciar sesión" puede colgar 30 s la primera vez. Para evitarlo, pegarle a https://tacs-backend-2026.onrender.com/actuator/health un minuto antes.
+
+### Usuarios disponibles
+
+Todos comparten el mismo password: **`123456`**
+
+| Email                    | Rol   | Estado inicial                                                      |
+|--------------------------|-------|---------------------------------------------------------------------|
+| `peperacing@gmail.com`   | USER  | Tiene cards en colección (3× FWC1, 2× MEX1, 1× BRA3)                |
+| `moniargento@gmail.com`  | USER  | Tiene cards en colección (1× FWC3, 2× ARG1, 3× BRA1, 1× ARG3, 1× MEX7) |
+| `dfuseneco@outlook.com`  | USER  | Usuario "vacío" — sin colección. Útil para probar empty states      |
+| `admin@mail.com`         | ADMIN | Usuario administrador. Login normal — el FE detecta `role: ADMIN` del DTO y redirige a `/admin` |
+
+No hay publicaciones, subastas, propuestas ni intercambios preseedeados — los crean los users durante la demo.
+
+## Levantar local
+
+El stack local es útil para **load tests** (apunta a Mongo en container, no Atlas — no afecta a la quota free ni a la data del cloud) y desarrollo del FE.
+
+### Opción A: stack completo desde el backend
+
+La más simple. El repo del backend orquesta los 5 servicios (mongo + mongo-init + mongo-seed + backend + frontend) con healthchecks y dependencias. Ver [README del backend](https://github.com/Leo-de-Riv3r/tp1c2026).
+
+Con esa opción no hace falta clonar este repo: el servicio `frontend` del compose pullea la imagen publicada en GHCR (correspondiente al tag de la Entrega actual).
+
+### Opción B: compose local del frontend (para editar FE y ver cambios)
 
 Si se quiere trabajar sobre el código del FE viendo los cambios reflejados en Docker, se puede usar el `docker-compose.yml`. Asume que el repo del backend está descargado en una carpeta bajo el mismo padre:
 
@@ -28,7 +60,7 @@ Eso levanta 5 servicios en orden:
 
 1. **Mongo** — arranca con `--replSet rs0` para soportar transacciones multi-documento.
 2. **mongo-init** — espera healthcheck de Mongo y corre `rs.initiate()` una sola vez. Termina y sale
-3. **mongo-seed** — corre `seed/seed.js` y carga el catálogo de 500 figuritas + los usuarios de prueba. Termina y sale
+3. **mongo-seed** — corre `seed/seed.js` y carga el catálogo de 991 figuritas + los usuarios de prueba. Termina y sale
 4. **Backend** — espera a que el seed termine OK; se buildea desde `../tp1c2026/backend`
 5. **Frontend** — se buildea desde el código local
 
@@ -65,18 +97,9 @@ npm run dev
 
 Esta app estará disponible en http://localhost:5173
 
-## Usuarios de prueba
+### Usuarios del seed local
 
-Todos los users del seed comparten el mismo password: **`123456`**
-
-| Email                    | Rol   | Notas                                                                            |
-|--------------------------|-------|----------------------------------------------------------------------------------|
-| `peperacing@gmail.com`   | USER  | Tiene cards en colección (3x card_001, 2x card_005, 1x card_010) y missing cards |
-| `moniargento@gmail.com`  | USER  | Tiene 2 publicaciones activas (card_003 y card_004)                      |
-| `dfuseneco@outlook.com`  | USER  | Usuario "vacío" — sin colección, faltantes, publicaciones ni propuestas. Para probar los empty states de cada sección |
-| `admin@mail.com`         | ADMIN | Usuario administrador. Login desde la misma pantalla — el FE detecta el rol del JWT y redirige a `/admin` |
-
-> **Corrección respecto de la entrega anterior:** el admin ya no se valida contra variables `ADMIN_EMAIL`/`ADMIN_PASSWORD` del `.env`. Ahora es un `User` más en Mongo con campo `role: ADMIN`. El endpoint de login es único (`POST /api/auth/login`) y el FE decodifica el claim `role` del JWT para decidir a qué UI redirigir
+Mismos que el cloud (ver "Acceso al deploy" arriba). El stack local es independiente del cloud — los users solo existen como duplicado para que el setup sea autocontenido.
 
 ## Variables de entorno
 
