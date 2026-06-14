@@ -1,0 +1,14 @@
+# Config de deploy en Netlify.
+# La URL del backend se inyecta vía env var VITE_API_BASE_URL (Site settings → Environment
+# variables), p.ej. https://<back>.onrender.com — apiConfig le agrega "/api".
+
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+# SPA fallback: cualquier ruta no-archivo sirve index.html para que ande React Router
+# (deep-links y F5 en rutas internas no dan 404).
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
