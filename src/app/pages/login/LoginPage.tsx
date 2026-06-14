@@ -5,7 +5,7 @@ import { useUserContext } from '../../context/useUserContext';
 import { useAdminContext } from '../../context/useAdminContext';
 import { API_CONFIG } from '../../config/apiConfig';
 import { register } from '../../api/AuthService';
-import { getRoleFromToken } from '../../utils/jwt';
+import { LoginResponse } from '../../interfaces/auth/LoginResponse';
 import {
   LoginContainer,
   LoginCard,
@@ -92,6 +92,7 @@ export default function LoginPage() {
     setFieldErrors({});
     setLoading(true);
     try {
+      let isAdmin = false;
       if (mode === 'register') {
         const derivedName = form.email.split('@')[0] || form.email;
         const { token, user } = await register({
@@ -101,15 +102,17 @@ export default function LoginPage() {
           avatarId: 'avatar_1',
         });
         login(user, token);
+        isAdmin = user.role === 'ADMIN';
       } else {
-        const response = await axios.post(API_CONFIG.auth.login, {
+        const response = await axios.post<LoginResponse>(API_CONFIG.auth.login, {
           email: form.email,
           password: form.password,
         });
         const { token, user } = response.data;
         login(user, token);
+        isAdmin = user.role === 'ADMIN';
       }
-      if (getRoleFromToken() === 'ADMIN') {
+      if (isAdmin) {
         setAdminLoggedIn(true);
         navigate('/admin');
       } else {

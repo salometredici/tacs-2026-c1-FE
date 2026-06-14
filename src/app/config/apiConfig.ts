@@ -50,4 +50,8 @@ export const API_CONFIG = {
     byId: (id: string) => `${API}/exchanges/${id}`,
     feedback: (id: string) => `${API}/exchanges/${id}/feedback`,
   },
+
+  settings: {
+    base: `${API}/settings`,
+  },
 };
