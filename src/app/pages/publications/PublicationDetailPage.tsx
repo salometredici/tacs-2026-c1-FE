@@ -70,7 +70,7 @@ export default function PublicationDetailPage() {
       // Optimistic local update; el BE eventualmente lo refleja
       setPublication(prev => prev ? { ...prev, status: 'CANCELADA' } : prev);
       setProposals(prev => prev.map(p =>
-        p.status === 'PENDIENTE' ? { ...p, status: 'RECHAZADA' } : p
+        p.status === 'PENDIENTE' ? { ...p, status: 'CANCELADA' } : p
       ));
       showSuccess('Publicación cancelada');
     } catch {
@@ -89,8 +89,7 @@ export default function PublicationDetailPage() {
     setActionLoading(proposal.id);
     try {
       await acceptProposal(proposal.id, currentUser.id);
-      // Optimistic: descontar requestedCount al remainingCount; si llega a 0 → FINALIZADA
-      // y rechazar pendientes restantes.
+      // Optimistic: descontar requestedCount al remainingCount; si llega a 0 → FINALIZADA.
       const newRemaining = Math.max(0, publication.remainingCount - proposal.requestedCount);
       const finalized = newRemaining === 0;
       setPublication(prev => prev ? {
@@ -98,9 +97,11 @@ export default function PublicationDetailPage() {
         remainingCount: newRemaining,
         status: finalized ? 'FINALIZADA' : prev.status,
       } : prev);
+      // Cascada marketplace: las pendientes que ya no entran (piden más de lo que quedó) se
+      // cancelan silenciosamente. Si finalizó (newRemaining=0), eso cubre a todas las restantes.
       setProposals(prev => prev.map(p => {
         if (p.id === proposal.id) return { ...p, status: 'ACEPTADA' };
-        if (finalized && p.status === 'PENDIENTE') return { ...p, status: 'RECHAZADA' };
+        if (p.status === 'PENDIENTE' && p.requestedCount > newRemaining) return { ...p, status: 'CANCELADA' };
         return p;
       }));
       showSuccess(finalized ? 'Propuesta aceptada — Publicación finalizada' : 'Propuesta aceptada');
@@ -140,10 +141,11 @@ export default function PublicationDetailPage() {
         onProposeClick={() => setShowProposeModal(true)}
       />
 
-      {isOwner && (
+      {proposals.length > 0 && (
         <ProposalsList
           proposals={proposals}
           publication={publication}
+          isOwner={isOwner}
           isActive={isActive}
           actionLoading={actionLoading}
           onAccept={handleAccept}

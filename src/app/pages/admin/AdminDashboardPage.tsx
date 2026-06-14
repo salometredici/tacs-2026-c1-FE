@@ -2,7 +2,9 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useAdminContext } from '../../context/useAdminContext';
+import { useSnackbar } from '../../context/useSnackbar';
 import { API_CONFIG } from '../../config/apiConfig';
+import { getSettings, updateSettings } from '../../api/SettingsService';
 import {
   DashboardOuter,
   DashboardHeaderBar,
@@ -18,6 +20,12 @@ import {
   StatIcon,
   StatValue,
   StatLabel,
+  ConfigCard,
+  ConfigLabel,
+  ConfigHelp,
+  ConfigRow,
+  ConfigInput,
+  ConfigButton,
 } from './AdminDashboardPage.styles';
 
 interface AdminStats {
@@ -50,14 +58,44 @@ const STAT_ITEMS = (stats: AdminStats) => [
 export default function AdminDashboardPage() {
   const navigate = useNavigate();
   const { adminLogout } = useAdminContext();
+  const { showSuccess, showError } = useSnackbar();
   const [stats, setStats] = useState<AdminStats>({ totalUsers: null, activeAuctions: null, activePublications: null });
   const [loading, setLoading] = useState(true);
+
+  const [maxPending, setMaxPending] = useState<number | null>(null);
+  const [maxPendingInput, setMaxPendingInput] = useState('');
+  const [savingSettings, setSavingSettings] = useState(false);
 
   useEffect(() => {
     fetchAdminStats()
       .then(setStats)
       .finally(() => setLoading(false));
   }, []);
+
+  useEffect(() => {
+    getSettings()
+      .then(s => { setMaxPending(s.maxPendingProposals); setMaxPendingInput(String(s.maxPendingProposals)); })
+      .catch(() => { /* el banner muestra N/D */ });
+  }, []);
+
+  const handleSaveSettings = async () => {
+    const value = parseInt(maxPendingInput, 10);
+    if (!Number.isInteger(value) || value < 1) {
+      showError('El tope debe ser un número entero mayor o igual a 1.');
+      return;
+    }
+    setSavingSettings(true);
+    try {
+      const updated = await updateSettings(value);
+      setMaxPending(updated.maxPendingProposals);
+      setMaxPendingInput(String(updated.maxPendingProposals));
+      showSuccess('Configuración actualizada');
+    } catch {
+      showError('No se pudo actualizar la configuración. Intentá de nuevo.');
+    } finally {
+      setSavingSettings(false);
+    }
+  };
 
   const handleLogout = () => {
     adminLogout();
@@ -96,6 +134,29 @@ export default function AdminDashboardPage() {
             </StatCard>
           ))}
         </StatsGrid>
+
+        <SectionTitle style={{ marginTop: '2rem' }}>Configuración</SectionTitle>
+        <ConfigCard>
+          <ConfigLabel htmlFor="max-pending">Máximo de propuestas pendientes por publicación</ConfigLabel>
+          <ConfigHelp>
+            Tope de propuestas en estado PENDIENTE que puede recibir una publicación.
+          </ConfigHelp>
+          <ConfigHelp>
+            Actual: <strong>{maxPending !== null ? maxPending : 'N/D'}</strong>
+          </ConfigHelp>
+          <ConfigRow>
+            <ConfigInput
+              id="max-pending"
+              type="number"
+              min={1}
+              value={maxPendingInput}
+              onChange={e => setMaxPendingInput(e.target.value)}
+            />
+            <ConfigButton onClick={handleSaveSettings} disabled={savingSettings || maxPending === null}>
+              {savingSettings ? 'Guardando…' : 'Guardar'}
+            </ConfigButton>
+          </ConfigRow>
+        </ConfigCard>
       </DashboardContent>
     </DashboardOuter>
   );

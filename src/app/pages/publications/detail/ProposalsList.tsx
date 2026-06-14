@@ -7,6 +7,7 @@ import ProposalCardItem from './ProposalCardItem';
 interface Props {
   proposals: Proposal[];
   publication: Publication;
+  isOwner: boolean;
   isActive: boolean;
   actionLoading: string | null;
   onAccept: (proposal: Proposal) => void;
@@ -14,15 +15,15 @@ interface Props {
 }
 
 export default function ProposalsList({
-  proposals, publication, isActive, actionLoading, onAccept, onReject,
+  proposals, publication, isOwner, isActive, actionLoading, onAccept, onReject,
 }: Props) {
   const pendingCount = proposals.filter(p => p.status === 'PENDIENTE').length;
+  const sectionLabel = isOwner
+    ? `Propuestas recibidas (${proposals.length}${pendingCount > 0 ? ` · ${pendingCount} pendiente${pendingCount !== 1 ? 's' : ''}` : ''})`
+    : `Mi propuesta${proposals.length !== 1 ? 's' : ''} (${proposals.length})`;
   return (
     <section>
-      <SectionTitle>
-        Propuestas recibidas ({proposals.length}
-        {pendingCount > 0 && ` · ${pendingCount} pendiente${pendingCount !== 1 ? 's' : ''}`})
-      </SectionTitle>
+      <SectionTitle>{sectionLabel}</SectionTitle>
       {proposals.length === 0 ? (
         <EmptyState>Aún no hay propuestas sobre esta publicación.</EmptyState>
       ) : (
@@ -32,7 +33,7 @@ export default function ProposalsList({
               key={p.id}
               proposal={p}
               publication={publication}
-              showActions={isActive && p.status === 'PENDIENTE'}
+              showActions={isOwner && isActive && p.status === 'PENDIENTE'}
               actionLoading={actionLoading}
               onAccept={onAccept}
               onReject={onReject}

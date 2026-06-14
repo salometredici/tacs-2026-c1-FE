@@ -167,3 +167,63 @@ export const StatLabel = styled.span`
   color: ${theme.colors.onSurfaceVariant};
   line-height: 1.3;
 `;
+
+// ─── Configuración ───────────────────────────────────────────────────────
+export const ConfigCard = styled.div`
+  background: ${theme.colors.surfaceContainerLow};
+  border-radius: ${theme.shape.medium};
+  box-shadow: ${theme.elevation[1]};
+  padding: ${theme.spacing.lg};
+  display: flex;
+  flex-direction: column;
+  gap: ${theme.spacing.sm};
+  max-width: 520px;
+`;
+
+export const ConfigLabel = styled.label`
+  font-size: ${theme.typography.bodyLarge.fontSize};
+  color: ${theme.colors.onSurface};
+  font-weight: 500;
+`;
+
+export const ConfigHelp = styled.span`
+  font-size: ${theme.typography.bodySmall.fontSize};
+  color: ${theme.colors.onSurfaceVariant};
+`;
+
+export const ConfigRow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: ${theme.spacing.sm};
+  margin-top: ${theme.spacing.xs};
+`;
+
+export const ConfigInput = styled.input`
+  width: 120px;
+  padding: 10px ${theme.spacing.md};
+  border: 1px solid ${theme.colors.outline};
+  border-radius: ${theme.shape.small};
+  font-size: ${theme.typography.bodyLarge.fontSize};
+  background: ${theme.colors.surface};
+  color: ${theme.colors.onSurface};
+
+  &:focus {
+    outline: none;
+    border-color: ${theme.colors.primary};
+  }
+`;
+
+export const ConfigButton = styled.button`
+  padding: 10px ${theme.spacing.lg};
+  background: ${theme.colors.primary};
+  color: ${theme.colors.onPrimary};
+  border: none;
+  border-radius: ${theme.shape.full};
+  font-size: ${theme.typography.labelLarge.fontSize};
+  font-weight: ${theme.typography.labelLarge.fontWeight};
+  cursor: pointer;
+  transition: filter 0.15s;
+
+  &:hover:not(:disabled) { filter: brightness(1.08); }
+  &:disabled { opacity: 0.5; cursor: not-allowed; }
+`;
