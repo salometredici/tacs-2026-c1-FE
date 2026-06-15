@@ -25,7 +25,7 @@ export const AuctionsTitle = styled.h1`
   margin: 0;
 `;
 
-// M3 Filled Button – section primary action (matches "Ofertar" weight)
+// M3 Filled Button — acción primaria de la sección (mismo peso visual que "Ofertar")
 export const SectionActionButton = styled.button`
   display: inline-flex;
   align-items: center;
@@ -66,7 +66,7 @@ export const AuctionsGrid = styled.div`
   gap: ${theme.spacing.lg};
 `;
 
-// M3 Elevated Card – compact density
+// M3 Elevated Card — densidad compacta
 export const AuctionCard = styled.div`
   background: ${theme.colors.surfaceContainerLow};
   border-radius: ${theme.shape.medium};
@@ -104,7 +104,7 @@ export const CardInfo = styled.div`
   padding-bottom: ${theme.spacing.sm};
 `;
 
-// Figurita visual (image when available, themed placeholder otherwise)
+// Figurita visual (imagen si está disponible, placeholder temático si no)
 export const CardImage = styled.div<{ $imageUrl?: string; $category: string }>`
   width: 64px;
   height: 64px;
@@ -160,7 +160,7 @@ export const CardDetails = styled.div`
   }
 `;
 
-// M3 Assist Chip – category indicator (used in card header)
+// M3 Assist Chip — indicador de categoría (usado en el header de la card)
 export const CategoryChip = styled.span<{ $category: string }>`
   display: inline-flex;
   align-items: center;
@@ -222,7 +222,7 @@ export const TimeRemaining = styled.div`
   font-size: ${theme.typography.labelLarge.fontSize};
 `;
 
-// M3 Filled Card (tonal) – last bid info
+// M3 Filled Card (tonal) — info de la última oferta
 export const BestBidInfo = styled.div`
   background: ${theme.colors.secondaryContainer};
   padding: ${theme.spacing.sm} ${theme.spacing.md};
@@ -241,7 +241,7 @@ export const BestBidInfo = styled.div`
   }
 `;
 
-// M3 Filled Card (tonal) – requirements
+// M3 Filled Card (tonal) — requisitos
 export const RequirmentsInfo = styled.div`
   background: ${theme.colors.primaryContainer};
   padding: ${theme.spacing.sm} ${theme.spacing.md};
@@ -264,7 +264,7 @@ export const RequirmentsInfo = styled.div`
   }
 `;
 
-// M3 Filled Button – compact (card primary action). Pinned to bottom of card.
+// M3 Filled Button — compacto (acción primaria de la card). Anclado al pie de la card.
 export const BidButton = styled.button`
   padding: 8px ${theme.spacing.md};
   background: ${theme.colors.primary};

@@ -3,6 +3,7 @@ import { useNavigate, useOutletContext } from 'react-router-dom';
 import { getExchangesByUserId, submitFeedback } from '../../api/ExchangesService';
 import { AuthedOutletContext } from '../../components/layout/UserRoute';
 import { useSnackbar } from '../../context/useSnackbar';
+import { useUserContext } from '../../context/useUserContext';
 import { useFetch } from '../../hooks/useFetch';
 import { viewAs } from '../../utils/exchangeView';
 import { Exchange } from '../../interfaces/exchanges/Exchange';
@@ -21,6 +22,7 @@ const ORIGIN_LABEL = { PROPUESTA: 'Propuesta', SUBASTA: 'Subasta' } as const;
 export default function ExchangesPage() {
   const navigate = useNavigate();
   const { currentUser } = useOutletContext<AuthedOutletContext>();
+  const { refreshCurrentUser } = useUserContext();
   const { showError } = useSnackbar();
 
   const [ratingTarget, setRatingTarget] = useState<Exchange | null>(null);
@@ -60,6 +62,7 @@ export default function ExchangesPage() {
         }))
       );
       closeRatingModal();
+      refreshCurrentUser();
     } catch {
       showError('Error al enviar la calificación. Intentá nuevamente.');
     } finally {

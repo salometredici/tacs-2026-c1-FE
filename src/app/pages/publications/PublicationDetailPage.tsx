@@ -5,6 +5,7 @@ import { getPublicationById, cancelPublication } from '../../api/PublicationsSer
 import { getProposalsByPublicationId, acceptProposal, rejectProposal } from '../../api/ProposalsService';
 import { AuthedOutletContext } from '../../components/layout/UserRoute';
 import { useSnackbar } from '../../context/useSnackbar';
+import { useUserContext } from '../../context/useUserContext';
 import { useFetch } from '../../hooks/useFetch';
 import MakeProposalModal from '../../components/proposals/MakeProposalModal';
 import ConfirmDialog from '../../components/feedback/ConfirmDialog';
@@ -18,6 +19,7 @@ export default function PublicationDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { currentUser } = useOutletContext<AuthedOutletContext>();
+  const { refreshCurrentUser } = useUserContext();
   const { showError, showSuccess } = useSnackbar();
 
   const [actionLoading, setActionLoading] = useState<string | null>(null);
@@ -105,6 +107,7 @@ export default function PublicationDetailPage() {
         return p;
       }));
       showSuccess(finalized ? 'Propuesta aceptada — Publicación finalizada' : 'Propuesta aceptada');
+      refreshCurrentUser();
     } catch {
       showError('Error al aceptar la propuesta. Intentá nuevamente.');
     } finally {

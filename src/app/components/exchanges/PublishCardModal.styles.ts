@@ -131,7 +131,7 @@ export const Row = styled.div`
   gap: ${theme.spacing.md};
 `;
 
-// M3 List Item — selectable (mismo patrón que CreateAuctionPage)
+// M3 List Item — seleccionable (mismo patrón que CreateAuctionPage)
 export const SelectableItem = styled.div<{ $selected: boolean; $disabled?: boolean }>`
   display: flex;
   align-items: center;

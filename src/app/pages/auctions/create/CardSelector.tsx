@@ -5,7 +5,7 @@ import {
 } from '../CreateAuctionPage.styles';
 import {
   SearchInput, CardList, CardNum, CardDescription, CardQuantityLabel, EmptyItem,
-} from '../../../components/proposals/MakeProposalModal.styles';
+} from '../../../components/common/styles/cardList.styles';
 
 interface Props {
   collection: CollectionCard[];

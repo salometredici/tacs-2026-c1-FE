@@ -12,7 +12,7 @@ import {
   OriginBadge, HeaderActions, TwoColumns, Column, ColumnLabel,
   PartyRow, PartyAvatar,
   CardItem, CardMeta,
-  FeedbackBlock, FeedbackHeader, FeedbackStars, FeedbackComment, FeedbackPending,
+  FeedbackBlock, FeedbackHeader, FeedbackComment, FeedbackPending,
   FeedbackTextarea, FeedbackFormActions, SecondaryButton,
   Footer, FooterButton,
 } from './ExchangeDetailModal.styles';
@@ -23,6 +23,12 @@ interface Props {
   exchange: Exchange;
   currentUserId: string;
   onClose: () => void;
+  /**
+   * Callback opcional que se invoca con el feedback recién creado, antes del onClose.
+   * Permite al padre hacer optimistic update del exchange en su state para que reabrir
+   * el modal muestre la calificación ya dejada (sin necesidad de F5).
+   */
+  onFeedbackSubmitted?: (feedback: Feedback) => void;
 }
 
 const formatDateTime = (iso: string) => {
@@ -47,13 +53,9 @@ const renderCards = (cards: CardSnapshot[]) => (
 );
 
 const renderStars = (score: number) => (
-  <FeedbackStars aria-label={`${score} de 5 estrellas`}>
-    {Array.from({ length: 5 }, (_, i) => (
-      <span key={i} className="material-symbols-outlined" aria-hidden="true">
-        {i < score ? 'star' : 'star_border'}
-      </span>
-    ))}
-  </FeedbackStars>
+  <span aria-label={`${score} de 5 estrellas`}>
+    <RatingStars value={score} readonly />
+  </span>
 );
 
 const renderFeedback = (fb: Feedback | null, label: string) => (
@@ -71,7 +73,7 @@ const renderFeedback = (fb: Feedback | null, label: string) => (
       </FeedbackBlock>
 );
 
-export default function ExchangeDetailModal({ exchange, currentUserId, onClose }: Props) {
+export default function ExchangeDetailModal({ exchange, currentUserId, onClose, onFeedbackSubmitted }: Props) {
   const navigate = useNavigate();
   const v = viewAs(exchange, currentUserId);
   const { showSuccess, showError } = useSnackbar();
@@ -84,7 +86,9 @@ export default function ExchangeDetailModal({ exchange, currentUserId, onClose }
     if (selectedScore === 0 || submitting) return;
     setSubmitting(true);
     try {
-      await submitFeedback(exchange.id, { score: selectedScore, comment: comment.trim() || undefined });
+      const trimmed = comment.trim() || undefined;
+      await submitFeedback(exchange.id, { score: selectedScore, comment: trimmed });
+      onFeedbackSubmitted?.({ score: selectedScore, comment: trimmed, createdAt: new Date().toISOString() });
       showSuccess('¡Calificación enviada!');
       onClose();
     } catch {

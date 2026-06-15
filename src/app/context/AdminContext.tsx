@@ -1,5 +1,6 @@
 import { FC, ReactNode, createContext, useState } from 'react';
 import { AdminContextType } from './AdminContextType';
+import { logout as logoutOnBackend } from '../api/AuthService';
 
 export const AdminContext = createContext<AdminContextType | null>(null);
 
@@ -22,6 +23,7 @@ export const AdminProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const [isAdminLoggedIn, setIsAdminLoggedIn] = useState<boolean>(isPersistedAdmin);
 
   const adminLogout = () => {
+    logoutOnBackend(); // revoca la sesión en el back antes de limpiar el storage
     setIsAdminLoggedIn(false);
     localStorage.removeItem('token');
     localStorage.removeItem('currentUser');

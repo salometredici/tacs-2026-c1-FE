@@ -10,7 +10,7 @@ import {
 } from '../exchanges/PublishCardModal.styles';
 import {
   CardList, CardNum, CardDescription, CardQuantityLabel, EmptyItem,
-} from '../proposals/MakeProposalModal.styles';
+} from '../common/styles/cardList.styles';
 
 const CATEGORIES: Category[] = ['COMUN', 'EPICO', 'LEGENDARIO'];
 

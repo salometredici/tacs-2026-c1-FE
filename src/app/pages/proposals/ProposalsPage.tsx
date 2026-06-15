@@ -4,6 +4,7 @@ import { Proposal } from '../../interfaces/proposals/Proposal';
 import { getProposals, acceptProposal, rejectProposal, cancelProposal } from '../../api/ProposalsService';
 import { AuthedOutletContext } from '../../components/layout/UserRoute';
 import { useSnackbar } from '../../context/useSnackbar';
+import { useUserContext } from '../../context/useUserContext';
 import { useFetch } from '../../hooks/useFetch';
 import ProposalDetailModal from '../../components/proposals/ProposalDetailModal';
 import {
@@ -21,6 +22,7 @@ import { PROPOSAL_STATUS_LABEL as STATUS_LABEL, PROPOSAL_STATUS_TONE as STATUS_T
 export default function ProposalsPage() {
   const navigate = useNavigate();
   const { currentUser } = useOutletContext<AuthedOutletContext>();
+  const { refreshCurrentUser } = useUserContext();
   const { showError, showSuccess } = useSnackbar();
 
   const [tab, setTab] = useState<'received' | 'sent'>('received');
@@ -45,6 +47,7 @@ export default function ProposalsPage() {
       await acceptProposal(proposal.id, currentUser.id);
       setReceived(prev => prev.map(p => p.id === proposal.id ? { ...p, status: 'ACEPTADA' } : p));
       showSuccess('Propuesta aceptada');
+      refreshCurrentUser();
     } catch {
       showError('Error al aceptar la propuesta. Intentá nuevamente.');
     } finally {

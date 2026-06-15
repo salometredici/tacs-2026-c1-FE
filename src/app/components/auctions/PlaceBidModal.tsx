@@ -23,7 +23,7 @@ import {
   QtyDisplay,
   EmptyItem,
   InfoText,
-} from '../proposals/MakeProposalModal.styles';
+} from '../common/styles/cardList.styles';
 
 interface Props {
   userId: string;

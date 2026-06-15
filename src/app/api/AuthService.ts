@@ -9,8 +9,12 @@ export const login = async (email: string, password: string): Promise<LoginRespo
 };
 
 export const logout = async (): Promise<void> => {
+  // Capturamos el token explícitamente (en vez de depender del interceptor) porque el caller
+  // limpia el localStorage inmediatamente después: así el BE recibe el Bearer y borra la sesión.
+  const token = localStorage.getItem('token');
   try {
-    await axios.post(API_CONFIG.auth.logout);
+    await axios.post(API_CONFIG.auth.logout, null,
+      token ? { headers: { Authorization: `Bearer ${token}` } } : undefined);
   } catch {
     console.log('Error al hacer logout en backend, pero se limpia el storage igual desde el componente');
   }

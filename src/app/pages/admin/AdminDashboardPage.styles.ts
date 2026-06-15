@@ -116,6 +116,10 @@ export const SectionTitle = styled.h2`
   margin: 0 0 ${theme.spacing.md};
 `;
 
+export const ConfigSectionTitle = styled(SectionTitle)`
+  margin-top: ${theme.spacing.xl};
+`;
+
 // M3 responsive grid
 export const StatsGrid = styled.div`
   display: grid;

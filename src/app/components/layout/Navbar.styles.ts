@@ -178,7 +178,7 @@ export const NotificationsDropdown = styled.div`
   width: 300px;
   background: ${theme.colors.surfaceContainerLow};
   border: 1px solid ${theme.colors.outlineVariant};
-  border-radius: ${theme.shape.extraLarge};
+  border-radius: ${theme.shape.medium};
   box-shadow: ${theme.elevation[3]};
   z-index: 2000;
   overflow: hidden;
