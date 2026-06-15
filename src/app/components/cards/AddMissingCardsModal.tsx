@@ -12,7 +12,7 @@ import {
 import {
   CardList, CardItem, CardNum, CardDescription, CardQuantityLabel,
   AddButton, RemoveButton, EmptyItem, SectionLabel,
-} from '../proposals/MakeProposalModal.styles';
+} from '../common/styles/cardList.styles';
 
 const CATEGORIES: Category[] = ['COMUN', 'EPICO', 'LEGENDARIO'];
 

@@ -10,7 +10,7 @@ import {
 } from './PublishCardModal.styles';
 import {
   SearchInput, CardList, CardNum, CardDescription, CardQuantityLabel, EmptyItem,
-} from '../proposals/MakeProposalModal.styles';
+} from '../common/styles/cardList.styles';
 
 interface Props {
   userId: string;

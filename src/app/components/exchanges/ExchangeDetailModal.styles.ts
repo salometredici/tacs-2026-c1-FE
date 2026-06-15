@@ -179,14 +179,6 @@ export const FeedbackHeader = styled.div`
   color: ${theme.colors.onSurfaceVariant};
 `;
 
-export const FeedbackStars = styled.span`
-  display: inline-flex;
-  gap: 2px;
-  color: ${theme.colors.tertiary};
-
-  & .material-symbols-outlined { font-size: 18px; }
-`;
-
 export const FeedbackComment = styled.p`
   margin: 0;
   color: ${theme.colors.onSurface};
@@ -199,13 +191,6 @@ export const FeedbackPending = styled.p`
   color: ${theme.colors.onSurfaceVariant};
   font-size: ${theme.typography.bodyMedium.fontSize};
   font-style: italic;
-`;
-
-// Estrella interactiva del picker — hereda layout de FeedbackStars pero permite clic individual
-export const InteractiveStar = styled.span`
-  cursor: pointer;
-  user-select: none;
-  & .material-symbols-outlined { font-size: 24px; }
 `;
 
 export const FeedbackTextarea = styled.textarea`

@@ -12,7 +12,7 @@ import {
   OriginBadge, HeaderActions, TwoColumns, Column, ColumnLabel,
   PartyRow, PartyAvatar,
   CardItem, CardMeta,
-  FeedbackBlock, FeedbackHeader, FeedbackStars, FeedbackComment, FeedbackPending,
+  FeedbackBlock, FeedbackHeader, FeedbackComment, FeedbackPending,
   FeedbackTextarea, FeedbackFormActions, SecondaryButton,
   Footer, FooterButton,
 } from './ExchangeDetailModal.styles';
@@ -47,13 +47,9 @@ const renderCards = (cards: CardSnapshot[]) => (
 );
 
 const renderStars = (score: number) => (
-  <FeedbackStars aria-label={`${score} de 5 estrellas`}>
-    {Array.from({ length: 5 }, (_, i) => (
-      <span key={i} className="material-symbols-outlined" aria-hidden="true">
-        {i < score ? 'star' : 'star_border'}
-      </span>
-    ))}
-  </FeedbackStars>
+  <span aria-label={`${score} de 5 estrellas`}>
+    <RatingStars value={score} readonly />
+  </span>
 );
 
 const renderFeedback = (fb: Feedback | null, label: string) => (

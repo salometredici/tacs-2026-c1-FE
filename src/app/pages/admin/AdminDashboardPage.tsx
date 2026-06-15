@@ -15,6 +15,7 @@ import {
   DashboardContent,
   DashboardSubtitle,
   SectionTitle,
+  ConfigSectionTitle,
   StatsGrid,
   StatCard,
   StatIcon,
@@ -135,7 +136,7 @@ export default function AdminDashboardPage() {
           ))}
         </StatsGrid>
 
-        <SectionTitle style={{ marginTop: '2rem' }}>Configuración</SectionTitle>
+        <ConfigSectionTitle>Configuración</ConfigSectionTitle>
         <ConfigCard>
           <ConfigLabel htmlFor="max-pending">Máximo de propuestas pendientes por publicación</ConfigLabel>
           <ConfigHelp>

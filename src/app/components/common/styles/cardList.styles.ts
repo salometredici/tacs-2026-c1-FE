@@ -1,5 +1,9 @@
 import styled from 'styled-components';
-import { theme } from '../../styles/theme';
+import { theme } from '../../../styles/theme';
+
+// Styled-components compartidos por todos los modales / forms que muestran listas de
+// figuritas seleccionables: MakeProposalModal, PlaceBidModal, PublishCardModal,
+// AddToCollectionModal, AddMissingCardsModal, CardSelector (CreateAuctionPage).
 
 // M3 Outlined Text Field
 export const SearchInput = styled.input`
