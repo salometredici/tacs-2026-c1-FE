@@ -15,6 +15,7 @@ const BASE_DTO: AuctionDto = {
   publisherUserId: 'user-42',
   publisherName: 'Carlos García',
   publisherAvatarId: 'avatar_3',
+  publisherRating: null,
   offers: [],
   conditions: [],
 };

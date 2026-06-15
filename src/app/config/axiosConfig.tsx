@@ -2,7 +2,7 @@ import axios, { AxiosError } from 'axios';
 import { toast } from 'sonner';
 import Snackbar from '../components/feedback/Snackbar';
 
-// Bearer token en cada request. Hay un solo token (user o admin); el role va en el claim del JWT
+// Bearer token (sessionId opaco) en cada request. Hay un solo token; el role viaja en el UserDto.
 axios.interceptors.request.use(config => {
   const token = localStorage.getItem('token');
   if (token) {
