@@ -52,6 +52,15 @@ export const API_CONFIG = {
   },
 
   settings: {
-    base: `${API}/settings`,
+    base: `${API}/admin/settings`,
+  },
+
+  broadcast: {
+    base: `${API}/admin/broadcast`,
+  },
+
+  adminStats: {
+    overview: `${API}/admin/stats/overview`,
+    mostWantedCards: `${API}/admin/stats/most-wanted-cards`,
   },
 };

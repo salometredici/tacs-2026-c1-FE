@@ -231,3 +231,21 @@ export const ConfigButton = styled.button`
   &:hover:not(:disabled) { filter: brightness(1.08); }
   &:disabled { opacity: 0.5; cursor: not-allowed; }
 `;
+
+export const ConfigTextarea = styled.textarea`
+  width: 100%;
+  min-height: 96px;
+  resize: vertical;
+  padding: 10px ${theme.spacing.md};
+  border: 1px solid ${theme.colors.outline};
+  border-radius: ${theme.shape.small};
+  font-size: ${theme.typography.bodyLarge.fontSize};
+  font-family: inherit;
+  background: ${theme.colors.surface};
+  color: ${theme.colors.onSurface};
+
+  &:focus {
+    outline: none;
+    border-color: ${theme.colors.primary};
+  }
+`;

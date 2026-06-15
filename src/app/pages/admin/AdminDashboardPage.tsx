@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import { useAdminContext } from '../../context/useAdminContext';
 import { useSnackbar } from '../../context/useSnackbar';
-import { API_CONFIG } from '../../config/apiConfig';
 import { getSettings, updateSettings } from '../../api/SettingsService';
+import { sendBroadcast } from '../../api/BroadcastService';
+import { getAdminOverview, AdminOverview } from '../../api/AdminStatsService';
+import ConfirmDialog from '../../components/feedback/ConfirmDialog';
 import {
   DashboardOuter,
   DashboardHeaderBar,
@@ -27,69 +28,71 @@ import {
   ConfigRow,
   ConfigInput,
   ConfigButton,
+  ConfigTextarea,
 } from './AdminDashboardPage.styles';
 
-interface AdminStats {
-  totalUsers: number | null;
-  activeAuctions: number | null;
-  activePublications: number | null;
-}
+const BROADCAST_MAX_LENGTH = 2000;
 
-interface Paginated<T> { data: T[]; currentPage: number; totalPages: number }
-
-const fetchAdminStats = async (): Promise<AdminStats> => {
-  const [usersRes, auctionsRes, publicationsRes] = await Promise.allSettled([
-    axios.get<unknown[]>(API_CONFIG.users.base),
-    axios.get<Paginated<unknown>>(API_CONFIG.auctions.base, { params: { per_page: 9999, page: 1 } }),
-    axios.get<Paginated<unknown>>(API_CONFIG.publications.base, { params: { per_page: 9999, page: 1 } }),
-  ]);
-  return {
-    totalUsers:        usersRes.status        === 'fulfilled' ? usersRes.value.data.length               : null,
-    activeAuctions:    auctionsRes.status     === 'fulfilled' ? auctionsRes.value.data.data.length       : null,
-    activePublications: publicationsRes.status === 'fulfilled' ? publicationsRes.value.data.data.length  : null,
-  };
-};
-
-const STAT_ITEMS = (stats: AdminStats) => [
-  { icon: 'group',   value: stats.totalUsers,          label: 'Usuarios registrados'   },
-  { icon: 'gavel',   value: stats.activeAuctions,       label: 'Subastas activas'        },
-  { icon: 'style',   value: stats.activePublications,   label: 'Publicaciones activas'   },
+const STAT_ITEMS = (overview: AdminOverview | null) => [
+  { icon: 'group',         value: overview?.totalUsers          ?? null, label: 'Usuarios registrados'  },
+  { icon: 'gavel',         value: overview?.activeAuctions      ?? null, label: 'Subastas activas'      },
+  { icon: 'style',         value: overview?.activePublications  ?? null, label: 'Publicaciones activas' },
+  { icon: 'swap_horiz',    value: overview?.totalExchanges      ?? null, label: 'Intercambios concretados' },
 ];
 
 export default function AdminDashboardPage() {
   const navigate = useNavigate();
   const { adminLogout } = useAdminContext();
   const { showSuccess, showError } = useSnackbar();
-  const [stats, setStats] = useState<AdminStats>({ totalUsers: null, activeAuctions: null, activePublications: null });
+  const [overview, setOverview] = useState<AdminOverview | null>(null);
   const [loading, setLoading] = useState(true);
 
   const [maxPending, setMaxPending] = useState<number | null>(null);
   const [maxPendingInput, setMaxPendingInput] = useState('');
+  const [maxOffers, setMaxOffers] = useState<number | null>(null);
+  const [maxOffersInput, setMaxOffersInput] = useState('');
   const [savingSettings, setSavingSettings] = useState(false);
 
+  const [broadcastMessage, setBroadcastMessage] = useState('');
+  const [broadcastConfirmOpen, setBroadcastConfirmOpen] = useState(false);
+  const [sendingBroadcast, setSendingBroadcast] = useState(false);
+
   useEffect(() => {
-    fetchAdminStats()
-      .then(setStats)
+    getAdminOverview()
+      .then(setOverview)
+      .catch(() => { /* fallback en STAT_ITEMS: muestra N/D */ })
       .finally(() => setLoading(false));
   }, []);
 
   useEffect(() => {
     getSettings()
-      .then(s => { setMaxPending(s.maxPendingProposals); setMaxPendingInput(String(s.maxPendingProposals)); })
+      .then(s => {
+        setMaxPending(s.maxPendingProposals);
+        setMaxPendingInput(String(s.maxPendingProposals));
+        setMaxOffers(s.maxOffersPerAuction);
+        setMaxOffersInput(String(s.maxOffersPerAuction));
+      })
       .catch(() => { /* el banner muestra N/D */ });
   }, []);
 
   const handleSaveSettings = async () => {
-    const value = parseInt(maxPendingInput, 10);
-    if (!Number.isInteger(value) || value < 1) {
-      showError('El tope debe ser un número entero mayor o igual a 1.');
+    const pending = parseInt(maxPendingInput, 10);
+    const offers = parseInt(maxOffersInput, 10);
+    if (!Number.isInteger(pending) || pending < 1 || pending > 100) {
+      showError('El tope de propuestas debe estar entre 1 y 100.');
+      return;
+    }
+    if (!Number.isInteger(offers) || offers < 1 || offers > 100) {
+      showError('El tope de ofertas debe estar entre 1 y 100.');
       return;
     }
     setSavingSettings(true);
     try {
-      const updated = await updateSettings(value);
+      const updated = await updateSettings({ maxPendingProposals: pending, maxOffersPerAuction: offers });
       setMaxPending(updated.maxPendingProposals);
       setMaxPendingInput(String(updated.maxPendingProposals));
+      setMaxOffers(updated.maxOffersPerAuction);
+      setMaxOffersInput(String(updated.maxOffersPerAuction));
       showSuccess('Configuración actualizada');
     } catch {
       showError('No se pudo actualizar la configuración. Intentá de nuevo.');
@@ -98,10 +101,29 @@ export default function AdminDashboardPage() {
     }
   };
 
+  const handleConfirmBroadcast = async () => {
+    const trimmed = broadcastMessage.trim();
+    if (!trimmed) return;
+    setSendingBroadcast(true);
+    try {
+      await sendBroadcast(trimmed);
+      showSuccess('Notificación enviada a todos los usuarios');
+      setBroadcastMessage('');
+      setBroadcastConfirmOpen(false);
+    } catch {
+      showError('No se pudo enviar la notificación. Intentá de nuevo.');
+    } finally {
+      setSendingBroadcast(false);
+    }
+  };
+
   const handleLogout = () => {
     adminLogout();
     navigate('/login');
   };
+
+  const trimmedBroadcast = broadcastMessage.trim();
+  const broadcastDisabled = trimmedBroadcast.length === 0 || trimmedBroadcast.length > BROADCAST_MAX_LENGTH;
 
   return (
     <DashboardOuter>
@@ -123,7 +145,7 @@ export default function AdminDashboardPage() {
 
         <SectionTitle>Estadísticas generales</SectionTitle>
         <StatsGrid>
-          {STAT_ITEMS(stats).map(stat => (
+          {STAT_ITEMS(overview).map(stat => (
             <StatCard key={stat.label}>
               <StatIcon>
                 <span className="material-symbols-outlined" aria-hidden="true">{stat.icon}</span>
@@ -150,14 +172,72 @@ export default function AdminDashboardPage() {
               id="max-pending"
               type="number"
               min={1}
+              max={100}
               value={maxPendingInput}
               onChange={e => setMaxPendingInput(e.target.value)}
             />
-            <ConfigButton onClick={handleSaveSettings} disabled={savingSettings || maxPending === null}>
+          </ConfigRow>
+
+          <ConfigLabel htmlFor="max-offers">Máximo de ofertas pendientes por subasta</ConfigLabel>
+          <ConfigHelp>
+            Tope de ofertas en estado PENDIENTE que puede recibir una subasta. Máximo 100 (las ofertas
+            son embedded en el documento de la subasta).
+          </ConfigHelp>
+          <ConfigHelp>
+            Actual: <strong>{maxOffers !== null ? maxOffers : 'N/D'}</strong>
+          </ConfigHelp>
+          <ConfigRow>
+            <ConfigInput
+              id="max-offers"
+              type="number"
+              min={1}
+              max={100}
+              value={maxOffersInput}
+              onChange={e => setMaxOffersInput(e.target.value)}
+            />
+            <ConfigButton onClick={handleSaveSettings} disabled={savingSettings || maxPending === null || maxOffers === null}>
               {savingSettings ? 'Guardando…' : 'Guardar'}
             </ConfigButton>
           </ConfigRow>
         </ConfigCard>
+
+        <ConfigSectionTitle>Notificación global</ConfigSectionTitle>
+        <ConfigCard>
+          <ConfigLabel htmlFor="broadcast-message">Mensaje para todos los usuarios</ConfigLabel>
+          <ConfigHelp>
+            Se envía como notificación a cada usuario con rol USER. Útil para anuncios de mantenimiento,
+            cambios de funcionalidad o avisos generales.
+          </ConfigHelp>
+          <ConfigTextarea
+            id="broadcast-message"
+            placeholder="Ej: Mantenimiento programado mañana 16/06 de 23 a 24hs. Durante ese horario el sistema no estará disponible."
+            maxLength={BROADCAST_MAX_LENGTH}
+            value={broadcastMessage}
+            onChange={e => setBroadcastMessage(e.target.value)}
+          />
+          <ConfigHelp>
+            {trimmedBroadcast.length} / {BROADCAST_MAX_LENGTH} caracteres
+          </ConfigHelp>
+          <ConfigRow>
+            <ConfigButton
+              onClick={() => setBroadcastConfirmOpen(true)}
+              disabled={broadcastDisabled || sendingBroadcast}
+            >
+              Enviar a todos
+            </ConfigButton>
+          </ConfigRow>
+        </ConfigCard>
+
+        <ConfirmDialog
+          open={broadcastConfirmOpen}
+          title="Enviar notificación global"
+          message="Vas a enviar este mensaje a todos los usuarios. ¿Confirmás?"
+          confirmLabel="Enviar"
+          loadingLabel="Enviando…"
+          loading={sendingBroadcast}
+          onConfirm={handleConfirmBroadcast}
+          onCancel={() => { if (!sendingBroadcast) setBroadcastConfirmOpen(false); }}
+        />
       </DashboardContent>
     </DashboardOuter>
   );
