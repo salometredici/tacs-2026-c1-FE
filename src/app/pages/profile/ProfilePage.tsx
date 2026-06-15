@@ -17,6 +17,7 @@ import { getExchangesByUserId } from '../../api/ExchangesService';
 import { AuthedOutletContext } from '../../components/layout/UserRoute';
 import { useFetch } from '../../hooks/useFetch';
 import { useSnackbar } from '../../context/useSnackbar';
+import { useUserContext } from '../../context/useUserContext';
 import {
   ProfileContainer, ProfileHeader, ProfileAvatar, ProfileTitle, ProfileEmail, ProfileMeta, ProfileMetaStar,
   TabSection, TabNav, TabButton,
@@ -37,6 +38,7 @@ type Tab = 'collection' | 'missing' | 'publications' | 'propuestas' | 'subastas'
 
 export default function ProfilePage() {
   const { currentUser } = useOutletContext<AuthedOutletContext>();
+  const { refreshCurrentUser } = useUserContext();
   const { showSuccess, showError } = useSnackbar();
   const { id: pathUserId } = useParams<{ id: string }>();
   const { data: freshUser } = useFetch(() => getById(currentUser.id), [currentUser.id]);
@@ -90,6 +92,7 @@ export default function ProfilePage() {
       await acceptProposal(proposal.id, user.id);
       showSuccess('Propuesta aceptada');
       refetch();
+      refreshCurrentUser();
     } catch {
       showError('Error al aceptar la propuesta. Intentá nuevamente.');
     }
@@ -118,6 +121,7 @@ export default function ProfilePage() {
         feedbackFromB: isUserA ? e.feedbackFromB : feedback,
       })),
     }));
+    refreshCurrentUser();
   };
 
   // Si la URL apunta al perfil de otro user (ej. /profile/<otroId> tipeado a mano),

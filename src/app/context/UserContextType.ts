@@ -4,4 +4,5 @@ export type UserContextType = {
   currentUser: User | null;
   login: (user: User, token: string) => void;
   logout: () => void;
+  refreshCurrentUser: () => Promise<void>;
 };

@@ -6,6 +6,7 @@ import PlaceBidModal from '../../components/auctions/PlaceBidModal';
 import ConfirmDialog from '../../components/feedback/ConfirmDialog';
 import { AuthedOutletContext } from '../../components/layout/UserRoute';
 import { useSnackbar } from '../../context/useSnackbar';
+import { useUserContext } from '../../context/useUserContext';
 import { useFetch } from '../../hooks/useFetch';
 import BackButton from '../../components/common/BackButton';
 import AuctionSummaryCard from './detail/AuctionSummaryCard';
@@ -19,6 +20,7 @@ export default function AuctionDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { currentUser } = useOutletContext<AuthedOutletContext>();
+  const { refreshCurrentUser } = useUserContext();
   const { showSuccess } = useSnackbar();
 
   const [showBidModal, setShowBidModal] = useState(false);
@@ -68,6 +70,7 @@ export default function AuctionDetailPage() {
       setPendingBid(null);
       await refreshAuction();
       showSuccess('Oferta aceptada — Subasta finalizada');
+      refreshCurrentUser();
     } catch {
       setFinalizeError('Error al finalizar la subasta. Intentá de nuevo.');
       setPendingBid(null);
