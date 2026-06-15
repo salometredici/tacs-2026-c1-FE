@@ -7,6 +7,8 @@ import { Auction } from '../../interfaces/auctions/Auction';
 import { UserBid } from '../../interfaces/auctions/bid/UserBid';
 import { Publication } from '../../interfaces/publications/Publication';
 import { Exchange } from '../../interfaces/exchanges/Exchange';
+import { Feedback } from '../../interfaces/exchanges/Feedback';
+import { viewAs } from '../../utils/exchangeView';
 import { getUserMissingCards, getById } from '../../api/UsersService';
 import { getAuctionsByUserId, getAuctionBidsByUserId } from '../../api/AuctionsService';
 import { getProposals, acceptProposal, rejectProposal } from '../../api/ProposalsService';
@@ -49,7 +51,7 @@ export default function ProfilePage() {
   // Carga las 7 secciones en paralelo con allSettled. Si una sola falla, el resto igual se muestra.
   // Si TODAS fallan, marcamos error global. `refetch` re-corre las 7 (lo invocan los modales de
   // crear faltante / publicar figurita, y "Ya la conseguí")
-  const { data, isLoading, error, refetch } = useFetch(
+  const { data, isLoading, error, refetch, setData } = useFetch(
     () => Promise.allSettled([
       getUserMissingCards(user.id),
       getProposals(user.id),
@@ -101,6 +103,21 @@ export default function ProfilePage() {
     } catch {
       showError('Error al rechazar la propuesta. Intentá nuevamente.');
     }
+  };
+
+  // Optimistic: tras calificar, actualizamos el exchange en el state local para que reabrir
+  // el modal muestre la calificación dejada (en vez de "Calificar a X" hasta F5).
+  const handleExchangeFeedbackSubmitted = (feedback: Feedback) => {
+    if (!exchangeDetail) return;
+    const isUserA = viewAs(exchangeDetail, user.id).isUserA;
+    setData(prev => ({
+      ...prev,
+      exchanges: prev.exchanges.map(e => e.id !== exchangeDetail.id ? e : ({
+        ...e,
+        feedbackFromA: isUserA ? feedback : e.feedbackFromA,
+        feedbackFromB: isUserA ? e.feedbackFromB : feedback,
+      })),
+    }));
   };
 
   // Si la URL apunta al perfil de otro user (ej. /profile/<otroId> tipeado a mano),
@@ -229,6 +246,7 @@ export default function ProfilePage() {
           exchange={exchangeDetail}
           currentUserId={user.id}
           onClose={() => setExchangeDetail(null)}
+          onFeedbackSubmitted={handleExchangeFeedbackSubmitted}
         />
       )}
     </ProfileContainer>

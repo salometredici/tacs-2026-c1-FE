@@ -1,21 +1,21 @@
 import { createGlobalStyle } from 'styled-components';
 
-// ─── M3 Color Tokens (FIFA World Cup 2026 palette: deep purple + gold accent)
+// ─── M3 Color Tokens (paleta FIFA World Cup 2026: púrpura profundo + dorado de acento)
 export const theme = {
   colors: {
-    // Primary – deep purple (Mundial 2026 brand)
+    // Primary — púrpura profundo (marca Mundial 2026)
     primary:              '#4B2D7F',
     onPrimary:            '#FFFFFF',
     primaryContainer:     '#E9DDFF',
     onPrimaryContainer:   '#190064',
 
-    // Secondary (neutral with slight warm tint)
+    // Secondary (neutro con tinte cálido sutil)
     secondary:            '#625B71',
     onSecondary:          '#FFFFFF',
     secondaryContainer:   '#E8DEF8',
     onSecondaryContainer: '#1D192B',
 
-    // Tertiary – trophy gold accent
+    // Tertiary — dorado tipo trofeo
     tertiary:             '#7E5700',
     onTertiary:           '#FFFFFF',
     tertiaryContainer:    '#FFDF9E',
@@ -27,7 +27,7 @@ export const theme = {
     errorContainer:       '#FFDAD6',
     onErrorContainer:     '#410002',
 
-    // Surface tones – background pure white, containers tinted with subtle purple
+    // Tonos de surface — fondo blanco puro, containers tintados con púrpura sutil
     background:           '#FFFFFF',
     onBackground:         '#1D1B20',
     surface:              '#FFFBFF',
@@ -35,7 +35,7 @@ export const theme = {
     surfaceVariant:       '#E7E0EC',
     onSurfaceVariant:     '#49454F',
 
-    // Surface containers (low → high = subtle → prominent)
+    // Surface containers (low → high = sutil → prominente)
     surfaceContainerLowest:  '#FFFFFF',
     surfaceContainerLow:     '#F7F2FA',
     surfaceContainer:        '#F1ECF4',
@@ -51,13 +51,13 @@ export const theme = {
     inverseOnSurface: '#F5EFF7',
     inversePrimary:   '#CFBCFF',
 
-    // Semantic status (M3 container pattern)
+    // Estados semánticos (patrón container de M3)
     success:          '#386A20',
     successContainer: '#B7F397',
     warning:          '#7B5800',
     warningContainer: '#FFDEA8',
 
-    // ─── Legacy aliases (keeps existing components working) ─────────────────
+    // ─── Aliases legacy (mantienen compatibilidad con componentes existentes) ───
     danger:        '#BA1A1A',    // = error
     text:          '#1D1B20',   // = onBackground
     textSecondary: '#49454F',   // = onSurfaceVariant
@@ -76,14 +76,14 @@ export const theme = {
     full:       '9999px',
   },
 
-  // ─── Legacy borderRadius (updated to M3 values) ───────────────────────────
+  // ─── borderRadius legacy (actualizado a valores M3) ──────────────────────
   borderRadius: {
     sm: '8px',   // M3 small
     md: '12px',  // M3 medium
     lg: '16px',  // M3 large
   },
 
-  // ─── Spacing (unchanged) ──────────────────────────────────────────────────
+  // ─── Spacing (sin cambios) ───────────────────────────────────────────────
   spacing: {
     xs:  '0.25rem',
     sm:  '0.5rem',
@@ -93,7 +93,7 @@ export const theme = {
     xxl: '3rem',
   },
 
-  // ─── M3 Elevation (shadow + tonal surface overlay) ────────────────────────
+  // ─── M3 Elevation (sombra + tonal surface overlay) ───────────────────────
   elevation: {
     0: 'none',
     1: '0px 1px 2px rgba(0,0,0,0.3), 0px 1px 3px 1px rgba(0,0,0,0.15)',
@@ -103,7 +103,7 @@ export const theme = {
     5: '0px 8px 12px 6px rgba(0,0,0,0.15), 0px 4px 4px rgba(0,0,0,0.3)',
   },
 
-  // ─── Legacy shadows (aliased to M3 elevation levels) ─────────────────────
+  // ─── Shadows legacy (mapeados a niveles de M3 Elevation) ─────────────────
   shadows: {
     sm: '0px 1px 2px rgba(0,0,0,0.3), 0px 1px 3px 1px rgba(0,0,0,0.15)',
     md: '0px 1px 2px rgba(0,0,0,0.3), 0px 2px 6px 2px rgba(0,0,0,0.15)',
@@ -139,7 +139,7 @@ export const theme = {
   },
 };
 
-// ─── Global Styles ────────────────────────────────────────────────────────────
+// ─── Estilos globales ─────────────────────────────────────────────────────────
 export const GlobalStyle = createGlobalStyle`
   *, *::before, *::after {
     margin: 0;

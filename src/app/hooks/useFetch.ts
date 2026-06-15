@@ -119,7 +119,7 @@ export function useFetch<T>(
     isLoading: true,
     error: null,
   });
-  // Bumping this dispara una re-ejecución del effect (está incluido abajo en deps)
+  // Incrementarlo dispara una re-ejecución del effect (está incluido abajo en deps)
   const [refetchKey, setRefetchKey] = useState(0);
 
   useEffect(() => {
