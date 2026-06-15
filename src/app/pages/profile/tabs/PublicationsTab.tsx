@@ -34,7 +34,7 @@ export default function PublicationsTab({ publications, onPublish }: Props) {
           {publications.map(pub => (
             <OutlinedListItem key={pub.id} onClick={() => navigate(`/publications/${pub.id}`)}>
               <div>
-                <strong>{pub.card.id} {pub.card.description}</strong>
+                <strong><b>{pub.card.id}</b> - {pub.card.description}</strong>
                 <span>Quedan {pub.remainingCount} de {pub.initialCount}</span>
               </div>
               <StatusBadge tone={STATUS_TONE[pub.status]}>

@@ -44,6 +44,7 @@ export default function PublishFiguritaModal({ userId, onClose, onSuccess }: Pro
   const maxQuantity = selectedCard ? availableOf(selectedCard) : 0;
 
   const filtered = collection.filter(c =>
+    c.cardId.toLowerCase().includes(searchQuery.toLowerCase()) ||
     c.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
     String(c.number).includes(searchQuery)
   );
@@ -95,7 +96,7 @@ export default function PublishFiguritaModal({ userId, onClose, onSuccess }: Pro
           ) : (
             <>
               <SearchInput
-                placeholder="Buscar por descripción o número..."
+                placeholder="Buscar por id, descripción o número..."
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
               />
@@ -117,7 +118,7 @@ export default function PublishFiguritaModal({ userId, onClose, onSuccess }: Pro
                           {isSelected ? 'radio_button_checked' : 'radio_button_unchecked'}
                         </span>
                       </SelectIndicator>
-                      <CardNum>#{c.number}</CardNum>
+                      <CardNum>{c.cardId}</CardNum>
                       <CardDescription>{c.description}</CardDescription>
                       <CardQuantityLabel>
                         {available} disp. / {c.quantity} tot.

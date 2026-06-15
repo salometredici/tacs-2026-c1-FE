@@ -55,7 +55,7 @@ export default function AuctionBidsList({
                   </OfferHeader>
                   <OfferedCards>
                     <strong>{o.offeredCards.length} figurita(s):</strong>{' '}
-                    {o.offeredCards.map(f => `#${f.number} ${f.description}`).join(', ')}
+                    {o.offeredCards.map(f => `${f.id} - ${f.description}`).join(', ')}
                   </OfferedCards>
                   <OfferDate>{new Date(o.bidDate).toLocaleString('es-AR')}</OfferDate>
                   {isOwner && isActive && o.status === 'ACTIVA' && (

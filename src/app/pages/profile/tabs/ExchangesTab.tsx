@@ -7,7 +7,7 @@ import EmptyState from '../../../components/common/EmptyState';
 import { RowList, OutlinedListItem, SeeAllLink } from '../ProfilePage.styles';
 
 const ORIGIN_LABEL = { PROPUESTA: 'Propuesta', SUBASTA: 'Subasta' } as const;
-const PREVIEW = 3;
+const PREVIEW = 5;
 
 interface Props {
   userId: string;
@@ -22,7 +22,7 @@ export default function ExchangesTab({ userId, exchanges, onSelect }: Props) {
       <SectionHeader
         title="Histórico"
         count={exchanges.length}
-        action={exchanges.length > PREVIEW && (
+        action={exchanges.length > 0 && (
           <SeeAllLink onClick={() => navigate('/exchanges')}>Ver todos →</SeeAllLink>
         )}
       />

@@ -29,7 +29,7 @@ export default function PublicationSummaryCard({
     <PublicationCard>
       <TopRow>
         <CardInfo>
-          <CardTitle>#{publication.card.number} · {publication.card.description}</CardTitle>
+          <CardTitle><b>{publication.card.id}</b> · {publication.card.description}</CardTitle>
           <CardMeta>
             {[publication.card.country, publication.card.team, publication.card.category]
               .filter(Boolean)

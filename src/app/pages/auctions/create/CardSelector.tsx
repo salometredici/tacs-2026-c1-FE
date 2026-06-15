@@ -18,6 +18,7 @@ export default function CardSelector({ collection, loading, value, onChange }: P
   const [searchQuery, setSearchQuery] = useState('');
 
   const matchesSearch = (fc: CollectionCard) =>
+    fc.cardId.toLowerCase().includes(searchQuery.toLowerCase()) ||
     fc.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
     String(fc.number).includes(searchQuery);
 
@@ -34,7 +35,7 @@ export default function CardSelector({ collection, loading, value, onChange }: P
       ) : (
         <>
           <SearchInput
-            placeholder="Buscar por descripción o número..."
+            placeholder="Buscar por id, descripción o número..."
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
           />
@@ -53,7 +54,7 @@ export default function CardSelector({ collection, loading, value, onChange }: P
                       {isSelected ? 'radio_button_checked' : 'radio_button_unchecked'}
                     </span>
                   </SelectIndicator>
-                  <CardNum>#{fc.number}</CardNum>
+                  <CardNum>{fc.cardId}</CardNum>
                   <CardDescription>{fc.description}</CardDescription>
                   <CardQuantityLabel>{available} disp. / {fc.quantity} tot.</CardQuantityLabel>
                 </SelectableItem>

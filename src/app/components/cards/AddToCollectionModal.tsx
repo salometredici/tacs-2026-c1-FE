@@ -35,6 +35,7 @@ export default function AddToCollectionModal({ userId, onClose, onSuccess }: Pro
   const filtered = catalog.filter(f => {
     const matchesQuery =
       !query ||
+      f.id.toLowerCase().includes(query.toLowerCase()) ||
       f.description.toLowerCase().includes(query.toLowerCase()) ||
       String(f.number).includes(query);
     const matchesCategory = !category || f.category === category;
@@ -70,7 +71,7 @@ export default function AddToCollectionModal({ userId, onClose, onSuccess }: Pro
           <Row>
             <Input
               type="text"
-              placeholder="Buscar por nombre o número..."
+              placeholder="Buscar por id, nombre o número..."
               value={query}
               onChange={e => { setQuery(e.target.value); setSelected(null); }}
               autoFocus
@@ -101,7 +102,7 @@ export default function AddToCollectionModal({ userId, onClose, onSuccess }: Pro
                         {isSelected ? 'radio_button_checked' : 'radio_button_unchecked'}
                       </span>
                     </SelectIndicator>
-                    <CardNum>#{f.number}</CardNum>
+                    <CardNum>{f.id}</CardNum>
                     <CardDescription>{f.description}</CardDescription>
                     <CardQuantityLabel>{f.country} · {f.category}</CardQuantityLabel>
                   </SelectableItem>

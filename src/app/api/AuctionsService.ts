@@ -180,6 +180,7 @@ export const cancelOffer = async (auctionId: string, offerId: string): Promise<v
 
 interface UserBidDtoBE {
   auctionId: string;
+  cardId: string;
   cardNumber: number;
   cardDescription: string;
   cardCountry: string | null;
@@ -199,7 +200,7 @@ export const getAuctionBidsByUserId = async (userId: string): Promise<UserBid[]>
   return res.data.map(b => ({
     auctionId: b.auctionId,
     card: {
-      id: '',
+      id: b.cardId,
       number: b.cardNumber,
       type: 'JUGADOR' as CardType,
       description: b.cardDescription,

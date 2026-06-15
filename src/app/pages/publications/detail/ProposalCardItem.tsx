@@ -32,11 +32,11 @@ export default function ProposalCardItem({
         <ProposalDetail>
           Ofrece <strong>{offeredCount}</strong> figurita{offeredCount !== 1 ? 's' : ''}
           {' a cambio de '}
-          <strong>{proposal.requestedCount}</strong> de #{publication.card.number} {publication.card.description}
+          <strong>{proposal.requestedCount}</strong> de <b>{publication.card.id}</b> - {publication.card.description}
         </ProposalDetail>
         {offeredCount > 0 && (
           <ProposalDetail>
-            Ofrecidas: {proposal.offeredCards.map(c => `#${c.number} ${c.description}`).join(', ')}
+            Ofrecidas: {proposal.offeredCards.map(c => `${c.id} - ${c.description}`).join(', ')}
           </ProposalDetail>
         )}
       </ProposalInfo>

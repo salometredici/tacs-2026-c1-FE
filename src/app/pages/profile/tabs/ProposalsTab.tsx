@@ -5,7 +5,7 @@ import StatusBadge from '../../../components/common/StatusBadge';
 import EmptyState from '../../../components/common/EmptyState';
 import { RowList, OutlinedListItem, SeeAllLink, Divider } from '../ProfilePage.styles';
 import { PROPOSAL_STATUS_LABEL as STATUS_LABEL, PROPOSAL_STATUS_TONE as STATUS_TONE } from '../../../interfaces/proposals/ProposalStatus';
-const PREVIEW = 3;
+const PREVIEW = 5;
 
 interface Props {
   received: Proposal[];
@@ -20,7 +20,7 @@ export default function ProposalsTab({ received, sent, onSelect }: Props) {
       <SectionHeader
         title="Recibidas"
         count={received.length}
-        action={received.length > PREVIEW && (
+        action={received.length > 0 && (
           <SeeAllLink onClick={() => navigate('/proposals')}>Ver todas →</SeeAllLink>
         )}
       />
@@ -45,7 +45,7 @@ export default function ProposalsTab({ received, sent, onSelect }: Props) {
       <SectionHeader
         title="Enviadas"
         count={sent.length}
-        action={sent.length > PREVIEW && (
+        action={sent.length > 0 && (
           <SeeAllLink onClick={() => navigate('/proposals')}>Ver todas →</SeeAllLink>
         )}
       />
