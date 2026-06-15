@@ -105,9 +105,13 @@ const mapProposalDto = (dto: TradeProposalDto, pub: Publication | null): Proposa
 const enrichProposals = async (dtos: TradeProposalDto[]): Promise<Proposal[]> => {
   const uniquePubIds = Array.from(new Set(dtos.map(d => d.publicationId)));
   const pubsById = new Map<string, Publication | null>();
-  await Promise.all(uniquePubIds.map(async id => {
-    pubsById.set(id, await getPublicationById(id));
-  }));
+  // allSettled (no all): si una publication falla (404, 5xx transitorio, etc.) las demás siguen
+  // resolviéndose y las proposals huérfanas caen al fallback `stubPublication` del mapper.
+  const results = await Promise.allSettled(uniquePubIds.map(id => getPublicationById(id)));
+  uniquePubIds.forEach((id, idx) => {
+    const r = results[idx];
+    pubsById.set(id, r.status === 'fulfilled' ? r.value : null);
+  });
   return dtos.map(d => mapProposalDto(d, pubsById.get(d.publicationId) ?? null));
 };
 

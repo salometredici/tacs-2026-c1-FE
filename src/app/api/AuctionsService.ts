@@ -47,6 +47,7 @@ export interface AuctionDto {
   publisherUserId: string | null;
   publisherName: string | null;
   publisherAvatarId: string | null;
+  publisherRating: number | null;
   offers: AuctionOfferDtoBE[] | null;
   conditions: AuctionConditionBE[] | null;
 }
@@ -78,7 +79,7 @@ export const mapAuction = (dto: AuctionDto): Auction => {
     id: dto.publisherUserId ?? '',
     name: dto.publisherName ?? '',
     email: '',
-    rating: null,
+    rating: dto.publisherRating ?? null,
     exchangesAmount: 0,
     avatarId: (dto.publisherAvatarId as User['avatarId']) ?? 'avatar_1',
     creationDate: '',
