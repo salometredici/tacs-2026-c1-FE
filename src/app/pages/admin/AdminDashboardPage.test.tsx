@@ -50,6 +50,21 @@ vi.mock('../../components/feedback/ConfirmDialog', () => ({
   ) : null,
 }));
 
+// Stubs de los 4 paneles (Capa 2/3). Sus tests viven aparte; acá sólo verificamos que
+// la page los compone — evitamos importar recharts en tests de unidad de esta page.
+vi.mock('./panels/TimeseriesPanel', () => ({
+  default: ({ label }: { label: string }) => <div data-testid={`ts-${label}`}>ts-panel:{label}</div>,
+}));
+vi.mock('./panels/MostWantedCardsPanel', () => ({
+  default: () => <div data-testid="most-wanted-panel" />,
+}));
+vi.mock('./panels/TopExchangedCardsPanel', () => ({
+  default: () => <div data-testid="top-exchanged-panel" />,
+}));
+vi.mock('./panels/TopAuctionPanel', () => ({
+  default: () => <div data-testid="top-auction-panel" />,
+}));
+
 import { getSettings, updateSettings } from '../../api/SettingsService';
 import { sendBroadcast } from '../../api/BroadcastService';
 import {
@@ -210,35 +225,18 @@ describe('AdminDashboardPage — logout', () => {
   });
 });
 
-// ─── Layer 2 + Layer 3 ───────────────────────────────────────────────────
+// ─── Composición de paneles ──────────────────────────────────────────────
+// El comportamiento interno de cada panel vive en sus propios tests / verificación manual.
+// Acá sólo validamos que la page los compone con los labels correctos.
 
-describe('AdminDashboardPage — Capa 2/3 paneles', () => {
-  it('los timeseries muestran el total devuelto por el BE', async () => {
-    mockAuctionsTs.mockResolvedValue({ period: 'week', total: 12, daily: [] });
-    mockProposalsTs.mockResolvedValue({ period: 'week', total: 34, daily: [] });
-    mockExchangesTs.mockResolvedValue({ period: 'week', total: 56, daily: [] });
+describe('AdminDashboardPage — composición de paneles', () => {
+  it('compone los 3 timeseries (Subastas/Propuestas/Intercambios) + los 3 highlights', async () => {
     render(<AdminDashboardPage />);
-    await waitFor(() => expect(screen.getByText('12')).toBeTruthy());
-    expect(screen.getByText('34')).toBeTruthy();
-    expect(screen.getByText('56')).toBeTruthy();
-  });
-
-  it('highlights muestran el placeholder cuando no hay datos', async () => {
-    render(<AdminDashboardPage />);
-    await waitFor(() => expect(screen.getByText(/Sin datos en el período/)).toBeTruthy());
-    expect(screen.getByText(/Sin intercambios en el período/)).toBeTruthy();
-    expect(screen.getByText(/No hay subastas activas con ofertas/)).toBeTruthy();
-  });
-
-  it('top auction muestra el detalle cuando el BE devuelve datos', async () => {
-    mockTopAuction.mockResolvedValue({
-      auctionId: 'a1', cardId: 'ARG10', cardDescription: 'Messi',
-      publisherName: 'Ana', pendingOffers: 99, totalOffers: 123,
-    });
-    render(<AdminDashboardPage />);
-    await waitFor(() => expect(screen.getByText('99')).toBeTruthy());
-    expect(screen.getByText(/Messi/)).toBeTruthy();
-    expect(screen.getByText(/Subastada por Ana/)).toBeTruthy();
-    expect(screen.getByText(/123 ofertas en total/)).toBeTruthy();
+    await waitFor(() => expect(screen.getByTestId('ts-Subastas creadas')).toBeTruthy());
+    expect(screen.getByTestId('ts-Propuestas creadas')).toBeTruthy();
+    expect(screen.getByTestId('ts-Intercambios concretados')).toBeTruthy();
+    expect(screen.getByTestId('most-wanted-panel')).toBeTruthy();
+    expect(screen.getByTestId('top-exchanged-panel')).toBeTruthy();
+    expect(screen.getByTestId('top-auction-panel')).toBeTruthy();
   });
 });
