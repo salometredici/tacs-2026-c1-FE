@@ -4,9 +4,10 @@ import SectionHeader from '../../../components/common/SectionHeader';
 import StatusBadge from '../../../components/common/StatusBadge';
 import EmptyState from '../../../components/common/EmptyState';
 import { SectionActionButton } from '../../../components/auctions/Auctions.styles';
-import { RowList, OutlinedListItem } from '../ProfilePage.styles';
+import { RowList, OutlinedListItem, SeeAllLink, HeaderActions } from '../ProfilePage.styles';
 import { PUBLICATION_STATUS_LABEL as STATUS_LABEL, PUBLICATION_STATUS_TONE as STATUS_TONE } from '../../../interfaces/publications/publicationTypes';
 
+const PREVIEW = 5;
 
 interface Props {
   publications: Publication[];
@@ -21,17 +22,22 @@ export default function PublicationsTab({ publications, onPublish }: Props) {
         title="Mis Publicaciones"
         count={publications.length}
         action={
-          <SectionActionButton onClick={onPublish}>
-            <span className="material-symbols-outlined" aria-hidden="true">add</span>
-            Publicar Figurita
-          </SectionActionButton>
+          <HeaderActions>
+            {publications.length > 0 && (
+              <SeeAllLink onClick={() => navigate('/publications')}>Ver todas →</SeeAllLink>
+            )}
+            <SectionActionButton onClick={onPublish}>
+              <span className="material-symbols-outlined" aria-hidden="true">add</span>
+              Publicar Figurita
+            </SectionActionButton>
+          </HeaderActions>
         }
       />
       {publications.length === 0 ? (
         <EmptyState>No tenés publicaciones realizadas.</EmptyState>
       ) : (
         <RowList>
-          {publications.map(pub => (
+          {publications.slice(0, PREVIEW).map(pub => (
             <OutlinedListItem key={pub.id} onClick={() => navigate(`/publications/${pub.id}`)}>
               <div>
                 <strong><b>{pub.card.id}</b> - {pub.card.description}</strong>

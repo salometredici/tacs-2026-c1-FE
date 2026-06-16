@@ -4,7 +4,13 @@ import { useAdminContext } from '../../context/useAdminContext';
 import { useSnackbar } from '../../context/useSnackbar';
 import { getSettings, updateSettings } from '../../api/SettingsService';
 import { sendBroadcast } from '../../api/BroadcastService';
-import { getAdminOverview, AdminOverview } from '../../api/AdminStatsService';
+import {
+  getAdminOverview, AdminOverview,
+  getAuctionsTimeseries, getProposalsTimeseries, getExchangesTimeseries,
+  getMostWantedCards, getTopExchangedCards, getTopAuctionByOffers,
+  MostWantedCardEntry, TopExchangedCardEntry, TopAuctionByOffersEntry,
+  StatsPeriod, Timeseries,
+} from '../../api/AdminStatsService';
 import ConfirmDialog from '../../components/feedback/ConfirmDialog';
 import {
   DashboardOuter,
@@ -29,9 +35,149 @@ import {
   ConfigInput,
   ConfigButton,
   ConfigTextarea,
+  TimeseriesGrid,
+  TimeseriesCard,
+  TimeseriesTitle,
+  TimeseriesTotal,
+  PeriodToggleGroup,
+  PeriodToggleButton,
+  HighlightList,
+  HighlightItem,
+  HighlightItemLabel,
+  HighlightItemCount,
+  HighlightEmpty,
+  HighlightCallout,
+  HighlightCalloutTitle,
+  HighlightCalloutSubtitle,
+  HighlightCalloutCount,
 } from './AdminDashboardPage.styles';
 
 const BROADCAST_MAX_LENGTH = 2000;
+const PERIOD_LABEL: Record<StatsPeriod, string> = { day: 'Día', week: 'Semana', month: 'Mes' };
+const PERIODS: StatsPeriod[] = ['day', 'week', 'month'];
+
+interface TimeseriesPanelProps {
+  label: string;
+  loader: (period: StatsPeriod) => Promise<Timeseries>;
+}
+
+// Capa 2: dropdown independiente por métrica. Cada panel mantiene su propio period.
+function TimeseriesPanel({ label, loader }: TimeseriesPanelProps) {
+  const [period, setPeriod] = useState<StatsPeriod>('week');
+  const [data, setData] = useState<Timeseries | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    setLoading(true);
+    loader(period)
+      .then(setData)
+      .catch(() => setData(null))
+      .finally(() => setLoading(false));
+  }, [loader, period]);
+
+  return (
+    <TimeseriesCard>
+      <TimeseriesTitle>{label}</TimeseriesTitle>
+      <TimeseriesTotal>
+        {loading ? '…' : data ? data.total.toLocaleString('es-AR') : 'N/D'}
+      </TimeseriesTotal>
+      <PeriodToggleGroup role="group" aria-label={`Período de ${label}`}>
+        {PERIODS.map(p => (
+          <PeriodToggleButton key={p} $active={p === period} onClick={() => setPeriod(p)}>
+            {PERIOD_LABEL[p]}
+          </PeriodToggleButton>
+        ))}
+      </PeriodToggleGroup>
+    </TimeseriesCard>
+  );
+}
+
+// Capa 3: cards de highlights (top-N). Backend cachea con TTL 5min, así que aún si N admins
+// abren el dashboard en simultáneo sólo dispara 1 aggregation por ventana.
+
+function MostWantedCardsPanel() {
+  const [data, setData] = useState<MostWantedCardEntry[] | null>(null);
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    getMostWantedCards(7).then(setData).catch(() => setData(null)).finally(() => setLoading(false));
+  }, []);
+  return (
+    <TimeseriesCard>
+      <TimeseriesTitle>Más buscadas en faltantes — últimos 7 días</TimeseriesTitle>
+      {loading
+        ? <HighlightEmpty>Cargando…</HighlightEmpty>
+        : !data || data.length === 0
+          ? <HighlightEmpty>Sin datos en el período.</HighlightEmpty>
+          : (
+            <HighlightList>
+              {data.map(e => (
+                <HighlightItem key={e.cardId}>
+                  <HighlightItemLabel>
+                    <b>{e.cardId}</b> · {e.cardDescription}
+                  </HighlightItemLabel>
+                  <HighlightItemCount>{e.userCount}</HighlightItemCount>
+                </HighlightItem>
+              ))}
+            </HighlightList>
+          )}
+    </TimeseriesCard>
+  );
+}
+
+function TopExchangedCardsPanel() {
+  const [data, setData] = useState<TopExchangedCardEntry[] | null>(null);
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    getTopExchangedCards(7).then(setData).catch(() => setData(null)).finally(() => setLoading(false));
+  }, []);
+  return (
+    <TimeseriesCard>
+      <TimeseriesTitle>Cartas más intercambiadas — últimos 7 días</TimeseriesTitle>
+      {loading
+        ? <HighlightEmpty>Cargando…</HighlightEmpty>
+        : !data || data.length === 0
+          ? <HighlightEmpty>Sin intercambios en el período.</HighlightEmpty>
+          : (
+            <HighlightList>
+              {data.map(e => (
+                <HighlightItem key={e.cardId}>
+                  <HighlightItemLabel>
+                    <b>{e.cardId}</b> · {e.cardDescription}
+                  </HighlightItemLabel>
+                  <HighlightItemCount>{e.occurrences}</HighlightItemCount>
+                </HighlightItem>
+              ))}
+            </HighlightList>
+          )}
+    </TimeseriesCard>
+  );
+}
+
+function TopAuctionPanel() {
+  const [data, setData] = useState<TopAuctionByOffersEntry | null>(null);
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    getTopAuctionByOffers().then(setData).catch(() => setData(null)).finally(() => setLoading(false));
+  }, []);
+  return (
+    <TimeseriesCard>
+      <TimeseriesTitle>Subasta con más ofertas pendientes</TimeseriesTitle>
+      {loading
+        ? <HighlightEmpty>Cargando…</HighlightEmpty>
+        : !data
+          ? <HighlightEmpty>No hay subastas activas con ofertas.</HighlightEmpty>
+          : (
+            <HighlightCallout>
+              <HighlightCalloutCount>{data.pendingOffers}</HighlightCalloutCount>
+              <HighlightCalloutTitle><b>{data.cardId}</b> · {data.cardDescription}</HighlightCalloutTitle>
+              <HighlightCalloutSubtitle>
+                Subastada por {data.publisherName} · {data.totalOffers} oferta{data.totalOffers === 1 ? '' : 's'} en total
+              </HighlightCalloutSubtitle>
+            </HighlightCallout>
+          )}
+    </TimeseriesCard>
+  );
+}
 
 const STAT_ITEMS = (overview: AdminOverview | null) => [
   { icon: 'group',         value: overview?.totalUsers          ?? null, label: 'Usuarios registrados'  },
@@ -157,6 +303,20 @@ export default function AdminDashboardPage() {
             </StatCard>
           ))}
         </StatsGrid>
+
+        <ConfigSectionTitle>Actividad por período</ConfigSectionTitle>
+        <TimeseriesGrid>
+          <TimeseriesPanel label="Subastas creadas"        loader={getAuctionsTimeseries} />
+          <TimeseriesPanel label="Propuestas creadas"      loader={getProposalsTimeseries} />
+          <TimeseriesPanel label="Intercambios concretados" loader={getExchangesTimeseries} />
+        </TimeseriesGrid>
+
+        <ConfigSectionTitle>Destacados</ConfigSectionTitle>
+        <TimeseriesGrid>
+          <MostWantedCardsPanel />
+          <TopExchangedCardsPanel />
+          <TopAuctionPanel />
+        </TimeseriesGrid>
 
         <ConfigSectionTitle>Configuración</ConfigSectionTitle>
         <ConfigCard>

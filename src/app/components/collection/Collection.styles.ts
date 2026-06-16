@@ -80,6 +80,15 @@ export const CollectionHeader = styled.div`
   margin-bottom: ${theme.spacing.md};
 `;
 
+// Completitud del álbum (figuritas distintas / total del catálogo), bajo el botón de agregar
+export const CompletionLabel = styled.p`
+  margin: 0 0 ${theme.spacing.md} 0;
+  text-align: right;
+  color: ${theme.colors.primary};
+  font-weight: 700;
+  font-size: ${theme.typography.titleSmall.fontSize};
+`;
+
 export const TabButtons = styled.div`
   display: flex;
   gap: ${theme.spacing.sm};

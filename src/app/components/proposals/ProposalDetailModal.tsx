@@ -9,7 +9,7 @@ import {
   Footer, FooterButton,
 } from '../exchanges/ExchangeDetailModal.styles';
 import StatusBadge from '../common/StatusBadge';
-import { AcceptButton, RejectButton } from '../../pages/proposals/ProposalsPage.styles';
+import { AcceptButton, RejectButton } from '../common/styles/listPage.styles';
 
 interface Props {
   proposal: Proposal;

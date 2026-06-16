@@ -3,16 +3,25 @@ import { Card } from '../../interfaces/cards/Card';
 import { Category } from '../../interfaces/Category';
 import { getCatalog } from '../../api/CardsService';
 import { addToUserCollection } from '../../api/UsersService';
+import { useSnackbar } from '../../context/useSnackbar';
 import {
   Overlay, Modal, ModalHeader, ModalTitle, CloseButton,
-  Field, Hint, Input, Select, Row, SelectableItem, SelectIndicator,
+  Field, Hint, Input, Select, Row,
   Footer, CancelButton, SubmitButton, ErrorMsg,
 } from '../exchanges/PublishCardModal.styles';
 import {
-  CardList, CardNum, CardDescription, CardQuantityLabel, EmptyItem,
+  CardList, CardItem, CardNum, CardDescription, CardQuantityLabel,
+  AddButton, RemoveButton, EmptyItem, SectionLabel,
+  QtyRow, QtyButton, QtyDisplay,
 } from '../common/styles/cardList.styles';
 
 const CATEGORIES: Category[] = ['COMUN', 'EPICO', 'LEGENDARIO'];
+const MAX_QTY = 100;
+
+interface PendingCard {
+  card: Card;
+  qty: number;
+}
 
 interface Props {
   userId: string;
@@ -21,10 +30,11 @@ interface Props {
 }
 
 export default function AddToCollectionModal({ userId, onClose, onSuccess }: Props) {
+  const { showSuccess } = useSnackbar();
   const [catalog, setCatalog] = useState<Card[]>([]);
   const [query, setQuery] = useState('');
   const [category, setCategory] = useState<Category | ''>('');
-  const [selected, setSelected] = useState<Card | null>(null);
+  const [pending, setPending] = useState<PendingCard[]>([]);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -32,7 +42,11 @@ export default function AddToCollectionModal({ userId, onClose, onSuccess }: Pro
     getCatalog().then(setCatalog);
   }, []);
 
+  const pendingIds = new Set(pending.map(p => p.card.id));
+
+  // No se excluyen las cartas ya poseídas: agregar una que ya tenés incrementa la cantidad (repetida).
   const filtered = catalog.filter(f => {
+    if (pendingIds.has(f.id)) return false;
     const matchesQuery =
       !query ||
       f.id.toLowerCase().includes(query.toLowerCase()) ||
@@ -42,16 +56,29 @@ export default function AddToCollectionModal({ userId, onClose, onSuccess }: Pro
     return matchesQuery && matchesCategory;
   });
 
+  const handleAdd = (f: Card) => setPending(prev => [...prev, { card: f, qty: 1 }]);
+  const handleRemove = (id: string) => setPending(prev => prev.filter(p => p.card.id !== id));
+  const changeQty = (id: string, delta: number) =>
+    setPending(prev => prev.map(p =>
+      p.card.id === id ? { ...p, qty: Math.min(MAX_QTY, Math.max(1, p.qty + delta)) } : p
+    ));
+
+  const totalCopies = pending.reduce((sum, p) => sum + p.qty, 0);
+
   const handleConfirm = async () => {
-    if (!selected) return;
+    if (pending.length === 0) return;
     setSubmitting(true);
     setError(null);
     try {
-      await addToUserCollection(userId, selected.id);
+      // Una sola request por figurita: el BE incrementa la cantidad en p.qty de una.
+      for (const p of pending) {
+        await addToUserCollection(userId, p.card.id, p.qty);
+      }
+      showSuccess(`${totalCopies} figurita${totalCopies === 1 ? '' : 's'} agregada${totalCopies === 1 ? '' : 's'} a tu colección`);
       onSuccess();
       onClose();
     } catch {
-      setError('Error al agregar la figurita. Intentá de nuevo.');
+      setError('Error al agregar las figuritas. Intentá de nuevo.');
     } finally {
       setSubmitting(false);
     }
@@ -61,7 +88,7 @@ export default function AddToCollectionModal({ userId, onClose, onSuccess }: Pro
     <Overlay onClick={e => { if (e.target === e.currentTarget) onClose(); }}>
       <Modal>
         <ModalHeader>
-          <ModalTitle>Agregar figurita a mi colección</ModalTitle>
+          <ModalTitle>Agregar figuritas a mi colección</ModalTitle>
           <CloseButton type="button" onClick={onClose} aria-label="Cerrar">
             <span className="material-symbols-outlined" aria-hidden="true">close</span>
           </CloseButton>
@@ -73,12 +100,12 @@ export default function AddToCollectionModal({ userId, onClose, onSuccess }: Pro
               type="text"
               placeholder="Buscar por id, nombre o número..."
               value={query}
-              onChange={e => { setQuery(e.target.value); setSelected(null); }}
+              onChange={e => setQuery(e.target.value)}
               autoFocus
             />
             <Select
               value={category}
-              onChange={e => { setCategory(e.target.value as Category | ''); setSelected(null); }}
+              onChange={e => setCategory(e.target.value as Category | '')}
             >
               <option value="">Todas las categorías</option>
               {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
@@ -89,25 +116,14 @@ export default function AddToCollectionModal({ userId, onClose, onSuccess }: Pro
             <Hint>Cargando catálogo...</Hint>
           ) : (
             <CardList>
-              {filtered.map(f => {
-                const isSelected = selected?.id === f.id;
-                return (
-                  <SelectableItem
-                    key={f.id}
-                    $selected={isSelected}
-                    onClick={() => setSelected(f)}
-                  >
-                    <SelectIndicator $selected={isSelected}>
-                      <span className="material-symbols-outlined" aria-hidden="true">
-                        {isSelected ? 'radio_button_checked' : 'radio_button_unchecked'}
-                      </span>
-                    </SelectIndicator>
-                    <CardNum>{f.id}</CardNum>
-                    <CardDescription>{f.description}</CardDescription>
-                    <CardQuantityLabel>{f.country} · {f.category}</CardQuantityLabel>
-                  </SelectableItem>
-                );
-              })}
+              {filtered.map(f => (
+                <CardItem key={f.id}>
+                  <CardNum>{f.id}</CardNum>
+                  <CardDescription>{f.description}</CardDescription>
+                  <CardQuantityLabel>{f.country} · {f.category}</CardQuantityLabel>
+                  <AddButton type="button" onClick={() => handleAdd(f)}>Agregar</AddButton>
+                </CardItem>
+              ))}
               {filtered.length === 0 && (
                 <EmptyItem>Sin resultados</EmptyItem>
               )}
@@ -115,12 +131,42 @@ export default function AddToCollectionModal({ userId, onClose, onSuccess }: Pro
           )}
         </Field>
 
+        {pending.length > 0 && (
+          <Field>
+            <SectionLabel>Para agregar ({totalCopies})</SectionLabel>
+            <CardList>
+              {pending.map(p => (
+                <CardItem key={p.card.id}>
+                  <CardNum>{p.card.id}</CardNum>
+                  <CardDescription>{p.card.description}</CardDescription>
+                  <QtyRow>
+                    <QtyButton
+                      type="button"
+                      aria-label="Restar una"
+                      onClick={() => changeQty(p.card.id, -1)}
+                      disabled={p.qty <= 1}
+                    >−</QtyButton>
+                    <QtyDisplay>{p.qty}</QtyDisplay>
+                    <QtyButton
+                      type="button"
+                      aria-label="Sumar una"
+                      onClick={() => changeQty(p.card.id, 1)}
+                      disabled={p.qty >= MAX_QTY}
+                    >+</QtyButton>
+                  </QtyRow>
+                  <RemoveButton type="button" onClick={() => handleRemove(p.card.id)}>Quitar</RemoveButton>
+                </CardItem>
+              ))}
+            </CardList>
+          </Field>
+        )}
+
         {error && <ErrorMsg>{error}</ErrorMsg>}
 
         <Footer>
           <CancelButton type="button" onClick={onClose}>Cancelar</CancelButton>
-          <SubmitButton type="button" onClick={handleConfirm} disabled={!selected || submitting}>
-            {submitting ? 'Agregando...' : 'Confirmar'}
+          <SubmitButton type="button" onClick={handleConfirm} disabled={pending.length === 0 || submitting}>
+            {submitting ? 'Agregando...' : `Confirmar (${totalCopies})`}
           </SubmitButton>
         </Footer>
       </Modal>

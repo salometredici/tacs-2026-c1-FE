@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { getUserCollection } from '../../api/UsersService';
+import { getCatalog } from '../../api/CardsService';
 import { CollectionCard } from '../../interfaces/cards/CollectionCard';
 import AddToCollectionModal from '../cards/AddToCollectionModal';
 import {
@@ -9,6 +10,7 @@ import {
   TabButtons,
   TabButton,
   CollectionHeader,
+  CompletionLabel,
 } from './Collection.styles';
 import { SectionActionButton } from '../auctions/Auctions.styles';
 import EmptyState from '../common/EmptyState';
@@ -22,10 +24,15 @@ export default function Collection({ userId: userId }: CollectionProps) {
   const [collection, setCollection] = useState<CollectionCard[]>([]);
   const [loading, setLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
+  const [catalogTotal, setCatalogTotal] = useState(0);
 
   useEffect(() => {
     loadCollection();
   }, [userId]);
+
+  useEffect(() => {
+    getCatalog().then(c => setCatalogTotal(c.length)).catch(() => {});
+  }, []);
 
   const loadCollection = async () => {
     try {
@@ -63,13 +70,17 @@ export default function Collection({ userId: userId }: CollectionProps) {
         </SectionActionButton>
       </CollectionHeader>
 
+      {catalogTotal > 0 && (
+        <CompletionLabel>{owned.length}/{catalogTotal}</CompletionLabel>
+      )}
+
       <CollectionContainer>
         {tab === 'todas' && owned.map((fc) => (
           <CardItem key={fc.cardId}>
             <CardImage $category={fc.category}>
               <span className="material-symbols-outlined" aria-hidden="true">sports_soccer</span>
             </CardImage>
-            <h4>{fc.cardId}</h4>
+            <h4><b>{fc.cardId}</b></h4>
             <p><strong>{fc.description}</strong></p>
             <p>{[fc.country, fc.team].filter(Boolean).join(' · ')}</p>
             <p>{fc.category}</p>
@@ -82,7 +93,7 @@ export default function Collection({ userId: userId }: CollectionProps) {
             <CardImage $category={fc.category}>
               <span className="material-symbols-outlined" aria-hidden="true">sports_soccer</span>
             </CardImage>
-            <h4>{fc.cardId} · x{fc.quantity}</h4>
+            <h4><b>{fc.cardId}</b> · x{fc.quantity}</h4>
             <p><strong>{fc.description}</strong></p>
           </CardItem>
         ))}

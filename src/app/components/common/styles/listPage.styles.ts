@@ -1,5 +1,12 @@
 import styled from 'styled-components';
-import { theme } from '../../styles/theme';
+import { theme } from '../../../styles/theme';
+
+/**
+ * Estilos compartidos por las páginas de lista del perfil (Propuestas, Publicaciones, …):
+ * shell de página (container + header + tabs) + card de lista + botones de acción.
+ * Antes vivían en `ProposalsPage.styles.ts` y se importaban cruzado entre páginas; extraídos
+ * acá para evitar el acoplamiento página↔página.
+ */
 
 export const PageContainer = styled.div`
   max-width: 900px;
@@ -58,14 +65,14 @@ export const TabButton = styled.button<{ $active: boolean }>`
   &:hover { color: ${theme.colors.primary}; &::after { opacity: ${theme.state.hover}; } }
 `;
 
-export const ProposalList = styled.div`
+export const ListContainer = styled.div`
   display: flex;
   flex-direction: column;
   gap: ${theme.spacing.md};
 `;
 
 // M3 Elevated Card
-export const ProposalCard = styled.div`
+export const ListCard = styled.div`
   background: ${theme.colors.surfaceContainerLow};
   border-radius: ${theme.shape.medium};
   padding: ${theme.spacing.lg};
@@ -82,21 +89,21 @@ export const ProposalCard = styled.div`
   }
 `;
 
-export const ProposalInfo = styled.div`
+export const ListCardInfo = styled.div`
   flex: 1;
   display: flex;
   flex-direction: column;
   gap: ${theme.spacing.xs};
 `;
 
-export const ProposalTitle = styled.p`
+export const ListCardTitle = styled.p`
   font-weight: 500;
   color: ${theme.colors.onSurface};
   margin: 0;
   font-size: ${theme.typography.bodyLarge.fontSize};
 `;
 
-export const ProposalDetail = styled.p`
+export const ListCardDetail = styled.p`
   color: ${theme.colors.onSurfaceVariant};
   margin: 0;
   font-size: ${theme.typography.bodyMedium.fontSize};
@@ -179,8 +186,8 @@ export const RejectButton = styled.button`
   &:disabled { opacity: 0.38; pointer-events: none; }
 `;
 
-// M3 Text Button — link a la publi relacionada
-export const ViewPublicationLink = styled.button`
+// M3 Text Button — link inline (ej. "Ver publicación")
+export const InlineLink = styled.button`
   align-self: flex-start;
   margin-top: ${theme.spacing.xs};
   padding: 4px 8px;
@@ -197,14 +204,4 @@ export const ViewPublicationLink = styled.button`
   &:hover { text-decoration: underline; }
 
   & .material-symbols-outlined { font-size: 1rem; }
-`;
-
-export const ErrorMsg = styled.p`
-  color: ${theme.colors.error};
-  font-size: ${theme.typography.bodySmall.fontSize};
-  text-align: center;
-  margin: ${theme.spacing.sm} 0 0;
-  background: ${theme.colors.errorContainer};
-  padding: ${theme.spacing.sm} ${theme.spacing.md};
-  border-radius: ${theme.shape.extraSmall};
 `;

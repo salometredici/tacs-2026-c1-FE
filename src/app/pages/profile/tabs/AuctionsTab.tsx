@@ -44,7 +44,7 @@ export default function AuctionsTab({ myAuctions, myOffers }: Props) {
           {myAuctions.slice(0, PREVIEW).map(a => (
             <OutlinedListItem key={a.id} onClick={() => navigate(`/auctions/${a.id}`)}>
               <div>
-                <strong>{a.card.id} {a.card.description}</strong>
+                <strong><b>{a.card.id}</b> - {a.card.description}</strong>
                 <span>Cierra {fmtDate(a.endDate)}</span>
               </div>
               <StatusBadge tone={STATUS_TONE[a.status]}>{STATUS_LABEL[a.status]}</StatusBadge>
@@ -69,7 +69,7 @@ export default function AuctionsTab({ myAuctions, myOffers }: Props) {
           {myOffers.slice(0, PREVIEW).map(o => (
             <OutlinedListItem key={o.bidId} onClick={() => navigate(`/auctions/${o.auctionId}`)}>
               <div>
-                <strong>{o.card.id} {o.card.description}</strong>
+                <strong><b>{o.card.id}</b> - {o.card.description}</strong>
                 <span>De {o.publisher.name} · Cierra {fmtDate(o.closingDate)}</span>
               </div>
               <StatusBadge tone={o.auctionStatus === 'ACTIVA' ? 'success' : 'neutral'}>
