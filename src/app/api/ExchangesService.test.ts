@@ -7,7 +7,7 @@ vi.mock('axios');
 const mockGet = axios.get as ReturnType<typeof vi.fn>;
 const mockPost = axios.post as ReturnType<typeof vi.fn>;
 
-beforeEach(() => vi.clearAllMocks());
+beforeEach(() => { vi.clearAllMocks(); });
 
 describe('ExchangesService — getExchangesByUserId', () => {
   it('desempaqueta el listado paginado (response.data.data)', async () => {

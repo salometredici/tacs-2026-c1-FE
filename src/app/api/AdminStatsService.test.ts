@@ -6,7 +6,7 @@ vi.mock('axios');
 
 const mockGet = axios.get as ReturnType<typeof vi.fn>;
 
-beforeEach(() => vi.clearAllMocks());
+beforeEach(() => { vi.clearAllMocks(); });
 
 describe('AdminStatsService — getTopAuctionByOffers', () => {
   it('devuelve null cuando el BE responde 204 No Content', async () => {

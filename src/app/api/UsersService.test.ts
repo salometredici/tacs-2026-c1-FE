@@ -7,7 +7,7 @@ vi.mock('axios');
 const mockPost = axios.post as ReturnType<typeof vi.fn>;
 const mockGet = axios.get as ReturnType<typeof vi.fn>;
 
-beforeEach(() => vi.clearAllMocks());
+beforeEach(() => { vi.clearAllMocks(); });
 
 describe('UsersService — addToUserCollection', () => {
   it('postea { cardId, quantity } con la cantidad indicada', async () => {
