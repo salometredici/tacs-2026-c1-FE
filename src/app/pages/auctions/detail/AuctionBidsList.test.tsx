@@ -54,7 +54,7 @@ describe('AuctionBidsList — bids list', () => {
 
   it('renders offered card description', () => {
     render(<AuctionBidsList {...baseProps} bids={[makeBid()]} />);
-    expect(screen.getByText(/#10 Messi/)).toBeTruthy();
+    expect(screen.getByText(/ARG10 - Messi/)).toBeTruthy();
   });
 });
 
