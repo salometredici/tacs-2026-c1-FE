@@ -108,17 +108,24 @@ export const QuantityInput = styled(Input)`
   width: 120px;
 `;
 
-// M3 Outlined Select – mismo patrón visual que el Input
+// M3 Outlined Select – mismo patrón visual que el Input. Flecha custom (appearance:none)
+// para controlar el espacio respecto del borde derecho (la nativa quedaba pegada).
 export const Select = styled.select`
   padding: ${theme.spacing.md};
+  padding-right: 2.5rem;
   border: 1px solid ${theme.colors.outline};
   border-radius: ${theme.shape.extraSmall};
   font-size: ${theme.typography.bodyLarge.fontSize};
-  background: ${theme.colors.surface};
+  background-color: ${theme.colors.surface};
   color: ${theme.colors.onSurface};
   outline: none;
   cursor: pointer;
   transition: border 0.2s;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%2349454F' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right ${theme.spacing.md} center;
 
   &:hover { border-color: ${theme.colors.onSurface}; }
   &:focus { border: 2px solid ${theme.colors.primary}; }

@@ -52,6 +52,20 @@ export const API_CONFIG = {
   },
 
   settings: {
-    base: `${API}/settings`,
+    base: `${API}/admin/settings`,
+  },
+
+  broadcast: {
+    base: `${API}/admin/broadcast`,
+  },
+
+  adminStats: {
+    overview: `${API}/admin/stats/overview`,
+    auctions: `${API}/admin/stats/auctions`,
+    proposals: `${API}/admin/stats/proposals`,
+    exchanges: `${API}/admin/stats/exchanges`,
+    mostWantedCards: `${API}/admin/stats/most-wanted-cards`,
+    topExchangedCards: `${API}/admin/stats/top-exchanged-cards`,
+    topAuctionByOffers: `${API}/admin/stats/top-auction-by-offers`,
   },
 };

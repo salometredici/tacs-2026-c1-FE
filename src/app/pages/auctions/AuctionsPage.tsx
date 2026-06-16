@@ -137,7 +137,7 @@ export default function AuctionsPage() {
                     <MyBidCard key={o.bidId} onClick={() => navigate(`/auctions/${o.auctionId}`)}>
                       <MyBidHeader>
                         <div>
-                          <MyBidTitle>#{o.card.number} {o.card.description}</MyBidTitle>
+                          <MyBidTitle>{o.card.id} {o.card.description}</MyBidTitle>
                           {subtitle && (
                             <MyBidSubMeta>{subtitle}</MyBidSubMeta>
                           )}

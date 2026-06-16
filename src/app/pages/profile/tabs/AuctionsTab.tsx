@@ -5,10 +5,10 @@ import SectionHeader from '../../../components/common/SectionHeader';
 import StatusBadge from '../../../components/common/StatusBadge';
 import EmptyState from '../../../components/common/EmptyState';
 import { SectionActionButton } from '../../../components/auctions/Auctions.styles';
-import { RowList, OutlinedListItem, SeeAllLink, Divider } from '../ProfilePage.styles';
+import { RowList, OutlinedListItem, SeeAllLink, Divider, HeaderActions } from '../ProfilePage.styles';
 import { AUCTION_STATUS_LABEL as STATUS_LABEL, AUCTION_STATUS_TONE as STATUS_TONE } from '../../../interfaces/auctions/AuctionStatus';
 
-const PREVIEW = 3;
+const PREVIEW = 5;
 
 const fmtDate = (iso: string) =>
   new Date(iso).toLocaleString('es-AR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
@@ -26,15 +26,17 @@ export default function AuctionsTab({ myAuctions, myOffers }: Props) {
         title="Mis Subastas"
         count={myAuctions.length}
         action={
-          <SectionActionButton onClick={() => navigate('/auctions/create')}>
-            <span className="material-symbols-outlined" aria-hidden="true">gavel</span>
-            Crear Subasta
-          </SectionActionButton>
+          <HeaderActions>
+            {myAuctions.length > 0 && (
+              <SeeAllLink onClick={() => navigate('/auctions')}>Ver todas →</SeeAllLink>
+            )}
+            <SectionActionButton onClick={() => navigate('/auctions/create')}>
+              <span className="material-symbols-outlined" aria-hidden="true">gavel</span>
+              Crear Subasta
+            </SectionActionButton>
+          </HeaderActions>
         }
       />
-      {myAuctions.length > PREVIEW && (
-        <SeeAllLink onClick={() => navigate('/auctions')}>Ver todas →</SeeAllLink>
-      )}
       {myAuctions.length === 0 ? (
         <EmptyState>No tenés subastas publicadas.</EmptyState>
       ) : (
@@ -42,7 +44,7 @@ export default function AuctionsTab({ myAuctions, myOffers }: Props) {
           {myAuctions.slice(0, PREVIEW).map(a => (
             <OutlinedListItem key={a.id} onClick={() => navigate(`/auctions/${a.id}`)}>
               <div>
-                <strong>{a.card.id} {a.card.description}</strong>
+                <strong><b>{a.card.id}</b> - {a.card.description}</strong>
                 <span>Cierra {fmtDate(a.endDate)}</span>
               </div>
               <StatusBadge tone={STATUS_TONE[a.status]}>{STATUS_LABEL[a.status]}</StatusBadge>
@@ -56,7 +58,7 @@ export default function AuctionsTab({ myAuctions, myOffers }: Props) {
       <SectionHeader
         title="Mis Ofertas"
         count={myOffers.length}
-        action={myOffers.length > PREVIEW && (
+        action={myOffers.length > 0 && (
           <SeeAllLink onClick={() => navigate('/auctions')}>Ver todas →</SeeAllLink>
         )}
       />
@@ -67,7 +69,7 @@ export default function AuctionsTab({ myAuctions, myOffers }: Props) {
           {myOffers.slice(0, PREVIEW).map(o => (
             <OutlinedListItem key={o.bidId} onClick={() => navigate(`/auctions/${o.auctionId}`)}>
               <div>
-                <strong>{o.card.id} {o.card.description}</strong>
+                <strong><b>{o.card.id}</b> - {o.card.description}</strong>
                 <span>De {o.publisher.name} · Cierra {fmtDate(o.closingDate)}</span>
               </div>
               <StatusBadge tone={o.auctionStatus === 'ACTIVA' ? 'success' : 'neutral'}>

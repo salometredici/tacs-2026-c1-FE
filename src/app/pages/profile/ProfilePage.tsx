@@ -87,6 +87,13 @@ export default function ProfilePage() {
   const myOffers     = data?.myOffers     ?? [];
   const exchanges    = data?.exchanges    ?? [];
 
+  // Contadores de los tabs: solo lo "activo / que requiere acción", capeado a "5+" para no
+  // mostrar números enormes. Faltantes muestra el total (es informativo, no se capea).
+  const cap = (n: number) => (n > 5 ? '5+' : String(n));
+  const activePublications = publications.filter(p => p.status === 'ACTIVA').length;
+  const pendingReceived = received.filter(p => p.status === 'PENDIENTE').length;
+  const activeAuctions = myAuctions.filter(a => a.status === 'ACTIVA').length;
+
   const handleAcceptProposal = async (proposal: Proposal) => {
     try {
       await acceptProposal(proposal.id, user.id);
@@ -161,16 +168,16 @@ export default function ProfilePage() {
             Faltantes {!isLoading && `(${missing.length})`}
           </TabButton>
           <TabButton $active={activeTab === 'publications'} onClick={() => setActiveTab('publications')}>
-            Publicaciones {!isLoading && `(${publications.length})`}
+            Publicaciones {!isLoading && `(${cap(activePublications)})`}
           </TabButton>
           <TabButton $active={activeTab === 'propuestas'} onClick={() => setActiveTab('propuestas')}>
-            Propuestas {!isLoading && `(${received.length + sent.length})`}
+            Propuestas {!isLoading && `(${cap(pendingReceived)})`}
           </TabButton>
           <TabButton $active={activeTab === 'subastas'} onClick={() => setActiveTab('subastas')}>
-            Subastas {!isLoading && `(${myAuctions.length + myOffers.length})`}
+            Subastas {!isLoading && `(${cap(activeAuctions)})`}
           </TabButton>
           <TabButton $active={activeTab === 'exchanges'} onClick={() => setActiveTab('exchanges')}>
-            Intercambios {!isLoading && `(${exchanges.length})`}
+            Intercambios
           </TabButton>
         </TabNav>
 

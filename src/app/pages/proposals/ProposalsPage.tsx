@@ -9,11 +9,12 @@ import { useFetch } from '../../hooks/useFetch';
 import ProposalDetailModal from '../../components/proposals/ProposalDetailModal';
 import {
   PageContainer, Header, Title,
-  TabNav, TabButton, ProposalList, ProposalCard,
-  ProposalInfo, ProposalTitle, ProposalDetail,
+  TabNav, TabButton,
+  ListContainer as ProposalList, ListCard as ProposalCard,
+  ListCardInfo as ProposalInfo, ListCardTitle as ProposalTitle, ListCardDetail as ProposalDetail,
   CardRight, ActionButtons, AcceptButton, RejectButton,
-  ViewPublicationLink,
-} from './ProposalsPage.styles';
+  InlineLink as ViewPublicationLink,
+} from '../../components/common/styles/listPage.styles';
 import EmptyState from '../../components/common/EmptyState';
 import StatusBadge from '../../components/common/StatusBadge';
 import BackButton from '../../components/common/BackButton';
@@ -125,7 +126,12 @@ export default function ProposalsPage() {
                 </ProposalDetail>
                 {p.offeredCards.length > 0 && (
                   <ProposalDetail>
-                    Ofrecidas: {p.offeredCards.map(f => `${f.id} ${f.description}`).join(', ')}
+                    Ofrecidas: {p.offeredCards.map((f, i) => (
+                      <span key={`${f.id}-${i}`}>
+                        {i > 0 && ', '}
+                        <strong>{f.id}</strong> · {f.description}
+                      </span>
+                    ))}
                   </ProposalDetail>
                 )}
                 <ViewPublicationLink onClick={e => { e.stopPropagation(); navigate(`/publications/${p.publication.id}`); }}>

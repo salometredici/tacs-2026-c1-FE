@@ -129,6 +129,14 @@ export const SeeAllLink = styled.button`
   &:hover::after { opacity: ${theme.state.hover}; }
 `;
 
+// Agrupa varias acciones del header (ej. "Ver todas" + "Crear Subasta") como un solo bloque
+// a la derecha, en vez de que se separen con el space-between del SectionHeader.
+export const HeaderActions = styled.div`
+  display: flex;
+  align-items: center;
+  gap: ${theme.spacing.sm};
+`;
+
 export const RowList = styled.div`
   display: flex;
   flex-direction: column;

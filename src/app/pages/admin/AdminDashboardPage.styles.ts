@@ -231,3 +231,142 @@ export const ConfigButton = styled.button`
   &:hover:not(:disabled) { filter: brightness(1.08); }
   &:disabled { opacity: 0.5; cursor: not-allowed; }
 `;
+
+export const ConfigTextarea = styled.textarea`
+  width: 100%;
+  min-height: 96px;
+  resize: vertical;
+  padding: 10px ${theme.spacing.md};
+  border: 1px solid ${theme.colors.outline};
+  border-radius: ${theme.shape.small};
+  font-size: ${theme.typography.bodyLarge.fontSize};
+  font-family: inherit;
+  background: ${theme.colors.surface};
+  color: ${theme.colors.onSurface};
+
+  &:focus {
+    outline: none;
+    border-color: ${theme.colors.primary};
+  }
+`;
+
+// ─── Timeseries (Capa 2) ─────────────────────────────────────────────────
+export const TimeseriesGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: ${theme.spacing.md};
+`;
+
+export const TimeseriesCard = styled.div`
+  background: ${theme.colors.surfaceContainerLow};
+  border-radius: ${theme.shape.medium};
+  box-shadow: ${theme.elevation[1]};
+  padding: ${theme.spacing.lg};
+  display: flex;
+  flex-direction: column;
+  gap: ${theme.spacing.sm};
+`;
+
+export const TimeseriesTitle = styled.span`
+  font-size: ${theme.typography.bodyMedium.fontSize};
+  color: ${theme.colors.onSurfaceVariant};
+`;
+
+export const TimeseriesTotal = styled.span`
+  font-size: ${theme.typography.displaySmall.fontSize};
+  font-weight: 700;
+  color: ${theme.colors.primary};
+  line-height: 1;
+`;
+
+// M3 Segmented Button (toggle group): día / semana / mes
+export const PeriodToggleGroup = styled.div`
+  display: inline-flex;
+  border: 1px solid ${theme.colors.outline};
+  border-radius: ${theme.shape.full};
+  overflow: hidden;
+  align-self: flex-start;
+`;
+
+export const PeriodToggleButton = styled.button<{ $active: boolean }>`
+  padding: 6px ${theme.spacing.md};
+  background: ${p => p.$active ? theme.colors.secondaryContainer : 'transparent'};
+  color: ${p => p.$active ? theme.colors.onSecondaryContainer : theme.colors.onSurfaceVariant};
+  border: none;
+  font-size: ${theme.typography.labelMedium.fontSize};
+  font-weight: ${theme.typography.labelMedium.fontWeight};
+  cursor: pointer;
+  transition: background-color 0.15s;
+
+  & + & { border-left: 1px solid ${theme.colors.outline}; }
+  &:hover:not(:disabled) {
+    background: ${p => p.$active ? theme.colors.secondaryContainer : `rgba(0, 0, 0, ${theme.state.hover})`};
+  }
+  &:disabled { opacity: 0.5; cursor: not-allowed; }
+`;
+
+// ─── Highlights (Capa 3) ─────────────────────────────────────────────────
+export const HighlightList = styled.ol`
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: ${theme.spacing.xs};
+`;
+
+export const HighlightItem = styled.li`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: ${theme.spacing.sm};
+  padding: ${theme.spacing.xs} 0;
+  font-size: ${theme.typography.bodyMedium.fontSize};
+  color: ${theme.colors.onSurface};
+
+  & + & { border-top: 1px solid ${theme.colors.outlineVariant}; }
+`;
+
+export const HighlightItemLabel = styled.span`
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+`;
+
+export const HighlightItemCount = styled.span`
+  font-weight: 600;
+  color: ${theme.colors.primary};
+  white-space: nowrap;
+`;
+
+export const HighlightEmpty = styled.span`
+  font-size: ${theme.typography.bodySmall.fontSize};
+  color: ${theme.colors.onSurfaceVariant};
+  font-style: italic;
+`;
+
+export const HighlightCallout = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: ${theme.spacing.sm} 0;
+`;
+
+export const HighlightCalloutTitle = styled.span`
+  font-size: ${theme.typography.titleMedium.fontSize};
+  font-weight: 500;
+  color: ${theme.colors.onSurface};
+`;
+
+export const HighlightCalloutSubtitle = styled.span`
+  font-size: ${theme.typography.bodySmall.fontSize};
+  color: ${theme.colors.onSurfaceVariant};
+`;
+
+export const HighlightCalloutCount = styled.span`
+  font-size: ${theme.typography.headlineMedium.fontSize};
+  font-weight: 700;
+  color: ${theme.colors.primary};
+  line-height: 1;
+`;

@@ -11,6 +11,7 @@ import ProfilePage from '../pages/profile/ProfilePage'
 import ProposalsPage from '../pages/proposals/ProposalsPage'
 import ExchangesPage from '../pages/exchanges/ExchangesPage'
 import NotificationsPage from '../pages/notifications/NotificationsPage'
+import PublicationsPage from '../pages/publications/PublicationsPage'
 import PublicationDetailPage from '../pages/publications/PublicationDetailPage'
 import AdminLayout from '../components/admin/AdminLayout'
 import AdminRoute from '../components/admin/AdminRoute'
@@ -34,6 +35,7 @@ export default function AppRouter() {
             <Route path="/proposals" element={<ProposalsPage />} />
             <Route path="/exchanges" element={<ExchangesPage />} />
             <Route path="/notifications" element={<NotificationsPage />} />
+            <Route path="/publications" element={<PublicationsPage />} />
             <Route path="/publications/:id" element={<PublicationDetailPage />} />
           </Route>
         </Route>

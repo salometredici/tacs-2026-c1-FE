@@ -22,8 +22,8 @@ export const getUserCollection = async (userId: string): Promise<CollectionCard[
   return response.data;
 };
 
-export const addToUserCollection = async (userId: string, cardId: string): Promise<void> => {
-  await axios.post(`${BASE_URL}/${userId}/collection`, { cardId });
+export const addToUserCollection = async (userId: string, cardId: string, quantity = 1): Promise<void> => {
+  await axios.post(`${BASE_URL}/${userId}/collection`, { cardId, quantity });
 };
 
 export const getUserMissingCards = async (userId: string): Promise<MissingCard[]> => {

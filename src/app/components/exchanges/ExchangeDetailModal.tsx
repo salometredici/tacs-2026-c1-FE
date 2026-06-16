@@ -13,7 +13,7 @@ import {
   PartyRow, PartyAvatar,
   CardItem, CardMeta,
   FeedbackBlock, FeedbackHeader, FeedbackComment, FeedbackPending,
-  FeedbackTextarea, FeedbackFormActions, SecondaryButton,
+  FeedbackTextarea, FeedbackFormActions, FeedbackButton, FeedbackCancelButton,
   Footer, FooterButton,
 } from './ExchangeDetailModal.styles';
 
@@ -44,7 +44,7 @@ const renderCards = (cards: CardSnapshot[]) => (
     ? <CardMeta>Sin figuritas</CardMeta>
     : cards.map((c, i) => (
         <CardItem key={`${c.cardId}-${i}`}>
-          <span><strong>#{c.number}</strong> · {c.description}</span>
+          <span><strong>{c.cardId}</strong> · {c.description}</span>
           <CardMeta>
             {[c.country, c.team, c.category].filter(Boolean).join(' · ')}
           </CardMeta>
@@ -113,12 +113,12 @@ export default function ExchangeDetailModal({ exchange, currentUserId, onClose, 
             maxLength={500}
           />
           <FeedbackFormActions>
-            <SecondaryButton type="button" onClick={() => setShowFeedbackForm(false)} disabled={submitting}>
+            <FeedbackCancelButton type="button" onClick={() => setShowFeedbackForm(false)} disabled={submitting}>
               Cancelar
-            </SecondaryButton>
-            <FooterButton type="button" onClick={handleSubmitFeedback} disabled={selectedScore === 0 || submitting}>
-              {submitting ? 'Enviando…' : 'Enviar calificación'}
-            </FooterButton>
+            </FeedbackCancelButton>
+            <FeedbackButton type="button" onClick={handleSubmitFeedback} disabled={selectedScore === 0 || submitting}>
+              {submitting ? 'Enviando…' : 'Enviar'}
+            </FeedbackButton>
           </FeedbackFormActions>
         </FeedbackBlock>
       );
@@ -127,9 +127,9 @@ export default function ExchangeDetailModal({ exchange, currentUserId, onClose, 
       <FeedbackBlock>
         <FeedbackHeader><span>Tu calificación</span></FeedbackHeader>
         <FeedbackFormActions>
-          <FooterButton type="button" onClick={() => setShowFeedbackForm(true)}>
+          <FeedbackButton type="button" onClick={() => setShowFeedbackForm(true)}>
             Calificar a {v.other.name}
-          </FooterButton>
+          </FeedbackButton>
         </FeedbackFormActions>
       </FeedbackBlock>
     );

@@ -53,6 +53,7 @@ export default function AddMissingCardsModal({ userId, onClose, onSuccess }: Pro
     if (pendingIds.has(f.id) || excludedIds.has(f.id)) return false;
     const matchesQuery =
       !query ||
+      f.id.toLowerCase().includes(query.toLowerCase()) ||
       f.description.toLowerCase().includes(query.toLowerCase()) ||
       String(f.number).includes(query);
     const matchesCategory = !category || f.category === category;
@@ -94,7 +95,7 @@ export default function AddMissingCardsModal({ userId, onClose, onSuccess }: Pro
           <Row>
             <Input
               type="text"
-              placeholder="Buscar por nombre o número..."
+              placeholder="Buscar por id, nombre o número..."
               value={query}
               onChange={e => setQuery(e.target.value)}
               autoFocus
@@ -114,7 +115,7 @@ export default function AddMissingCardsModal({ userId, onClose, onSuccess }: Pro
             <CardList>
               {filtered.map(f => (
                 <CardItem key={f.id}>
-                  <CardNum>#{f.number}</CardNum>
+                  <CardNum>{f.id}</CardNum>
                   <CardDescription>{f.description}</CardDescription>
                   <CardQuantityLabel>{f.category}</CardQuantityLabel>
                   <AddButton type="button" onClick={() => handleAdd(f)}>Agregar</AddButton>
@@ -133,7 +134,7 @@ export default function AddMissingCardsModal({ userId, onClose, onSuccess }: Pro
             <CardList>
               {pending.map(f => (
                 <CardItem key={f.id}>
-                  <CardNum>#{f.number}</CardNum>
+                  <CardNum>{f.id}</CardNum>
                   <CardDescription>{f.description}</CardDescription>
                   <CardQuantityLabel>{f.category}</CardQuantityLabel>
                   <RemoveButton type="button" onClick={() => handleRemove(f.id)}>Quitar</RemoveButton>

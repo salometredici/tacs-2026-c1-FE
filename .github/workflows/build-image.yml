@@ -15,6 +15,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # Habilita emulación arm64 sobre runners amd64 vía binfmt + QEMU
+      - uses: docker/setup-qemu-action@v3
+        with:
+          platforms: arm64
+
       - uses: docker/setup-buildx-action@v3
 
       - uses: docker/login-action@v3
@@ -36,6 +41,8 @@ jobs:
         with:
           context: .
           push: true
+          # Imagen multi-arch para que el compose levante en runners arm64 (Mac M1+, multi-arch CI)
+          platforms: linux/amd64,linux/arm64
           build-args: |
             VITE_API_BASE_URL=http://localhost:8080
           tags: ${{ steps.meta.outputs.tags }}

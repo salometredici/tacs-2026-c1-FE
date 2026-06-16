@@ -173,8 +173,9 @@ export const FeedbackBlock = styled.div`
 
 export const FeedbackHeader = styled.div`
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: ${theme.spacing.xs};
   font-size: ${theme.typography.labelMedium.fontSize};
   color: ${theme.colors.onSurfaceVariant};
 `;
@@ -209,7 +210,10 @@ export const FeedbackTextarea = styled.textarea`
 export const FeedbackFormActions = styled.div`
   display: flex;
   gap: ${theme.spacing.sm};
-  justify-content: flex-end;
+  justify-content: flex-start;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-top: ${theme.spacing.sm};
 `;
 
 export const SecondaryButton = styled.button`
@@ -220,6 +224,31 @@ export const SecondaryButton = styled.button`
   color: ${theme.colors.primary};
   font-size: ${theme.typography.labelLarge.fontSize};
   font-weight: ${theme.typography.labelLarge.fontWeight};
+  cursor: pointer;
+  &:disabled { opacity: 0.4; cursor: not-allowed; }
+`;
+
+// Botones compactos del bloque de feedback (más chicos que los del Footer principal)
+export const FeedbackButton = styled.button`
+  padding: 6px ${theme.spacing.md};
+  background: ${theme.colors.primary};
+  border: none;
+  border-radius: ${theme.shape.full};
+  color: ${theme.colors.onPrimary};
+  font-size: ${theme.typography.labelMedium.fontSize};
+  font-weight: ${theme.typography.labelMedium.fontWeight};
+  cursor: pointer;
+  &:disabled { opacity: 0.4; cursor: not-allowed; }
+`;
+
+export const FeedbackCancelButton = styled.button`
+  padding: 6px ${theme.spacing.md};
+  background: transparent;
+  border: 1px solid ${theme.colors.outline};
+  border-radius: ${theme.shape.full};
+  color: ${theme.colors.primary};
+  font-size: ${theme.typography.labelMedium.fontSize};
+  font-weight: ${theme.typography.labelMedium.fontWeight};
   cursor: pointer;
   &:disabled { opacity: 0.4; cursor: not-allowed; }
 `;
