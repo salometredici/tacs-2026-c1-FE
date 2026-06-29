@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useParams, useNavigate, useOutletContext } from 'react-router-dom';
 import { Bid } from '../../interfaces/auctions/bid/Bid';
-import { getAuctionById, acceptOffer, rejectOffer, cancelAuction, cancelOffer } from '../../api/AuctionsService';
+import { getAuctionById, acceptOffer, rejectOffer, cancelAuction, cancelOffer, markInterested } from '../../api/AuctionsService';
 import PlaceBidModal from '../../components/auctions/PlaceBidModal';
 import ConfirmDialog from '../../components/feedback/ConfirmDialog';
 import { AuthedOutletContext } from '../../components/layout/UserRoute';
@@ -21,7 +21,7 @@ export default function AuctionDetailPage() {
   const navigate = useNavigate();
   const { currentUser } = useOutletContext<AuthedOutletContext>();
   const { refreshCurrentUser } = useUserContext();
-  const { showSuccess } = useSnackbar();
+  const { showSuccess, showError } = useSnackbar();
 
   const [showBidModal, setShowBidModal] = useState(false);
   const [finalizing, setFinalizing] = useState(false);
@@ -32,6 +32,8 @@ export default function AuctionDetailPage() {
   const [rejectingBidId, setRejectingBidId] = useState<string | null>(null);
   const [pendingCancelOwnBid, setPendingCancelOwnBid] = useState<string | null>(null);
   const [cancellingOwnBid, setCancellingOwnBid] = useState(false);
+  const [interested, setInterested] = useState(false);
+  const [markingInterested, setMarkingInterested] = useState(false);
 
   const { data: auction, isLoading: loading, setData: setAuction } = useFetch(
     () => getAuctionById(id!), [id],
@@ -95,6 +97,20 @@ export default function AuctionDetailPage() {
     }
   };
 
+  const handleMarkInterested = async () => {
+    if (!auction) return;
+    setMarkingInterested(true);
+    try {
+      await markInterested(auction.id);
+      setInterested(true);
+      showSuccess('Te avisaremos cuando esté por cerrar');
+    } catch {
+      showError('No se pudo registrar tu interés. Intentá de nuevo.');
+    } finally {
+      setMarkingInterested(false);
+    }
+  };
+
   const handleRejectOffer = async (bidId: string) => {
     if (!auction) return;
     setRejectingBidId(bidId);
@@ -133,6 +149,9 @@ export default function AuctionDetailPage() {
           isActive={isActive}
           onPlaceBid={() => setShowBidModal(true)}
           onCancelAuction={() => setConfirmCancel(true)}
+          onMarkInterested={handleMarkInterested}
+          interested={interested}
+          markingInterested={markingInterested}
         />
       </TopGrid>
 
