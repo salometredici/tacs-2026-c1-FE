@@ -17,6 +17,7 @@ import AdminLayout from '../components/admin/AdminLayout'
 import AdminRoute from '../components/admin/AdminRoute'
 import AdminDashboardPage from '../pages/admin/AdminDashboardPage'
 import UserRoute from '../components/layout/UserRoute'
+import NotFoundPage from '../pages/notfound/NotFoundPage'
 
 export default function AppRouter() {
   return (
@@ -45,7 +46,7 @@ export default function AppRouter() {
             <Route path="/admin" element={<AdminDashboardPage />} />
           </Route>
         </Route>
-        <Route path="*" element={<Navigate to="/login" replace />} />
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </BrowserRouter>
   )

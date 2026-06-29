@@ -5,6 +5,7 @@ import SearchCards from '../../components/search/SearchCards';
 import SearchResults from '../../components/search/SearchResults';
 import { searchAvailable, SearchAvailableResponse } from '../../api/CardsService';
 import { SearchFiguritasFilters } from '../../interfaces/search/SearchFiguritasFilters';
+import { useSnackbar } from '../../context/useSnackbar';
 
 const SearchPageContainer = styled.div`
   max-width: 1400px;
@@ -23,6 +24,7 @@ export default function SearchPage() {
   const [activeFilters, setActiveFilters] = useState<SearchFiguritasFilters | null>(null);
   const [searched, setSearched] = useState(false);
   const [loading, setLoading] = useState(false);
+  const { showError } = useSnackbar();
 
   const runSearch = async (
     filters: SearchFiguritasFilters,
@@ -30,18 +32,24 @@ export default function SearchPage() {
     aucPage: number,
   ) => {
     setLoading(true);
-    const data = await searchAvailable({
-      number: filters.number,
-      description: filters.description,
-      country: filters.country,
-      category: filters.category,
-      pubPage,
-      pubPerPage: PAGE_SIZE,
-      aucPage,
-      aucPerPage: PAGE_SIZE,
-    });
-    setResults(data);
-    setLoading(false);
+    try {
+      const data = await searchAvailable({
+        number: filters.number,
+        description: filters.description,
+        country: filters.country,
+        category: filters.category,
+        pubPage,
+        pubPerPage: PAGE_SIZE,
+        aucPage,
+        aucPerPage: PAGE_SIZE,
+      });
+      setResults(data);
+    } catch {
+      showError('No se pudo realizar la búsqueda. Intentá de nuevo.');
+      setResults(EMPTY_RESULTS);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleSearch = async (filters: SearchFiguritasFilters) => {

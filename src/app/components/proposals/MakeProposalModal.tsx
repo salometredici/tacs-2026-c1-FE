@@ -37,7 +37,7 @@ interface Props {
 }
 
 const clamp = (n: number, min: number, max: number) => Math.min(Math.max(n, min), max);
-const availableOf = (c: CollectionCard) => c.quantity - c.compromisedCount;
+const availableOf = (c: CollectionCard) => c.available;
 
 export default function MakeProposalModal({ userId, card, publicationId, maxRequestable, onClose, onSuccess }: Props) {
   const { showSuccess } = useSnackbar();
