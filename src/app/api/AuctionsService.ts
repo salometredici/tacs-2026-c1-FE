@@ -178,6 +178,10 @@ export const cancelOffer = async (auctionId: string, offerId: string): Promise<v
   await axios.delete(`${BASE}/${auctionId}/offers/${offerId}`);
 };
 
+export const markInterested = async (auctionId: string): Promise<void> => {
+  await axios.post(`${BASE}/${auctionId}/interested`);
+};
+
 interface UserBidDtoBE {
   auctionId: string;
   cardId: string;

@@ -262,6 +262,28 @@ export const BidButton = styled.button`
   &:disabled { background: ${theme.colors.border}; cursor: not-allowed; transform: none; box-shadow: none; }
 `;
 
+// Botón "Me interesa" — M3 Filled Tonal con ícono de campana
+export const InterestButton = styled.button`
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: ${theme.spacing.sm};
+  padding: ${theme.spacing.md};
+  background: ${theme.colors.primaryContainer};
+  color: ${theme.colors.onPrimaryContainer};
+  border: none;
+  border-radius: ${theme.shape.full};
+  font-size: ${theme.typography.labelLarge.fontSize};
+  font-weight: ${theme.typography.labelLarge.fontWeight};
+  cursor: pointer;
+  margin-top: ${theme.spacing.sm};
+  transition: box-shadow 0.2s;
+
+  &:hover { box-shadow: ${theme.elevation[1]}; }
+  &:disabled { opacity: ${theme.state.disabled}; cursor: default; box-shadow: none; }
+`;
+
 export const Countdown = styled.div<{ $urgente: boolean }>`
   font-size: 1.5rem;
   font-weight: 700;

@@ -61,3 +61,36 @@ describe('AuctionRulesPanel — action buttons', () => {
     expect(onCancelAuction).toHaveBeenCalledOnce();
   });
 });
+
+describe('AuctionRulesPanel — botón "Me interesa"', () => {
+  it('shows "Me interesa" when isActive=true, isOwner=false and onMarkInterested is provided', () => {
+    render(<AuctionRulesPanel rules={noRules} isOwner={false} isActive={true} onPlaceBid={vi.fn()} onCancelAuction={vi.fn()} onMarkInterested={vi.fn()} />);
+    expect(screen.getByText('Me interesa')).toBeTruthy();
+  });
+
+  it('does not show "Me interesa" for the owner', () => {
+    render(<AuctionRulesPanel rules={noRules} isOwner={true} isActive={true} onPlaceBid={vi.fn()} onCancelAuction={vi.fn()} onMarkInterested={vi.fn()} />);
+    expect(screen.queryByText('Me interesa')).toBeNull();
+  });
+
+  it('does not show "Me interesa" when onMarkInterested is absent', () => {
+    render(<AuctionRulesPanel rules={noRules} isOwner={false} isActive={true} onPlaceBid={vi.fn()} onCancelAuction={vi.fn()} />);
+    expect(screen.queryByText('Me interesa')).toBeNull();
+  });
+
+  it('calls onMarkInterested when clicked', () => {
+    const onMarkInterested = vi.fn();
+    render(<AuctionRulesPanel rules={noRules} isOwner={false} isActive={true} onPlaceBid={vi.fn()} onCancelAuction={vi.fn()} onMarkInterested={onMarkInterested} />);
+    fireEvent.click(screen.getByText('Me interesa'));
+    expect(onMarkInterested).toHaveBeenCalledOnce();
+  });
+
+  it('when interested=true, shows confirmation label and the button is disabled', () => {
+    const onMarkInterested = vi.fn();
+    render(<AuctionRulesPanel rules={noRules} isOwner={false} isActive={true} onPlaceBid={vi.fn()} onCancelAuction={vi.fn()} onMarkInterested={onMarkInterested} interested={true} />);
+    const btn = screen.getByText('Te avisaremos al cerrar').closest('button')!;
+    expect(btn.disabled).toBe(true);
+    fireEvent.click(btn);
+    expect(onMarkInterested).not.toHaveBeenCalled();
+  });
+});
