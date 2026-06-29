@@ -22,7 +22,7 @@ export default function CardSelector({ collection, loading, value, onChange }: P
     fc.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
     String(fc.number).includes(searchQuery);
 
-  const availableCards = collection.filter(fc => fc.quantity - fc.compromisedCount > 0);
+  const availableCards = collection.filter(fc => fc.available > 0);
   const filteredCards = availableCards.filter(matchesSearch);
 
   return (
@@ -42,7 +42,7 @@ export default function CardSelector({ collection, loading, value, onChange }: P
           <CardList>
             {filteredCards.map(fc => {
               const isSelected = value === fc.cardId;
-              const available = fc.quantity - fc.compromisedCount;
+              const available = fc.available;
               return (
                 <SelectableItem
                   key={fc.cardId}

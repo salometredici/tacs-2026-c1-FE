@@ -19,7 +19,7 @@ const mockGetCatalog = getCatalog as ReturnType<typeof vi.fn>;
 const cc = (cardId: string, quantity: number): CollectionCard => ({
   cardId, number: 1, description: `Card ${cardId}`,
   country: null, team: null, category: 'COMUN',
-  quantity, compromisedCount: 0,
+  quantity, available: quantity,
 });
 
 const catalogOf = (n: number): Card[] =>

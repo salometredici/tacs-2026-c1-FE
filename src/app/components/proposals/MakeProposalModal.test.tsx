@@ -28,10 +28,10 @@ const card: Card = {
   description: 'Messi', country: 'Argentina', team: null, category: 'LEGENDARIO',
 };
 
-const makeCollectionCard = (id: string, qty = 3, compromised = 0): CollectionCard => ({
+const makeCollectionCard = (id: string, qty = 3, available = qty): CollectionCard => ({
   cardId: id, number: 10, description: `Card ${id}`,
   country: null, team: null, category: 'COMUN',
-  quantity: qty, compromisedCount: compromised,
+  quantity: qty, available,
 });
 
 const baseProps = {

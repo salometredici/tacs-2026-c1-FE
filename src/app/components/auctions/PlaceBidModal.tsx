@@ -33,7 +33,7 @@ interface Props {
   onSuccess: () => void;
 }
 
-const availableOf = (c: CollectionCard) => c.quantity - c.compromisedCount;
+const availableOf = (c: CollectionCard) => c.available;
 
 export default function PlaceBidModal({ userId, card, auctionId, onClose, onSuccess }: Props) {
   const { showSuccess } = useSnackbar();

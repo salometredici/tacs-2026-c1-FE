@@ -6,7 +6,5 @@ export interface CollectionCard {
     team: string | null
     category: string
     quantity: number
-    compromisedCount: number
-    acquisitionDate?: string
-    acquisitionOrigin?: string
+    available: number
 }
