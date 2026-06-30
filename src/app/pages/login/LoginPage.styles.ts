@@ -5,7 +5,7 @@ export const LoginContainer = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 100vh;
+  min-height: var(--tg-viewport-stable-height, 100vh);
   background-color: #2d1b4e;
   padding: ${theme.spacing.md};
 `;

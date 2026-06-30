@@ -1,11 +1,15 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useUserContext } from '../../context/useUserContext';
 import { useAdminContext } from '../../context/useAdminContext';
 import { API_CONFIG } from '../../config/apiConfig';
 import { register } from '../../api/AuthService';
+import { getById } from '../../api/UsersService';
 import { LoginResponse } from '../../interfaces/auth/LoginResponse';
+import { User } from '../../interfaces/auth/User';
+import { isInsideTelegram, getTelegram } from '../../utils/telegram';
+import { verifyTelegramSession, linkTelegramSession } from '../../api/TelegramAuthService';
 import {
   LoginContainer,
   LoginCard,
@@ -40,6 +44,26 @@ export default function LoginPage() {
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+
+  // Nivel 2: auto-login al montar si el bot ya tiene una sesión vinculada para este usuario.
+  useEffect(() => {
+    if (!isInsideTelegram()) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const { linked, token, userId } = await verifyTelegramSession();
+        if (cancelled || !linked || !token || !userId) return;
+        localStorage.setItem('token', token);   // para que getById mande el Bearer
+        const user = await getById(userId);      // GET /api/users/{id}
+        if (!user) return;
+        login(user, token);
+        if (user.role === 'ADMIN') { setAdminLoggedIn(true); navigate('/admin'); }
+        else navigate('/');
+      } catch { /* sin sesión vinculada: se muestra el form normal */ }
+    })();
+    return () => { cancelled = true; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -92,27 +116,33 @@ export default function LoginPage() {
     setFieldErrors({});
     setLoading(true);
     try {
-      let isAdmin = false;
+      let token: string;
+      let user: User;
       if (mode === 'register') {
         const derivedName = form.email.split('@')[0] || form.email;
-        const { token, user } = await register({
+        ({ token, user } = await register({
           name: derivedName,
           email: form.email,
           password: form.password,
           avatarId: 'avatar_1',
-        });
-        login(user, token);
-        isAdmin = user.role === 'ADMIN';
+        }));
       } else {
         const response = await axios.post<LoginResponse>(API_CONFIG.auth.login, {
           email: form.email,
           password: form.password,
         });
-        const { token, user } = response.data;
-        login(user, token);
-        isAdmin = user.role === 'ADMIN';
+        ({ token, user } = response.data);
       }
-      if (isAdmin) {
+      login(user, token);
+
+      // Dentro de Telegram: vincular la sesión al usuario del bot y cerrar el webview.
+      if (isInsideTelegram()) {
+        try { await linkTelegramSession(token, user.id); } catch { /* best-effort */ }
+        getTelegram()?.close();   // cierra la Mini App y vuelve al chat
+        return;                   // no navegar dentro de un webview que se cierra
+      }
+
+      if (user.role === 'ADMIN') {
         setAdminLoggedIn(true);
         navigate('/admin');
       } else {
