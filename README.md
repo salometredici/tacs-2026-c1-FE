@@ -30,7 +30,7 @@ Todos comparten el mismo password: **`123456`**
 | `johndoe@gmail.com`      | USER  | Password `Password1`                                                |
 | `janedoe@gmail.com`      | USER  | Password `Password1`                                                |
 
-No hay publicaciones, subastas, propuestas ni intercambios preseedeados — los crean los users durante la demo (a menos que se levante el `--profile demo` del compose del BE).
+No hay publicaciones, subastas, propuestas ni intercambios preseedeados — los crean los users a mano durante la demo. Los usuarios base quedan solo con figuritas (en colección y faltantes).
 
 ## Levantar local — opción rápida
 
