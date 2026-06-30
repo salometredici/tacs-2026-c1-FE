@@ -28,6 +28,10 @@ export const API_CONFIG = {
     search: `${API}/cards/search`,
   },
 
+  matches: {
+    upcoming: `${API}/matches/upcoming`,
+  },
+
   auctions: {
     base: `${API}/auctions`,
   },

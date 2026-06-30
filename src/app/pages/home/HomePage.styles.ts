@@ -30,6 +30,29 @@ export const CardsGrid = styled.div`
   gap: ${theme.spacing.lg};
 `;
 
+// Fila superior a 2 columnas: accesos (izq) + próximos partidos (der). Stack en pantallas chicas.
+export const TopRow = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: ${theme.spacing.lg};
+  margin-bottom: ${theme.spacing.xl};
+
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr;
+  }
+
+  & > * { margin-bottom: 0; }
+`;
+
+// Columna izquierda: las dos cards de navegación apiladas, estiradas para igualar la altura del widget.
+export const AccessColumn = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: ${theme.spacing.lg};
+
+  & > button { flex: 1; }
+`;
+
 export const Card = styled.button`
   background: ${theme.colors.surfaceContainerLow};
   border: none;
@@ -329,4 +352,94 @@ export const EmptyMessage = styled.p`
   color: ${theme.colors.onSurfaceVariant};
   font-size: ${theme.typography.bodyMedium.fontSize};
   margin: 0;
+`;
+
+// ─── Bonus: widget de próximos partidos del Mundial ──────────────────────────
+
+// Banner del countdown al primer partido (M3 Filled Tonal)
+export const MatchesCountdown = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  background: ${theme.colors.primaryContainer};
+  color: ${theme.colors.onPrimaryContainer};
+  border-radius: ${theme.shape.medium};
+  padding: ${theme.spacing.sm} ${theme.spacing.md};
+  margin-bottom: ${theme.spacing.md};
+`;
+
+export const CountdownLabel = styled.span`
+  font-size: ${theme.typography.labelMedium.fontSize};
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+`;
+
+export const CountdownValue = styled.span`
+  font-size: ${theme.typography.titleLarge.fontSize};
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+`;
+
+// Card propia del widget de partidos (no comparte con Sugerencias/Catálogo): llena el alto de su
+// celda del grid para alinear con la columna de accesos.
+export const MatchesCard = styled.div`
+  background: ${theme.colors.surfaceContainerLow};
+  border-radius: ${theme.shape.medium};
+  padding: ${theme.spacing.xl};
+  box-shadow: ${theme.elevation[1]};
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+`;
+
+export const MatchesList = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: ${theme.spacing.sm};
+  /* El interior se adapta: la lista llena el alto disponible y reparte las filas, así el total
+     del widget queda alineado con las cards de la izquierda (haya o no countdown). */
+  flex: 1;
+  justify-content: space-between;
+`;
+
+// M3 Outlined Card — una fila por partido
+export const MatchRow = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: ${theme.spacing.sm};
+  padding: ${theme.spacing.sm} ${theme.spacing.md};
+  border: 1px solid ${theme.colors.outlineVariant};
+  border-radius: ${theme.shape.medium};
+  background: ${theme.colors.surface};
+`;
+
+export const MatchTeam = styled.span`
+  display: inline-flex;
+  align-items: center;
+  gap: ${theme.spacing.xs};
+  color: ${theme.colors.onSurface};
+`;
+
+export const MatchCrest = styled.img`
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+`;
+
+export const MatchTeamName = styled.span`
+  font-size: ${theme.typography.bodyMedium.fontSize};
+  font-weight: 500;
+`;
+
+export const MatchVs = styled.span`
+  font-size: ${theme.typography.labelSmall.fontSize};
+  color: ${theme.colors.onSurfaceVariant};
+  text-transform: uppercase;
+`;
+
+export const MatchInfo = styled.span`
+  margin-left: auto;
+  font-size: ${theme.typography.bodySmall.fontSize};
+  color: ${theme.colors.onSurfaceVariant};
 `;
