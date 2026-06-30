@@ -54,10 +54,9 @@ services:
       mongo-seed:
         condition: service_completed_successfully
     environment:
-      SPRING_DATA_MONGODB_URI: mongodb://mongo:27017/tacs_db?directConnection=true
-      MONGO_DATABASE: tacs_db
-      JWT_SECRET: ${JWT_SECRET}
-      JWT_EXPIRATION: ${JWT_EXPIRATION}
+      SPRING_MONGODB_URI: mongodb://mongo:27017/tacs_db?directConnection=true
+      FRONTEND_URI: http://localhost
+      FOOTBALLDATA_KEY: ${FOOTBALLDATA_KEY:-}
     networks:
       - tacs-network
     healthcheck:
