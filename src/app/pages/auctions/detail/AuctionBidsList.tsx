@@ -3,7 +3,8 @@ import StatusBadge from '../../../components/common/StatusBadge';
 import { BID_STATUS_TONE as BID_TONE } from '../../../interfaces/auctions/bid/BidStatus';
 import {
   Card, SectionTitle, EmptyBidsText, OffersGrid, OfferCard, OfferHeader,
-  OfferBidder, OfferRating, OfferedCards, OfferDate, OfferActions,
+  OfferBidder, OfferRating, OfferedCards, OfferedCardsList, OfferedCardItem,
+  OfferDate, OfferActions,
   ChooseWinnerButton, RejectOfferButton, FinalizeErrorText,
 } from '../AuctionDetailPage.styles';
 
@@ -54,8 +55,12 @@ export default function AuctionBidsList({
                     <StatusBadge tone={BID_TONE[o.status] ?? 'neutral'}>{o.status}</StatusBadge>
                   </OfferHeader>
                   <OfferedCards>
-                    <strong>{o.offeredCards.length} figurita(s):</strong>{' '}
-                    {o.offeredCards.map(f => `${f.id} - ${f.description}`).join(', ')}
+                    <strong>{o.offeredCards.length} figurita(s):</strong>
+                    <OfferedCardsList>
+                      {o.offeredCards.map((f, i) => (
+                        <OfferedCardItem key={`${f.id}-${i}`}>{`${f.id} - ${f.description}`}</OfferedCardItem>
+                      ))}
+                    </OfferedCardsList>
                   </OfferedCards>
                   <OfferDate>{new Date(o.bidDate).toLocaleString('es-AR')}</OfferDate>
                   {isOwner && isActive && o.status === 'ACTIVA' && (

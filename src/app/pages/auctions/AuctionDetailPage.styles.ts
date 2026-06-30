@@ -174,6 +174,16 @@ export const OfferedCards = styled.div`
   & strong { color: ${theme.colors.onSurface}; font-weight: 500; }
 `;
 
+export const OfferedCardsList = styled.ul`
+  margin: 4px 0 0;
+  padding-left: 1.1rem;
+  list-style: disc;
+`;
+
+export const OfferedCardItem = styled.li`
+  margin: 1px 0;
+`;
+
 export const OfferDate = styled.div`
   font-size: ${theme.typography.labelSmall.fontSize};
   color: ${theme.colors.onSurfaceVariant};
