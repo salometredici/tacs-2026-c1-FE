@@ -27,6 +27,8 @@ Todos comparten el mismo password: **`123456`**
 | `moniargento@gmail.com`  | USER  | Tiene cards en colección (1× FWC3, 2× ARG1, 3× BRA1, 1× ARG3, 1× MEX7) |
 | `dfuseneco@outlook.com`  | USER  | Usuario "vacío" — sin colección. Útil para probar empty states      |
 | `admin@mail.com`         | ADMIN | Usuario administrador. Login normal — el FE detecta `role: ADMIN` del DTO y redirige a `/admin` |
+| `johndoe@gmail.com`      | USER  | Password `Password1`                                                |
+| `janedoe@gmail.com`      | USER  | Password `Password1`                                                |
 
 No hay publicaciones, subastas, propuestas ni intercambios preseedeados — los crean los users durante la demo (a menos que se levante el `--profile demo` del compose del BE).
 

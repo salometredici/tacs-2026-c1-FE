@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { getTelegram } from '../utils/telegram';
 
-const BOT_BASE_URL = import.meta.env.VITE_BOT_BASE_URL || 'http://localhost:8081';
+const BOT_BASE_URL = import.meta.env.VITE_BOT_BASE_URL || 'https://tacs-bot-2026.onrender.com';
 
 // Instancia propia SIN los interceptores globales: un 401 del bot NO debe
 // borrar el token del backend ni redirigir a /login.
